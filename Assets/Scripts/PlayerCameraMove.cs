@@ -1,7 +1,7 @@
 using UnityEngine;
 using Unity.Netcode;
 
-public class PlayerCameraMove : NetworkBehaviour
+public class PlayerCameraMove : MonoBehaviour
 {
     [SerializeField]
     private Vector2 mouseMove = new Vector2();
@@ -13,10 +13,10 @@ public class PlayerCameraMove : NetworkBehaviour
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
-        gameObject.SetActive(false);
-        if (IsOwner)
+        gameObject.GetComponent<Camera>().enabled = false;
+        if (transform.parent.gameObject.GetComponent<PlayerMove>().IsOwner)
         {
-            gameObject.SetActive(true);
+            gameObject.GetComponent<Camera>().enabled = true;
         }
     }
 
@@ -39,7 +39,7 @@ public class PlayerCameraMove : NetworkBehaviour
     void LateUpdate()
     {
         
-        if (Cursor.lockState == CursorLockMode.Locked)
+        if (transform.parent.gameObject.GetComponent<PlayerMove>().IsOwner && Cursor.lockState == CursorLockMode.Locked)
         {
             MouseMove();
         }
