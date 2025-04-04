@@ -4,7 +4,7 @@
     - Handles looking around
     - Handles camera zoom (using CTRL)
     Contributor(s): John Aylward, Jake Schott
-    Last Updated: 3/25/2025
+    Last Updated: 4/2/2025
 */
 
 using UnityEngine;
@@ -26,7 +26,7 @@ public class PlayerCameraMove : MonoBehaviour
         FindAnyObjectByType<AudioManager>()?.SetMasterVolume(0.75f);
         Cursor.lockState = CursorLockMode.Locked;
         gameObject.SetActive(true);
-        control_script = (ControlScript)transform.GetComponent("ControlScript");
+        control_script = (ControlScript)transform.parent.GetComponent("ControlScript");
     }
 
     // Update is called once per frame
@@ -71,7 +71,6 @@ public class PlayerCameraMove : MonoBehaviour
         prevPos.y -= mouseMove.y;
         prevPos.x += mouseMove.x;
         transform.localRotation = Quaternion.AngleAxis(prevPos.y, Vector3.right);
-
         transform.parent.localRotation = Quaternion.AngleAxis(prevPos.x, Vector3.up);
     }
 

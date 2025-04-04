@@ -3,22 +3,23 @@
     - Handles inputs for horizontal thrusters
     - Extends ThrusterControl.cs
     Contributor(s): Jake Schott
-    Last Updated: 3/25/2025
+    Last Updated: 4/4/2025
 */
 
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Windows;
-using static UnityEngine.Rendering.VirtualTexturing.Debugging;
+using System.Collections.Generic;
 
 public class HorizontalThrusters : ThrusterControl, IControllable
 {
+    //CLASS CONSTANTS
+    private float UPDATE_DELAY = 0.02f; //time in seconds between updates
+
     private string CONTROL_NAME = "HORIZONTAL THRUSTERS";
-    private List<string> CONTROL_DESCS = new List<string> {"MOVE LEFT", "MOVE RIGHT"};
-    private List<int> CONTROL_INDEXES = new List<int>() {1, 3};
+    private List<string> CONTROL_DESCS = new List<string> { "MOVE LEFT", "MOVE RIGHT" };
+    private List<int> CONTROL_INDEXES = new List<int>() { 1, 3 };
 
     private List<KeyCode> keys_down = new List<KeyCode>();
+    private float delay_timer = 0.0f;
 
     private static HUDInfo hud_info = null;
 
@@ -31,34 +32,13 @@ public class HorizontalThrusters : ThrusterControl, IControllable
         }
         return hud_info;
     }
-    void FixedUpdate()
+    private void displayAdjustment()
     {
-        if (keys_down.Count == 0)
-        {
-            buttons[0] = false;
-            buttons[1] = false;
-        }
-        else
-        {
-            float temp_thrust = 0;
-            buttons[1] = (keys_down.Contains(KeyCode.D) || keys_down.Contains(KeyCode.RightArrow));
-            if (buttons[1]) //D to move right
-            {
-                temp_thrust = 1;
-
-            }
-            buttons[0] = (keys_down.Contains(KeyCode.A) || keys_down.Contains(KeyCode.LeftArrow));
-            if (buttons[0]) //A to move left
-            {
-                temp_thrust -= 1;
-            }
-            if (thrust_direction != temp_thrust)
-            {
-                adjustThrust(temp_thrust);
-            }
-        }
+        //adjust physical buttons
         adjustButton(physical_buttons[0], 0);
         adjustButton(physical_buttons[1], 1);
+
+        //update corresponding thruster screen
         GameObject diamond = display_canvas.transform.GetChild(1).gameObject;
         if (thrust_direction == 0) //bring back to center
         {
@@ -81,6 +61,43 @@ public class HorizontalThrusters : ThrusterControl, IControllable
             {
                 diamond.transform.localPosition = new Vector3(Mathf.Max(-0.055f, diamond.transform.localPosition.x - 0.0055f), diamond.transform.localPosition.y, diamond.transform.localPosition.z);
             }
+        }
+    }
+    void Update()
+    {
+        delay_timer -= Time.deltaTime;
+        if (delay_timer <= 0.0f)
+        {
+            //ensure thrust is updated
+            if (keys_down.Count == 0)
+            {
+                buttons[0] = false;
+                buttons[1] = false;
+            }
+            else
+            {
+                float temp_thrust = 0;
+                buttons[1] = (keys_down.Contains(KeyCode.D) || keys_down.Contains(KeyCode.RightArrow));
+                if (buttons[1]) //D to move right
+                {
+                    temp_thrust = 1;
+                }
+                buttons[0] = (keys_down.Contains(KeyCode.A) || keys_down.Contains(KeyCode.LeftArrow));
+                if (buttons[0]) //A to move left
+                {
+                    temp_thrust -= 1;
+                }
+                if (thrust_direction != temp_thrust)
+                {
+                    adjustThrust(temp_thrust);
+                }
+            }
+
+            //display changes
+            displayAdjustment();
+
+            //reset timer
+            delay_timer = UPDATE_DELAY;
         }
         keys_down.Clear();
     }

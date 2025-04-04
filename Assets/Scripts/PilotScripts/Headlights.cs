@@ -4,7 +4,7 @@
     - Moves physical slider
     - Updates corresponding screen
     Contributor(s): Jake Schott
-    Last Updated: 3/30/2025
+    Last Updated: 4/4/2025
 */
 
 using System.Collections.Generic;
@@ -42,7 +42,7 @@ public class Headlights : MonoBehaviour, IControllable
     {
         return hud_info;
     }
-    void FixedUpdate()
+    void Update()
     {
         if (adjusting_slider == true)
         {
@@ -64,7 +64,6 @@ public class Headlights : MonoBehaviour, IControllable
                     float dest_pos_y = init_pos_y + (((float)slider_configuration) / 7) * (end_pos_y - init_pos_y);
                     float dest_pos_z = init_pos_z + (((float)slider_configuration) / 7) * (end_pos_z - init_pos_z);
                     slider.transform.position = new Vector3(0, dest_pos_y, dest_pos_z);
-                    Debug.Log("Headlights are on setting: " + slider_configuration);
                     adjusting_slider = false;
                 }
                 else
@@ -78,7 +77,7 @@ public class Headlights : MonoBehaviour, IControllable
     {
         if (slider_configuration < 7)
         {
-            cooldown_timer = 0.02f;
+            cooldown_timer = 0.1f;
             move_factor = 1.0f;
             iterations = 10;
             slider_configuration++;
@@ -89,7 +88,7 @@ public class Headlights : MonoBehaviour, IControllable
     {
         if (slider_configuration > 0)
         {
-            cooldown_timer = 0.02f;
+            cooldown_timer = 0.1f;
             move_factor = -1.0f;
             iterations = 10;
             slider_configuration--;

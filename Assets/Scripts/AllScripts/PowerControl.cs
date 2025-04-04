@@ -1,18 +1,15 @@
 /*
-    PowerOn.cs
+    PowerControl.cs
     - Handles power-on/power-off procedure
     - Moves throttle lever accordingly
     Contributor(s): Jake Schott
-    Last Updated: 4/2/2025
+    Last Updated: 4/3/2025
 */
 
 using System.Collections.Generic;
-using System.ComponentModel;
-using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-public class PowerOn : MonoBehaviour, IControllable
+public class PowerControl : MonoBehaviour, IControllable
 {
     private string CONTROL_NAME = "POWER CONTROL";
     private List<string> CONTROL_DESCS = new List<string>{"ENABLE"};
@@ -36,7 +33,7 @@ public class PowerOn : MonoBehaviour, IControllable
     {
         return hud_info;
     }
-    public void FixedUpdate()
+    public void Update()
     {
         if (is_turning)
         {
@@ -69,11 +66,11 @@ public class PowerOn : MonoBehaviour, IControllable
                 CONTROL_INDEXES = new List<int> { 6 };
                 if (power_enabled)
                 {
-                    CONTROL_DESCS = new List<string> { "DISABLE" };
+                    CONTROL_DESCS = new List<string> {"DISABLE"};
                 }
                 else
                 {
-                    CONTROL_DESCS = new List<string> { "ENABLE" };
+                    CONTROL_DESCS = new List<string> {"ENABLE"};
                 }
                 hud_info = new HUDInfo(CONTROL_NAME);
                 hud_info.setInputs(CONTROL_DESCS, CONTROL_INDEXES);

@@ -1,6 +1,6 @@
 /*
-    TractorBeamDestroy.cs
-    - Meant to destroy item brought in from tractor beam
+    TBCollect.cs
+    - Meant to store item brought in from tractor beam
     - Does nothing
     Contributor(s): Jake Schott
     Last Updated: 4/2/2025
@@ -9,9 +9,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TractorBeamDestroy : MonoBehaviour, IControllable
+public class TBCollect : MonoBehaviour, IControllable
 {
-    private string CONTROL_NAME = "DESTROY OBJECT";
+    private string CONTROL_NAME = "COLLECT OBJECT";
     private List<string> CONTROL_DESCS = new List<string>();
     private List<int> CONTROL_INDEXES = new List<int>();
 

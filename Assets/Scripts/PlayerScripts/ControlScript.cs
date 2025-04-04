@@ -32,6 +32,8 @@ public class ControlScript : MonoBehaviour
     public GameObject control_info; //UI indicator that you are looking at a control
     public GameObject title; //title at the top of the UI indicator
     public GameObject buttons_panel; //contains all the buttons/dividers inside the trapezoid
+    public GameObject pause_menu;
+    public GameObject settings_menu;
     public GameObject script_holder; //empty GameObject that contains all the control scripts as components
     public Camera my_camera; //player's camera
 
@@ -188,8 +190,8 @@ public class ControlScript : MonoBehaviour
     {
         UnityEngine.Cursor.visible = true;
         UnityEngine.Cursor.lockState = CursorLockMode.None;
-        transform.GetChild(1).gameObject.SetActive(true);
-        transform.GetChild(2).gameObject.SetActive(false);
+        pause_menu.SetActive(true);
+        settings_menu.SetActive(false);
         paused = true;
         cursor.SetActive(false);
     }
@@ -197,8 +199,8 @@ public class ControlScript : MonoBehaviour
     {
         UnityEngine.Cursor.visible = false;
         UnityEngine.Cursor.lockState = CursorLockMode.Locked;
-        transform.GetChild(1).gameObject.SetActive(false);
-        transform.GetChild(2).gameObject.SetActive(false);
+        pause_menu.SetActive(false);
+        settings_menu.SetActive(false);
         paused = false;
         if (HUD_setting != 3)
         {
@@ -206,7 +208,7 @@ public class ControlScript : MonoBehaviour
         }
     }
 
-    void FixedUpdate()
+    void Update()
     {
         if (!paused)
         {

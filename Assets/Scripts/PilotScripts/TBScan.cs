@@ -1,15 +1,15 @@
 /*
-    TractorBeamScan.cs
+    TBScan.cs
     - Meant to scan item brought in from tractor beam
     - Does nothing
     Contributor(s): Jake Schott
-    Last Updated: 4/2/2025
+    Last Updated: 4/4/2025
 */
 
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TractorBeamScan : MonoBehaviour, IControllable
+public class TBScan : MonoBehaviour, IControllable
 {
     private string CONTROL_NAME = "SCAN OBJECT";
     private List<string> CONTROL_DESCS = new List<string>();
