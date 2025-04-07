@@ -8,10 +8,7 @@
 
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Windows;
-using static UnityEngine.Rendering.VirtualTexturing.Debugging;
 
 public class VerticalThrusters : ThrusterControl, IControllable
 {

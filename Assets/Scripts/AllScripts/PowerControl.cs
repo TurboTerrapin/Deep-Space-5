@@ -3,7 +3,7 @@
     - Handles power-on/power-off procedure
     - Moves throttle lever accordingly
     Contributor(s): Jake Schott
-    Last Updated: 4/3/2025
+    Last Updated: 4/6/2025
 */
 
 using System.Collections.Generic;
@@ -21,6 +21,7 @@ public class PowerControl : MonoBehaviour, IControllable
 
     private bool power_enabled = false;
     private bool is_turning = false;
+    private bool cooling_down = false;
     private float turn_timer = 0.0f;
 
     private static HUDInfo hud_info = null;
@@ -63,27 +64,39 @@ public class PowerControl : MonoBehaviour, IControllable
                     knob_indicator_canvas.transform.GetChild(1).gameObject.SetActive(true);
                 }
                 power_enabled = !power_enabled;
-                CONTROL_INDEXES = new List<int> { 6 };
+
+                is_turning = false;
+                cooling_down = true;
+                turn_timer = 0.25f;
+            }
+        }
+        else if (cooling_down) { }
+        {
+            if (turn_timer > 0.0f)
+            {
+                turn_timer -= Time.deltaTime;
+            }
+            else
+            {
+                turn_timer = 0.0f;
+                cooling_down = false;
                 if (power_enabled)
                 {
-                    CONTROL_DESCS = new List<string> {"DISABLE"};
+                    CONTROL_DESCS = new List<string> { "DISABLE" };
                 }
                 else
                 {
-                    CONTROL_DESCS = new List<string> {"ENABLE"};
+                    CONTROL_DESCS = new List<string> { "ENABLE" };
                 }
                 hud_info = new HUDInfo(CONTROL_NAME);
                 hud_info.setInputs(CONTROL_DESCS, CONTROL_INDEXES);
-                is_turning = false;
             }
         }
     }
     private void switch_power()
     {
-        CONTROL_DESCS.Clear();
-        CONTROL_INDEXES.Clear();
         hud_info = new HUDInfo(CONTROL_NAME);
-        hud_info.setInputs(CONTROL_DESCS, CONTROL_INDEXES);
+        hud_info.setInputs(new List<string>(), new List<int>());
         turn_timer = 1.0f;
         is_turning = true;
         if (power_enabled == true)
@@ -94,7 +107,7 @@ public class PowerControl : MonoBehaviour, IControllable
     }
     public void handleInputs(List<KeyCode> inputs)
     {
-        if (is_turning == false)
+        if (is_turning == false && cooling_down == false)
         {
             if (inputs.Contains(KeyCode.Mouse0) || inputs.Contains(KeyCode.KeypadEnter)) //To turn the knob
             {

@@ -3,12 +3,13 @@
     - Handles inputs for impulse throttle
     - Moves throttle lever accordingly
     Contributor(s): Jake Schott
-    Last Updated: 4/3/2025
+    Last Updated: 4/6/2025
 */
 
 using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
+using UnityEngine.Windows;
 
 public class ImpulseThrottle : MonoBehaviour, IControllable
 {
@@ -19,6 +20,8 @@ public class ImpulseThrottle : MonoBehaviour, IControllable
     public GameObject handle;
     public GameObject display_canvas; //used to display the bars beneath the handle
     public GameObject speed_information; //used to update the speedometer
+
+    private List<KeyCode> keys_down = new List<KeyCode>();
 
     private float impulse = 0.0f;
     private int impulse_direction = 0; //0 is neutral, 1 is increase, and -1 is decrease
@@ -54,6 +57,15 @@ public class ImpulseThrottle : MonoBehaviour, IControllable
     }
     void Update()
     {
+        impulse_direction = 0;
+        if (keys_down.Contains(KeyCode.E) || keys_down.Contains(KeyCode.RightArrow)) //E to increment
+        {
+            impulse_direction += 1;
+        }
+        if (keys_down.Contains(KeyCode.Q) || keys_down.Contains(KeyCode.LeftArrow))  //Q to decrement
+        {
+            impulse_direction -= 1;
+        }
         if (impulse_direction != 0)
         {
             if (impulse_direction > 0) 
@@ -66,18 +78,10 @@ public class ImpulseThrottle : MonoBehaviour, IControllable
             }
             displayAdjustment();
         }
+        keys_down.Clear();
     }
     public void handleInputs(List<KeyCode> inputs)
     {
-        int temp_impulse_direction = 0;
-        if (inputs.Contains(KeyCode.E) || inputs.Contains(KeyCode.RightArrow)) //E to increment
-        {
-            temp_impulse_direction += 1;
-        }
-        if (inputs.Contains(KeyCode.Q) || inputs.Contains(KeyCode.LeftArrow))  //Q to decrement
-        {
-            temp_impulse_direction -= 1;
-        }
-        impulse_direction = temp_impulse_direction;
+        keys_down = inputs;
     }
 }

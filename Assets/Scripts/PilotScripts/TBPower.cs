@@ -3,12 +3,13 @@
     - Handles inputs for tractor beam power
     - Moves tractor beam lever accordingly
     Contributor(s): Jake Schott
-    Last Updated: 4/4/2025
+    Last Updated: 4/6/2025
 */
 
 using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
+using UnityEngine.Windows;
 
 public class TBPower : MonoBehaviour, IControllable
 {
@@ -18,6 +19,8 @@ public class TBPower : MonoBehaviour, IControllable
 
     public GameObject lever;
     public GameObject display_canvas; //used to display the bars beneath the handle
+
+    private List<KeyCode> keys_down = new List<KeyCode>();
 
     private float power = 0.0f;
     private int power_direction = 0; //0 is neutral, 1 is increase, and -1 is decrease
@@ -50,6 +53,15 @@ public class TBPower : MonoBehaviour, IControllable
     }
     void Update()
     {
+        power_direction = 0;
+        if (keys_down.Contains(KeyCode.E) || keys_down.Contains(KeyCode.RightArrow)) //E to increment
+        {
+            power_direction += 1;
+        }
+        if (keys_down.Contains(KeyCode.Q) || keys_down.Contains(KeyCode.LeftArrow))  //Q to decrement
+        {
+            power_direction -= 1;
+        }
         if (power_direction != 0)
         {
             if (power_direction > 0)
@@ -62,18 +74,11 @@ public class TBPower : MonoBehaviour, IControllable
             }
             displayAdjustment();
         }
+        keys_down.Clear();
     }
     public void handleInputs(List<KeyCode> inputs)
     {
-        int temp_power_direction = 0;
-        if (inputs.Contains(KeyCode.E) || inputs.Contains(KeyCode.RightArrow)) //E to increment
-        {
-            temp_power_direction += 1;
-        }
-        if (inputs.Contains(KeyCode.Q) || inputs.Contains(KeyCode.LeftArrow))  //Q to decrement
-        {
-            temp_power_direction -= 1;
-        }
-        power_direction = temp_power_direction;
+
+        keys_down = inputs;
     }
 }
