@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Nova.meta
 guid: aeec9b659d67a834e998797241affd60
+========
+guid: a68bc1beaafc68e46b0dc2631ca3bb46
+>>>>>>>> Jake-Initial-Branch:Assets/Materials.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
