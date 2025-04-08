@@ -9,8 +9,7 @@
 
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor.Experimental.GraphView;
-using UnityEditor.UIElements;
+using UnityEngine.UIElements;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Windows;
@@ -54,11 +53,11 @@ public class CourseHeading : MonoBehaviour, IControllable
         string display_heading = rounded_heading.ToString();
         if (!display_heading.Contains("."))
         {
-            display_heading += ".0°";
+            display_heading += ".0ï¿½";
         }
         else
         {
-            display_heading += "°";
+            display_heading += "ï¿½";
         }
         heading_text.GetComponent<TMP_Text>().SetText(display_heading);
 
@@ -71,7 +70,7 @@ public class CourseHeading : MonoBehaviour, IControllable
         {
             fill_circle.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
         }
-        fill_circle.GetComponent<Image>().fillAmount = Mathf.Abs(wheel_angle / 2.0f);
+        fill_circle.GetComponent<UnityEngine.UI.Image>().fillAmount = Mathf.Abs(wheel_angle / 2.0f);
 
         //move physical wheel
         wheel.transform.localRotation = Quaternion.Euler(-112.79f, 180f, 450f * wheel_angle);

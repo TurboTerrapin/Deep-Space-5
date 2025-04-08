@@ -16,7 +16,7 @@ public class PlayerCameraMove : MonoBehaviour
     private Vector2 mouseMove = new Vector2();
     private Vector2 prevPos = new Vector2();
     [SerializeField]
-    private float mouseSensitivity = 50f;
+    private float mouseSensitivity = 100f;
     public Camera my_camera;
     private float zoom_FOV = 40f;
     private ControlScript control_script;
@@ -51,11 +51,11 @@ public class PlayerCameraMove : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl) || Input.GetKey(KeyCode.Mouse1))
             {
-                my_camera.fieldOfView = Mathf.Max(zoom_FOV, my_camera.fieldOfView -= 0.5f);
+                my_camera.fieldOfView = Mathf.Max(zoom_FOV, my_camera.fieldOfView -= 100f * Time.deltaTime);
                 return;
             }
         }
-        my_camera.fieldOfView = Mathf.Min(60f, my_camera.fieldOfView += 0.5f);
+        my_camera.fieldOfView = Mathf.Min(60f, my_camera.fieldOfView += 100f * Time.deltaTime);
     }
 
     void MouseMove()
@@ -63,8 +63,9 @@ public class PlayerCameraMove : MonoBehaviour
         Cursor.visible = false;
         //Gets mouse input
         mouseMove = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+        mouseMove.Normalize();
         //Increases the sensitivity to movement
-        mouseMove *= mouseSensitivity * Time.deltaTime;
+        mouseMove *= mouseSensitivity * Time.deltaTime * Mathf.Min(1f, (1.1f - ((60f - my_camera.fieldOfView) / 20f)));
 
         prevPos.y = Mathf.Clamp(prevPos.y, -90f, 90f);
 

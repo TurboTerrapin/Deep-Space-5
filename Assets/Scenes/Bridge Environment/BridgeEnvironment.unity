@@ -3860,7 +3860,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mouseMove: {x: 0, y: 0}
-  mouseSensitivity: 1000
+  mouseSensitivity: 100
   my_camera: {fileID: 330585545}
 --- !u!1001 &337288562
 PrefabInstance:
@@ -10630,7 +10630,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "0.0\xB0"
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 113210e0fb81b8d40a783893f4194ecb, type: 2}
   m_sharedMaterial: {fileID: 8143332823266262665, guid: 113210e0fb81b8d40a783893f4194ecb, type: 2}
