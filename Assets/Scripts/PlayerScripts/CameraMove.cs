@@ -12,11 +12,10 @@ using System.Globalization;
 
 public class PlayerCameraMove : MonoBehaviour
 {
-    [SerializeField]
     private Vector2 mouseMove = new Vector2();
     private Vector2 prevPos = new Vector2();
-    [SerializeField]
-    private float mouseSensitivity = 100f;
+
+    private float mouseSensitivity = 200f;
     public Camera my_camera;
     private float zoom_FOV = 40f;
     private ControlScript control_script;
@@ -63,7 +62,10 @@ public class PlayerCameraMove : MonoBehaviour
         Cursor.visible = false;
         //Gets mouse input
         mouseMove = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
-        mouseMove.Normalize();
+        if (mouseMove.magnitude > 1)
+        {
+            mouseMove.Normalize();
+        }
         //Increases the sensitivity to movement
         mouseMove *= mouseSensitivity * Time.deltaTime * Mathf.Min(1f, (1.1f - ((60f - my_camera.fieldOfView) / 20f)));
 
