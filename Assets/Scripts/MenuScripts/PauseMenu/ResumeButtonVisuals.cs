@@ -44,13 +44,13 @@ public class ResumeButtonVisuals : ItemVisuals
 
     internal static void HandleResumeButtonClick(Gesture.OnClick evt, ResumeButtonVisuals target)
     {
-        Transform main_camera = target.Background.transform;
+        Transform player = target.Background.transform;
 
-        while (main_camera.name != "Main Camera")
+        while (player.name != "Player")
         {
-            main_camera = main_camera.parent;
+            player = player.parent;
         }
-        ControlScript control_script = (ControlScript)main_camera.GetComponent("ControlScript");
+        ControlScript control_script = (ControlScript)player.GetComponent("ControlScript");
         control_script.unpause();
     }
 
