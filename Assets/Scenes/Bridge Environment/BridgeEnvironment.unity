@@ -17526,15 +17526,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Root: {fileID: 4779267699696462014}
   BoolSetting:
-    Name: 
+    Name: FULLSCREEN
     State: 0
   ToggleItemView: {fileID: 3218039319210815265}
   FloatSetting:
-    Name: 
-    value: 0
+    Name: MASTER VOLUME
+    value: 75
     min: 0
-    max: 0
-    ValueFormat: '{0:0.0}'
+    max: 100
+    ValueFormat: '{0:0}'
   SliderItemView: {fileID: 5614405466223926150}
   MultiOptionSetting:
     Name: 
@@ -17542,13 +17542,17 @@ MonoBehaviour:
     SelectedIndex: 0
   DropDownItemView: {fileID: 5903488227457118314}
   ResolutionSetting:
-    Name: 
+    Name: SCREEN SIZE
     Options: []
     SelectedIndex: 0
   ResolutionDropDownItemView: {fileID: 5903488227457118314}
   HUDMultiOptionSetting:
-    Name: 
-    HUDOptions: []
+    Name: HUD VISIBILITY
+    HUDOptions:
+    - Default
+    - Minimized
+    - Cursor Only
+    - None
     HUDSelectedIndex: 0
   HUDDropDownItemView: {fileID: 898053382872840107}
 --- !u!1 &1583563343
