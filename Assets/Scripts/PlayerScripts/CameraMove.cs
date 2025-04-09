@@ -22,7 +22,6 @@ public class PlayerCameraMove : MonoBehaviour
 
     void Start()
     {
-        FindAnyObjectByType<AudioManager>()?.SetMasterVolume(0.75f);
         Cursor.lockState = CursorLockMode.Locked;
         gameObject.SetActive(true);
         control_script = (ControlScript)transform.parent.GetComponent("ControlScript");
