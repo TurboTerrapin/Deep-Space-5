@@ -286,7 +286,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -233.03918, y: 0}
+  m_AnchoredPosition: {x: -221.6961, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &1658992889457824873
@@ -363,10 +363,10 @@ MonoBehaviour:
   layout:
     Size:
       X:
-        Raw: 188.47829
+        Raw: 165.79214
         Type: 0
       Y:
-        Raw: 50.996094
+        Raw: 44.6875
         Type: 0
       Z:
         Raw: 0
@@ -1807,7 +1807,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -275.68634, y: 0}
+  m_AnchoredPosition: {x: -260.9417, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &4733509897713905524
@@ -1884,7 +1884,7 @@ MonoBehaviour:
   layout:
     Size:
       X:
-        Raw: 273.77258
+        Raw: 244.28328
         Type: 0
       Y:
         Raw: 50.996094
@@ -3092,7 +3092,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -222.73407, y: 0}
+  m_AnchoredPosition: {x: -210.89307, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &8848393270877878231
@@ -3169,10 +3169,10 @@ MonoBehaviour:
   layout:
     Size:
       X:
-        Raw: 167.86804
+        Raw: 144.18605
         Type: 0
       Y:
-        Raw: 50.996094
+        Raw: 44.6875
         Type: 0
       Z:
         Raw: 0
@@ -4710,7 +4710,6 @@ MonoBehaviour:
     - rid: 961372579655843900
       type: {class: XButtonVisuals, ns: , asm: Assembly-CSharp}
       data:
-        pauseMenu: {fileID: 0}
         Label: {fileID: 5842627082620440050}
         Background: {fileID: 3850162663112530075}
         DefaultColor: {r: 0.48235294, g: 0.003921569, b: 0.003921569, a: 1}
@@ -7289,6 +7288,7 @@ MonoBehaviour:
         PressedColor: {r: 0.20784314, g: 0.20784314, b: 0.20784314, a: 1}
         PrimaryRowColor: {r: 0.32156864, g: 0.30588236, b: 0.30588236, a: 1}
         SecondaryRowColor: {r: 0.41568628, g: 0.4, b: 0.4, a: 1}
+        control_script_holder: {fileID: 0}
 --- !u!1 &6432965015389288638
 GameObject:
   m_ObjectHideFlags: 0
@@ -8712,7 +8712,7 @@ MonoBehaviour:
     LightingModel: 0
     ShadowCastingMode: 2
     ReceiveShadows: 1
-  PreviewSize: {x: 1, y: 1, z: 0}
+  PreviewSize: {x: 1500, y: 1000, z: 0}
   visuals:
     Color: {r: 0.21698111, g: 0.20572266, b: 0.20572266, a: 0.78039217}
     CornerRadius:
@@ -8825,42 +8825,34 @@ MonoBehaviour:
   m_GameObject: {fileID: 7160172230565598261}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 17fa4c2f81bdd48de982d5e8ccdc0ada, type: 3}
+  m_Script: {fileID: 11500000, guid: 198e88a123ee98c48846cee068685ccf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Root: {fileID: 4779267700867071359}
-  controlScript: {fileID: 0}
   BoolSetting:
-    Name: FULLSCREEN
+    Name: 
     State: 0
   ToggleItemView: {fileID: 3218039317964716768}
   FloatSetting:
-    Name: MASTER VOLUME
-    value: 75
+    Name: 
+    value: 0
     min: 0
-    max: 100
-    ValueFormat: '{0:0}%'
+    max: 0
+    ValueFormat: '{0:0.0}'
   SliderItemView: {fileID: 5614405464977821255}
   MultiOptionSetting:
-    Name: RESOLUTION
-    Options:
-    - opt 1
-    - opt 2
-    - opt 3
+    Name: 
+    Options: []
     SelectedIndex: 0
   DropDownItemView: {fileID: 5903488226278122923}
   ResolutionSetting:
-    Name: SCREEN SIZE
+    Name: 
     Options: []
     SelectedIndex: 0
   ResolutionDropDownItemView: {fileID: 5903488226278122923}
   HUDMultiOptionSetting:
-    Name: HUD VISIBILITY
-    HUDOptions:
-    - Default
-    - Minimized
-    - Cursor Only
-    - None
+    Name: 
+    HUDOptions: []
     HUDSelectedIndex: 0
   HUDDropDownItemView: {fileID: 898053383774216810}
 --- !u!1 &7235860445774525790
@@ -9416,7 +9408,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -275.68634, y: 0}
+  m_AnchoredPosition: {x: -260.9417, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &3914403217819204872
@@ -9493,7 +9485,7 @@ MonoBehaviour:
   layout:
     Size:
       X:
-        Raw: 273.77258
+        Raw: 244.28328
         Type: 0
       Y:
         Raw: 50.996094
@@ -10660,7 +10652,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.1171875, y: 0}
+  m_AnchoredPosition: {x: 25.813934, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &6419273132702762625
@@ -10737,10 +10729,10 @@ MonoBehaviour:
   layout:
     Size:
       X:
-        Raw: 399.76562
+        Raw: 348.3721
         Type: 0
       Y:
-        Raw: 89.243164
+        Raw: 78.20313
         Type: 0
       Z:
         Raw: 0

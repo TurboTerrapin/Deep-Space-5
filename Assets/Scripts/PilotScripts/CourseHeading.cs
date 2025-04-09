@@ -53,11 +53,11 @@ public class CourseHeading : MonoBehaviour, IControllable
         string display_heading = rounded_heading.ToString();
         if (!display_heading.Contains("."))
         {
-            display_heading += ".0�";
+            display_heading += ".0";
         }
         else
         {
-            display_heading += "�";
+            display_heading += "";
         }
         heading_text.GetComponent<TMP_Text>().SetText(display_heading);
 

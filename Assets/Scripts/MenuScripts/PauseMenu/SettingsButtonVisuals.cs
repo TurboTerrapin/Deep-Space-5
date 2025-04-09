@@ -43,15 +43,12 @@ public class SettingsButtonVisuals : ItemVisuals
 
     internal static void HandleSettingsButtonClick(Gesture.OnClick evt, SettingsButtonVisuals target)
     {
-        Debug.Log("D");
         Transform pauseMenu = target.Background.transform;
         while (pauseMenu.parent.name != "Main Camera") //will loop through parents until reaches camera
         {
             pauseMenu = pauseMenu.parent;
         }
         pauseMenu.gameObject.SetActive(false);
-        Debug.Log(pauseMenu.parent.GetChild(2).name);
         pauseMenu.parent.GetChild(2).gameObject.SetActive(true);
-        Debug.Log(pauseMenu.parent.GetChild(2).gameObject.activeSelf);
     }
 }
