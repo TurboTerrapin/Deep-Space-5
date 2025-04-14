@@ -22,10 +22,7 @@ using UnityEngine.Android;
 public class ControlScript : MonoBehaviour
 {
     //CLASS CONSTANTS
-    private static float RAYCAST_RANGE = 2.0f;
-    private static Color DARK_GRAY = new Color(0.22f, 0.22f, 0.22f, 1.0f); //default color
-    private static Color LIGHT_BLUE = new Color(0f, 0.42f, 0.51f, 1.0f); //being pressed
-    private static Color DARK_RED = new Color(0.7f, 0f, 0f); //unavailable
+    private static float RAYCAST_RANGE = 1.25f;
 
     //GAME OBJECTS
     public GameObject cursor; //the diamond in the center of the screen
@@ -38,7 +35,7 @@ public class ControlScript : MonoBehaviour
     public Camera my_camera; //player's camera
 
     //CLASS VARIABLES
-    private int num_options_displayed = 0; //how many controls the script currently is showing
+    private HUDInfo current_info;
 
     //SETTINGS
     private int HUD_setting = 0; //0 is Default, 1 is Minimized, 2 is Cursor Only, 3 is None
@@ -49,23 +46,18 @@ public class ControlScript : MonoBehaviour
     public List<string> corresponding_scripts = null; //names of the scripts that correspond to the GameObject colliders (ex. lever_target corresponds to Throttle)
 
     //INPUT INFO
-    public static KeyCode[] primary_inputs = { //what is displayed (ex. Q is displayed, LeftArrow is not, they both work though) 
-        KeyCode.W, 
-        KeyCode.A, 
-        KeyCode.S, 
-        KeyCode.D, 
-        KeyCode.Q, 
-        KeyCode.E, 
-        KeyCode.Mouse0
-    }; 
-    public static KeyCode[] secondary_inputs = { //what also works (ex. index 4 is both Q *AND* LeftArrow)
-        KeyCode.UpArrow, //corresponds to W
-        KeyCode.LeftArrow, //corresponds to A
-        KeyCode.DownArrow, //corresponds to S
-        KeyCode.RightArrow, //corresponds to D
-        KeyCode.LeftArrow, //corresponds to Q
-        KeyCode.RightArrow, //correponds to E
-        KeyCode.KeypadEnter //correponds to Mouse0
+    public static List<KeyCode[]> input_options = new List<KeyCode[]>{ 
+        new KeyCode[] {KeyCode.W, KeyCode.UpArrow}, //first argument is displayed, others are not
+        new KeyCode[] {KeyCode.A, KeyCode.LeftArrow},
+        new KeyCode[] {KeyCode.S, KeyCode.DownArrow},
+        new KeyCode[] {KeyCode.D, KeyCode.RightArrow},
+        new KeyCode[] {KeyCode.Q, KeyCode.LeftArrow},
+        new KeyCode[] {KeyCode.E, KeyCode.RightArrow},
+        new KeyCode[] {KeyCode.Mouse0, KeyCode.KeypadEnter},
+        new KeyCode[] {KeyCode.Alpha1, KeyCode.Keypad1},
+        new KeyCode[] {KeyCode.Alpha2, KeyCode.Keypad2},
+        new KeyCode[] {KeyCode.Alpha3, KeyCode.Keypad3},
+        new KeyCode[] {KeyCode.Alpha4, KeyCode.Keypad4},
     };
 
     void Start()
@@ -73,92 +65,50 @@ public class ControlScript : MonoBehaviour
         control_info.SetActive(false); //hide UI indicator to start
     }
 
-    //used to set the text for trapezoid buttons
-    private void setButtonInfo(GameObject button_to_set, HUDInfo buttons_info, int index)
+    //used to instantiate buttons/list entries for either trapezoid or minimized list
+    private void createButtons()
     {
-        string button_desc = buttons_info.getInputDescriptions()[index]; //ex. INCREASE
-        string key = primary_inputs[buttons_info.getInputIndexes()[index]].ToString(); //ex. E
-        if (key == "Mouse0")
+        //hide both UI indicators
+        control_info.transform.GetChild(0).gameObject.SetActive(false); //make the trapezoid invisible
+        control_info.transform.GetChild(1).gameObject.SetActive(false); //make the list visible
+
+        //clear trapezoid
+        for (int i = control_info.transform.GetChild(0).GetChild(0).childCount - 1; i >= 4; i--)
         {
-            key = "LMB";
+            GameObject to_destroy = control_info.transform.GetChild(0).GetChild(0).GetChild(i).gameObject;
+            UnityEngine.Object.Destroy(to_destroy);
         }
-        button_to_set.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().SetText(button_desc + " (" + key + ")"); //set desc of that control
-        button_to_set.name = //set name of button so it can be turned blue when pressed
-            primary_inputs[buttons_info.getInputIndexes()[index]].ToString() + "_" + secondary_inputs[buttons_info.getInputIndexes()[index]].ToString() + "_";
-        button_to_set.SetActive(true);
+
+        //clear list
+        for (int i = control_info.transform.GetChild(1).childCount - 1; i >= 1; i--)
+        {
+            GameObject to_destroy = control_info.transform.GetChild(1).GetChild(i).gameObject;
+            UnityEngine.Object.Destroy(to_destroy);
+        }
+
+        if (HUD_setting < 2)
+        {
+            control_info.transform.GetChild(HUD_setting).gameObject.SetActive(true);
+
+            GameObject frame = control_info.transform.GetChild(1).gameObject;
+            if (HUD_setting == 0)
+            {
+                frame = control_info.transform.GetChild(0).GetChild(0).gameObject;
+            }
+
+            for (int i = 0; i < current_info.numOptions(); i++)
+            {
+                current_info.getButtons()[i].createVisual(HUD_setting, current_info.numOptions(), i, frame);
+            }
+        }
     }
 
-    //used to instantiate buttons/list entries for either trapezoid or minimized list
-    private void createButtons(HUDInfo buttons_info)
+    //used to update buttons that may no longer be interactable
+    private void updateButtons(HUDInfo temp_info)
     {
-        if (HUD_setting == 0) //Default: trapezoidal format
+        for (int b = 0; b < current_info.numOptions(); b++)
         {
-            control_info.transform.GetChild(0).gameObject.SetActive(true); //make the trapezoid visible
-            control_info.transform.GetChild(1).gameObject.SetActive(false); //make the list invisible
-            foreach (Transform button in buttons_panel.transform) //destroy all existing buttons
-            {
-                if (button.gameObject.activeSelf == true)
-                {
-                    Destroy(button.gameObject); 
-                }
-            }
-            if (buttons_info.numOptions() == 0)
-            {
-                //center red "unavailable" button
-                GameObject unavailable_button = UnityEngine.Object.Instantiate(buttons_panel.transform.GetChild(3).gameObject, buttons_panel.transform);
-                unavailable_button.name = "Unavailable";
-                unavailable_button.SetActive(true);
-            }
-            else if (buttons_info.numOptions() == 1) //only one button, middle
-            {
-                //center button
-                GameObject new_button = UnityEngine.Object.Instantiate(buttons_panel.transform.GetChild(0).gameObject, buttons_panel.transform);
-                setButtonInfo(new_button, buttons_info, 0);
-            }
-            else if (buttons_info.numOptions() == 2) //two buttons, left and right
-            {
-                //left button
-                GameObject left_button = UnityEngine.Object.Instantiate(buttons_panel.transform.GetChild(1).gameObject, buttons_panel.transform);
-                left_button.GetComponent<RectTransform>().anchoredPosition = new Vector3(-76f, 20f, 0f);
-                setButtonInfo(left_button, buttons_info, 0);
-
-                //right button
-                GameObject right_button = UnityEngine.Object.Instantiate(buttons_panel.transform.GetChild(1).gameObject, buttons_panel.transform);
-                right_button.GetComponent<RectTransform>().anchoredPosition = new Vector3(76f, 20f, 0f);
-                right_button.transform.localRotation = Quaternion.Euler(0f, 0f, 180f);
-                right_button.transform.GetChild(0).transform.localRotation = Quaternion.Euler(0f, 0f, 180f);
-                setButtonInfo(right_button, buttons_info, 1);
-                
-                //center divider
-                GameObject divider = UnityEngine.Object.Instantiate(buttons_panel.transform.GetChild(2).gameObject, buttons_panel.transform);
-                divider.name = "Divider";
-                divider.SetActive(true);
-            }
-        }
-        else if (HUD_setting == 1) //Minimized: list format
-        {
-            control_info.transform.GetChild(0).gameObject.SetActive(false); //make the trapezoid invisible
-            control_info.transform.GetChild(1).gameObject.SetActive(true); //make the list visible
-            foreach (Transform list_entry in control_info.transform.GetChild(1)) //destroy all existing list entries
-            {
-                if (list_entry.gameObject.activeSelf == true)
-                {
-                    Destroy(list_entry.gameObject);
-                }
-            }
-            for (int i = buttons_info.numOptions() - 1; i >= 0; i--)
-            {
-                GameObject new_entry = UnityEngine.Object.Instantiate(control_info.transform.GetChild(1).GetChild(0).gameObject, control_info.transform.GetChild(1));
-                string button_desc = buttons_info.getInputDescriptions()[i];
-                string key = primary_inputs[buttons_info.getInputIndexes()[i]].ToString();
-                if (key == "Mouse0")
-                {
-                    key = "LMB";
-                }
-                new_entry.transform.gameObject.GetComponent<TMP_Text>().SetText(button_desc + " - " + key); //set desc of that control
-                new_entry.GetComponent<RectTransform>().anchoredPosition = new Vector3(46f, (10f * i) + 8f, 0f);
-                new_entry.SetActive(true);
-            }
+            current_info.getButtons()[b].updateInteractable(temp_info.getButtons()[b].isInteractable());
         }
     }
 
@@ -218,62 +168,69 @@ public class ControlScript : MonoBehaviour
                 {
                     IControllable target_control =
                         (IControllable)script_holder.GetComponent(corresponding_scripts[collider_names.IndexOf(hit.collider.gameObject.name)]); //get corresponding class
-                    if (HUD_setting < 2)
+                    
+                    HUDInfo temp_info = target_control.getHUDinfo(hit.collider.gameObject);
+
+                    if (title.GetComponent<TMP_Text>().text.CompareTo(temp_info.getName()) != 0 || current_info.numOptions() != temp_info.numOptions())
                     {
-                        HUDInfo temp_info = target_control.getHUDinfo();
-                        if (title.GetComponent<TMP_Text>().text.CompareTo(temp_info.getName()) != 0 || num_options_displayed != temp_info.numOptions()) //checks if HUDInfo already loaded or if num of controls has changed
+                        title.GetComponent<TMP_Text>().SetText(temp_info.getName()); //set title of that control
+                        current_info = temp_info;
+                        if (HUD_setting < 2)
                         {
-                            title.GetComponent<TMP_Text>().SetText(temp_info.getName()); //set title of that control
-                            num_options_displayed = temp_info.numOptions();
-                            createButtons(temp_info);
+                            createButtons();
                         }
-                        if (temp_info.numOptions() > 0)
+                    }
+                    else
+                    {
+                        if (HUD_setting < 2)
                         {
-                            foreach (Transform button in buttons_panel.transform) //make all buttons gray to start
-                            {
-                                if (button.name.CompareTo("Divider") != 0 && button.gameObject.activeSelf == true) //not a divider and is active
-                                {
-                                    button.gameObject.GetComponent<UnityEngine.UI.Image>().color = DARK_GRAY;
-                                    button.transform.GetChild(0).GetComponent<TMP_Text>().color = new Color(1f, 1f, 1f);
-                                }
-                            }
+                            updateButtons(temp_info);
                         }
                     }
 
                     List<KeyCode> current_inputs = new List<KeyCode>(); //gets all inputted keys
-                    for (int i = 0; i < primary_inputs.Length; i++)
+                    for (int b = 0; b < current_info.numOptions(); b++)
                     {
-                        KeyCode input = KeyCode.None;
-                        if (UnityEngine.Input.GetKey(primary_inputs[i])) //if key is down, add to input list
+                        Button curr_button = current_info.getButtons()[b];
+                        if (curr_button.isInteractable() == true)
                         {
-                            input = primary_inputs[i];
-                        }
-                        else if (UnityEngine.Input.GetKey(secondary_inputs[i])) //also valid
-                        {
-                            input = secondary_inputs[i];
-                        }
-                        if (input != KeyCode.None) //input was on the list
-                        {
-                            current_inputs.Add(input);
-                            if (HUD_setting == 0)
+                            bool pressed = false;
+                            for (int i = 0; i < input_options[curr_button.getControlIndex()].Length; i++)
                             {
-                                foreach (Transform button in buttons_panel.transform)
-                                {
-                                    if (button.gameObject.name.Contains(input.ToString() + "_")) //if matching key in layout frame, then make blue
+                                if (curr_button.isToggle() == false) { 
+                                    if (UnityEngine.Input.GetKey(input_options[curr_button.getControlIndex()][i]))
                                     {
-                                        button.gameObject.GetComponent<UnityEngine.UI.Image>().color = LIGHT_BLUE;
-                                        button.transform.GetChild(0).GetComponent<TMP_Text>().color = new Color(0.85f, 0.85f, 0.85f);
+                                        pressed = true;
                                     }
                                 }
+                                else
+                                {
+                                    if (UnityEngine.Input.GetKeyDown(input_options[curr_button.getControlIndex()][i]))
+                                    {
+                                        curr_button.toggle();
+                                        pressed = true;
+                                    }
+                                }
+                                if (pressed == true)
+                                {
+                                    current_inputs.Add(input_options[curr_button.getControlIndex()][i]);
+                                    curr_button.highlight(Time.deltaTime);
+                                    break;
+                                }
+                            }
+                            if (pressed == false)
+                            {
+                                curr_button.darken(Time.deltaTime);
                             }
                         }
                     }
                     control_info.SetActive(true); //show UI indicator
-                    target_control.handleInputs(current_inputs); //call when all inputs have been checked
+                    target_control.handleInputs(current_inputs, hit.collider.gameObject, 1); //call when all inputs have been checked
                     return;
                 }
             }
         }
         control_info.SetActive(false); //hide UI indicator if not looking at a control
+        title.GetComponent<TMP_Text>().SetText(""); //forces an update if not looking at a control
     }
 }

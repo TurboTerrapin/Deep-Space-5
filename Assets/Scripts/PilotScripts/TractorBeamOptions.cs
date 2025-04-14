@@ -1,6 +1,6 @@
 /*
-    HangarClamps.cs
-    - Meant to attach/detach from hangars
+    TractorBeamOptions.cs
+    - Meant to handle items brought in from tractor beam
     - Does nothing
     Contributor(s): Jake Schott
     Last Updated: 4/13/2025
@@ -9,11 +9,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HangarClamps : MonoBehaviour, IControllable
+public class TractorBeamOptions : MonoBehaviour, IControllable
 {
-    private string CONTROL_NAME = "HANGAR CLAMPS";
-    private List<string> CONTROL_DESCS = new List<string>(){"ENABLE", "ENABLE", "ENABLE", "ENABLE"};
-    private List<int> CONTROL_INDEXES = new List<int>(){7, 8, 9, 10};
+    private string CONTROL_NAME = "TRACTOR BEAM OPTIONS";
+    private List<string> CONTROL_DESCS = new List<string>() { "SCAN", "COLLECT", "DESTROY" };
+    private List<int> CONTROL_INDEXES = new List<int>() {4, 0, 5};
     private List<Button> BUTTONS = new List<Button>();
 
     private static HUDInfo hud_info = null;
@@ -23,7 +23,6 @@ public class HangarClamps : MonoBehaviour, IControllable
         BUTTONS.Add(new Button(CONTROL_DESCS[0], CONTROL_INDEXES[0], false, false));
         BUTTONS.Add(new Button(CONTROL_DESCS[1], CONTROL_INDEXES[1], false, false));
         BUTTONS.Add(new Button(CONTROL_DESCS[2], CONTROL_INDEXES[2], false, false));
-        BUTTONS.Add(new Button(CONTROL_DESCS[3], CONTROL_INDEXES[3], false, false));
         hud_info.setButtons(BUTTONS);
     }
     public HUDInfo getHUDinfo(GameObject current_target)

@@ -3,8 +3,9 @@
     - Handles inputs for vertical thrusters
     - Extends ThrusterControl.cs
     Contributor(s): Jake Schott
-    Last Updated: 4/4/2025
+    Last Updated: 4/13/2025
 */
+
 
 using System.Collections.Generic;
 using TMPro;
@@ -19,6 +20,7 @@ public class VerticalThrusters : ThrusterControl, IControllable
     private string CONTROL_NAME = "VERTICAL THRUSTERS";
     private List<string> CONTROL_DESCS = new List<string>{"DESCEND", "ASCEND"};
     private List<int> CONTROL_INDEXES = new List<int>(){2, 0};
+    private List<Button> BUTTONS = new List<Button>();
 
     public GameObject altitude_canvas;
 
@@ -29,12 +31,14 @@ public class VerticalThrusters : ThrusterControl, IControllable
 
     private static HUDInfo hud_info = null;
 
-    public HUDInfo getHUDinfo()
+    public HUDInfo getHUDinfo(GameObject current_target)
     {
         if (hud_info == null)
         {
             hud_info = new HUDInfo(CONTROL_NAME);
-            hud_info.setInputs(CONTROL_DESCS, CONTROL_INDEXES);
+            BUTTONS.Add(new Button(CONTROL_DESCS[0], CONTROL_INDEXES[0], true, false));
+            BUTTONS.Add(new Button(CONTROL_DESCS[1], CONTROL_INDEXES[1], true, false));
+            hud_info.setButtons(BUTTONS);
         }
         return hud_info;
     }
@@ -81,7 +85,7 @@ public class VerticalThrusters : ThrusterControl, IControllable
             altitude_canvas.transform.GetChild(3).gameObject.GetComponent<TMP_Text>().SetText("-");
             altitude_canvas.transform.GetChild(4).gameObject.GetComponent<TMP_Text>().SetText(Mathf.Abs(altitude).ToString() + "m");
         }
-        altitude_canvas.transform.GetChild(2).transform.localPosition = new Vector3(0f, (altitude / MAX_ALTITUDE) * 0.038f, 0f);
+        altitude_canvas.transform.GetChild(2).transform.localPosition = new Vector3(0.0268f, (altitude / MAX_ALTITUDE) * 0.038f, 0f);
     }
     void Update()
     {
@@ -135,7 +139,7 @@ public class VerticalThrusters : ThrusterControl, IControllable
         }
         keys_down.Clear();
     }
-    public void handleInputs(List<KeyCode> inputs)
+    public void handleInputs(List<KeyCode> inputs, GameObject current_target, int position)
     {
         keys_down = inputs;
     }

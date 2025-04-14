@@ -3,7 +3,7 @@
     - Handles power-on/power-off procedure
     - Moves throttle lever accordingly
     Contributor(s): Jake Schott
-    Last Updated: 4/6/2025
+    Last Updated: 4/14/2025
 */
 
 using System.Collections.Generic;
@@ -14,104 +14,125 @@ public class PowerControl : MonoBehaviour, IControllable
     private string CONTROL_NAME = "POWER CONTROL";
     private List<string> CONTROL_DESCS = new List<string>{"ENABLE"};
     private List<int> CONTROL_INDEXES = new List<int>(){6};
+    private List<Button>[] BUTTON_LISTS = new List<Button>[2];
 
-    public GameObject knob;
-    public GameObject knob_indicator_canvas; //used to update knob
-    public GameObject pilot_indicator_canvas; //used to update thing next to knob
+    public List<GameObject> dials = null;
+    public List<GameObject> light_indicator_groups = null;
 
-    private bool power_enabled = false;
-    private bool is_turning = false;
-    private bool cooling_down = false;
-    private float turn_timer = 0.0f;
+    private List<string> ray_targets = new List<string>{"pilot_power", "tactician_power", "engineer_power", "captain_power"};
+    private bool[] power_enabled = new bool[4] { false, false, false, false };
+    private bool[] is_turning = new bool[4] { false, false, false, false };
+    private bool[] cooling_down = new bool[4] { false, false, false, false };
+    private float[] turn_timer = new float[4] { 0.0f, 0.0f, 0.0f, 0.0f };
 
     private static HUDInfo hud_info = null;
     private void Start()
     {
         hud_info = new HUDInfo(CONTROL_NAME);
-        hud_info.setInputs(CONTROL_DESCS, CONTROL_INDEXES);
+        BUTTON_LISTS[0] = new List<Button>();
+        BUTTON_LISTS[1] = new List<Button>();
+
+        BUTTON_LISTS[0].Add(new Button(CONTROL_DESCS[0], CONTROL_INDEXES[0], true, true));
+        BUTTON_LISTS[1].Add(new Button(CONTROL_DESCS[0], CONTROL_INDEXES[0], true, true));
     }
-    public HUDInfo getHUDinfo()
+    public HUDInfo getHUDinfo(GameObject current_target)
     {
+        int index = ray_targets.IndexOf(current_target.name);
+        hud_info.setButtons(BUTTON_LISTS[index]);
         return hud_info;
+    }
+    
+    //updates knob light, adjacent circle lights (for all positions)
+    private void changeIndicator(int index, bool active)
+    {
+        dials[index].transform.GetChild(1).GetChild(0).GetChild(1).gameObject.SetActive(active);
+        for (int i = 0; i < light_indicator_groups.Count; i++)
+        {
+            light_indicator_groups[i].transform.GetChild(index).GetChild(0).GetChild(1).gameObject.SetActive(active);
+        }
     }
     public void Update()
     {
-        if (is_turning)
+        float delta_time = Time.deltaTime;
+        for (int i = 0; i <= 1; i++)
         {
-            if (turn_timer > 0.0f)
+            if (is_turning[i])
             {
-                turn_timer -= Time.deltaTime;
-                if (power_enabled == false)
+                if (turn_timer[i] > 0.0f)
                 {
-                    knob.transform.localRotation = Quaternion.Euler(-68.739f, -90f, -90 + (90f - (turn_timer / 1.0f * 90f)));
+                    turn_timer[i] -= delta_time;
+                    BUTTON_LISTS[i][0].showProgress((turn_timer[i] + 0.25f) / 1.25f);
+                    if (power_enabled[i] == false)
+                    {
+                        dials[i].transform.localRotation = Quaternion.Euler(dials[i].transform.localRotation.eulerAngles.x, dials[i].transform.localRotation.eulerAngles.y, -90 + (90f - (turn_timer[i] / 1.0f * 90f)));
+                    }
+                    else
+                    {
+                        dials[i].transform.localRotation = Quaternion.Euler(dials[i].transform.localRotation.eulerAngles.x, dials[i].transform.localRotation.eulerAngles.y, 0 - (90f - (turn_timer[i] / 1.0f * 90f)));
+                    }
                 }
                 else
                 {
-                    knob.transform.localRotation = Quaternion.Euler(-68.739f, -90f, 0 - (90f - (turn_timer / 1.0f * 90f)));
-                }
-            }
-            else
-            { 
-                turn_timer = 0.0f;
-                if (power_enabled == true)
-                {
-                    knob.transform.localRotation = Quaternion.Euler(-68.739f, -90f, -90f);
-                }
-                else
-                {
-                    knob.transform.localRotation = Quaternion.Euler(-68.739f, -90f, 0f);
-                    pilot_indicator_canvas.transform.GetChild(1).gameObject.SetActive(true);
-                    knob_indicator_canvas.transform.GetChild(1).gameObject.SetActive(true);
-                }
-                power_enabled = !power_enabled;
+                    turn_timer[i] = 0.0f;
+                    if (power_enabled[i] == true)
+                    {
+                        dials[i].transform.localRotation = Quaternion.Euler(dials[i].transform.localRotation.eulerAngles.x, dials[i].transform.localRotation.eulerAngles.y, -90f);
+                    }
+                    else
+                    {
+                        dials[i].transform.localRotation = Quaternion.Euler(dials[i].transform.localRotation.eulerAngles.x, dials[i].transform.localRotation.eulerAngles.y, 0f);
+                        changeIndicator(i, true);
+                    }
+                    power_enabled[i] = !power_enabled[i];
 
-                is_turning = false;
-                cooling_down = true;
-                turn_timer = 0.25f;
+                    is_turning[i] = false;
+                    cooling_down[i] = true;
+                    turn_timer[i] = 0.25f;
+                }
             }
-        }
-        else if (cooling_down) { }
-        {
-            if (turn_timer > 0.0f)
+            else if (cooling_down[i])
             {
-                turn_timer -= Time.deltaTime;
-            }
-            else
-            {
-                turn_timer = 0.0f;
-                cooling_down = false;
-                if (power_enabled)
+                if (turn_timer[i] > 0.0f)
                 {
-                    CONTROL_DESCS = new List<string> { "DISABLE" };
+                    turn_timer[i] -= delta_time;
+                    BUTTON_LISTS[i][0].showProgress(Mathf.Max(0.0f, turn_timer[i] / 1.25f));
                 }
                 else
                 {
-                    CONTROL_DESCS = new List<string> { "ENABLE" };
+                    turn_timer[i] = 0.0f;
+                    cooling_down[i] = false;
+                    BUTTON_LISTS[i][0].showProgress(0.0f);
+                    BUTTON_LISTS[i][0].updateInteractable(true);
+                    if (power_enabled[i])
+                    {
+                        BUTTON_LISTS[i][0].updateDesc("DISABLE");
+                    }
+                    else
+                    {
+                        BUTTON_LISTS[i][0].updateDesc("ENABLE");
+                    }
                 }
-                hud_info = new HUDInfo(CONTROL_NAME);
-                hud_info.setInputs(CONTROL_DESCS, CONTROL_INDEXES);
             }
         }
     }
-    private void switch_power()
+    private void switch_power(int index)
     {
-        hud_info = new HUDInfo(CONTROL_NAME);
-        hud_info.setInputs(new List<string>(), new List<int>());
-        turn_timer = 1.0f;
-        is_turning = true;
-        if (power_enabled == true)
+        turn_timer[index] = 1.0f;
+        is_turning[index] = true;
+        BUTTON_LISTS[index][0].updateInteractable(false);
+        if (power_enabled[index] == true)
         {
-            pilot_indicator_canvas.transform.GetChild(1).gameObject.SetActive(false);
-            knob_indicator_canvas.transform.GetChild(1).gameObject.SetActive(false);
+            changeIndicator(index, false);
         }
     }
-    public void handleInputs(List<KeyCode> inputs)
+    public void handleInputs(List<KeyCode> inputs, GameObject current_target, int position)
     {
-        if (is_turning == false && cooling_down == false)
+        int index = ray_targets.IndexOf(current_target.name);
+        if (is_turning[index] == false && cooling_down[index] == false)
         {
-            if (inputs.Contains(KeyCode.Mouse0) || inputs.Contains(KeyCode.KeypadEnter)) //To turn the knob
+            if (inputs.Contains(KeyCode.Mouse0) || inputs.Contains(KeyCode.KeypadEnter))
             {
-                switch_power();
+                switch_power(index);
             }
         }
     }

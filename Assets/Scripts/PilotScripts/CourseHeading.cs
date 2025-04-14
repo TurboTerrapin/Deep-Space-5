@@ -4,7 +4,7 @@
     - Moves steering wheel
     - Updates corresponding heading screen
     Contributor(s): Jake Schott
-    Last Updated: 3/25/2025
+    Last Updated: 4/13/2025
 */
 
 using System.Collections.Generic;
@@ -19,11 +19,13 @@ public class CourseHeading : MonoBehaviour, IControllable
     private string CONTROL_NAME = "COURSE HEADING";
     private List<string> CONTROL_DESCS = new List<string>{"DECREASE", "INCREASE"};
     private List<int> CONTROL_INDEXES = new List<int>(){4, 5};
+    private List<Button> BUTTONS = new List<Button>();
 
     public GameObject wheel;
     public GameObject fill_circle;
     public GameObject compass;
     public GameObject heading_text;
+    public GameObject degrees;
 
     private float heading = 0.0f;
     private float rounded_heading = 0.0f;
@@ -38,9 +40,11 @@ public class CourseHeading : MonoBehaviour, IControllable
     private void Start()
     {
         hud_info = new HUDInfo(CONTROL_NAME);
-        hud_info.setInputs(CONTROL_DESCS, CONTROL_INDEXES);
+        BUTTONS.Add(new Button(CONTROL_DESCS[0], CONTROL_INDEXES[0], true, false));
+        BUTTONS.Add(new Button(CONTROL_DESCS[1], CONTROL_INDEXES[1], true, false));
+        hud_info.setButtons(BUTTONS);
     }
-    public HUDInfo getHUDinfo()
+    public HUDInfo getHUDinfo(GameObject current_target)
     {
         return hud_info;
     }
@@ -53,13 +57,10 @@ public class CourseHeading : MonoBehaviour, IControllable
         string display_heading = rounded_heading.ToString();
         if (!display_heading.Contains("."))
         {
-            display_heading += ".0°";
-        }
-        else
-        {
-            display_heading += "°";
+            display_heading += ".0";
         }
         heading_text.GetComponent<TMP_Text>().SetText(display_heading);
+        degrees.transform.localPosition = new Vector3(-0.019f + (display_heading.Length - 3) * -0.006f, -0.001f, 0f);
 
         //adjust fill circle
         if (wheel_angle >= 0f)
@@ -144,7 +145,7 @@ public class CourseHeading : MonoBehaviour, IControllable
         }
         keys_down.Clear();
     }
-    public void handleInputs(List<KeyCode> inputs)
+    public void handleInputs(List<KeyCode> inputs, GameObject current_target, int position)
     {
         keys_down = inputs;
     }

@@ -3,7 +3,7 @@
     - Handles shifting between forward and reverse
     - Moves shift lever accordingly
     Contributor(s): Jake Schott
-    Last Updated: 4/6/2025
+    Last Updated: 4/12/2025
 */
 
 using System.Collections.Generic;
@@ -15,6 +15,7 @@ public class DirectionalShifter : MonoBehaviour, IControllable
     private string CONTROL_NAME = "DIRECTIONAL SHIFTER";
     private List<string> CONTROL_DESCS = new List<string> { "SHIFT" };
     private List<int> CONTROL_INDEXES = new List<int>() { 6 };
+    private List<Button> BUTTONS = new List<Button>();
 
     public GameObject lever;
     public GameObject directional_arrow; //on the speedometer screen
@@ -35,10 +36,12 @@ public class DirectionalShifter : MonoBehaviour, IControllable
     private void Start()
     {
         hud_info = new HUDInfo(CONTROL_NAME);
-        hud_info.setInputs(CONTROL_DESCS, CONTROL_INDEXES);
+        BUTTONS.Add(new Button(CONTROL_DESCS[0], CONTROL_INDEXES[0], true, false));
+        hud_info.setButtons(BUTTONS);
+
         forward_pos = lever.transform.position;
     }
-    public HUDInfo getHUDinfo()
+    public HUDInfo getHUDinfo(GameObject current_target)
     {
         return hud_info;
     }
@@ -118,8 +121,7 @@ public class DirectionalShifter : MonoBehaviour, IControllable
                     //potentially shifted
                     if ((shift_percentage == 1.0f && in_reverse == true) || (shift_percentage == 0.0f && in_reverse == false))
                     {
-                        hud_info = new HUDInfo(CONTROL_NAME);
-                        hud_info.setInputs(new List<string>(), new List<int>());
+                        BUTTONS[0].updateInteractable(false);
                         in_reverse = !in_reverse;
                         cooling_down = true;
                     }
@@ -132,9 +134,8 @@ public class DirectionalShifter : MonoBehaviour, IControllable
             if (cooldown_timer <= 0.0f)
             {
                 cooldown_timer = 1.0f;
-                hud_info = new HUDInfo(CONTROL_NAME);
-                hud_info.setInputs(CONTROL_DESCS, CONTROL_INDEXES);
                 cooling_down = false;
+                BUTTONS[0].updateInteractable(true);
             }
             else
             {
@@ -143,7 +144,7 @@ public class DirectionalShifter : MonoBehaviour, IControllable
         }
         keys_down.Clear();
     }
-    public void handleInputs(List<KeyCode> inputs)
+    public void handleInputs(List<KeyCode> inputs, GameObject current_target, int position)
     {
         keys_down = inputs;
     }

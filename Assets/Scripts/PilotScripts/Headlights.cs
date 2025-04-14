@@ -4,8 +4,9 @@
     - Moves physical slider
     - Updates corresponding screen
     Contributor(s): Jake Schott
-    Last Updated: 4/4/2025
+    Last Updated: 4/13/2025
 */
+
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,6 +16,7 @@ public class Headlights : MonoBehaviour, IControllable
     private string CONTROL_NAME = "HEADLIGHTS";
     private List<string> CONTROL_DESCS = new List<string> {"DIM", "BRIGHTEN"};
     private List<int> CONTROL_INDEXES = new List<int>() {2, 0};
+    private List<Button> BUTTONS = new List<Button>();
 
     public GameObject slider;
     public GameObject screen;
@@ -33,12 +35,14 @@ public class Headlights : MonoBehaviour, IControllable
     private void Start()
     {
         hud_info = new HUDInfo(CONTROL_NAME);
-        hud_info.setInputs(CONTROL_DESCS, CONTROL_INDEXES);
+        BUTTONS.Add(new Button(CONTROL_DESCS[0], CONTROL_INDEXES[0], false, false));
+        BUTTONS.Add(new Button(CONTROL_DESCS[1], CONTROL_INDEXES[1], true, false));
+        hud_info.setButtons(BUTTONS);
 
         init_pos_y = slider.transform.position.y;
         init_pos_z = slider.transform.position.z;
     }
-    public HUDInfo getHUDinfo()
+    public HUDInfo getHUDinfo(GameObject current_target)
     {
         return hud_info;
     }
@@ -59,12 +63,28 @@ public class Headlights : MonoBehaviour, IControllable
                     screen.transform.GetChild(slider_configuration + 2).gameObject.GetComponent<UnityEngine.UI.RawImage>().color = new Color(0, 0.93f, 1.0f, ((iterations - 1) / 10.0f) * (((float)slider_configuration) / 7));
                 }
                 iterations--;
-                if(iterations <= 0)
+                if (iterations <= 0)
                 {
                     float dest_pos_y = init_pos_y + (((float)slider_configuration) / 7) * (end_pos_y - init_pos_y);
                     float dest_pos_z = init_pos_z + (((float)slider_configuration) / 7) * (end_pos_z - init_pos_z);
                     slider.transform.position = new Vector3(0, dest_pos_y, dest_pos_z);
                     adjusting_slider = false;
+                    if (slider_configuration <= 0)
+                    {
+                        BUTTONS[0].updateInteractable(false);
+                    }
+                    else
+                    {
+                        BUTTONS[0].updateInteractable(true);
+                    }
+                    if (slider_configuration >= 7)
+                    {
+                        BUTTONS[1].updateInteractable(false);
+                    }
+                    else
+                    {
+                        BUTTONS[1].updateInteractable(true);
+                    }
                 }
                 else
                 {
@@ -95,20 +115,22 @@ public class Headlights : MonoBehaviour, IControllable
             adjusting_slider = true;
         }
     }
-    public void handleInputs(List<KeyCode> inputs)
+    public void handleInputs(List<KeyCode> inputs, GameObject current_target, int position)
     {
-        if (adjusting_slider == false)
-        {
-            if (inputs.Contains(KeyCode.W) || inputs.Contains(KeyCode.UpArrow)) //W to increment
+        if (!((inputs.Contains(KeyCode.W) || inputs.Contains(KeyCode.UpArrow)) && (inputs.Contains(KeyCode.S) || inputs.Contains(KeyCode.DownArrow)))){
+            if (adjusting_slider == false)
             {
-                increment();
+                if (inputs.Contains(KeyCode.W) || inputs.Contains(KeyCode.UpArrow)) //W to increment
+                {
+                    increment();
+                }
             }
-        }
-        if (adjusting_slider == false)
-        {
-            if (inputs.Contains(KeyCode.S) || inputs.Contains(KeyCode.DownArrow))  //S to decrement
+            if (adjusting_slider == false)
             {
-                decrement();
+                if (inputs.Contains(KeyCode.S) || inputs.Contains(KeyCode.DownArrow))  //S to decrement
+                {
+                    decrement();
+                }
             }
         }
     }

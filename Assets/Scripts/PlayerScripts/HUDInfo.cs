@@ -1,22 +1,29 @@
-using NUnit.Framework;
-using UnityEngine;
+/*
+    HUDInfo.cs
+    - Stores information for the onscreen UI indicator that appears when facing a control
+        - Includes control title and button information
+    Contributor(s): Jake Schott
+    Last Updated: 4/12/2025
+*/
+
 using System.Collections.Generic;
 
 public class HUDInfo
 {
     private string control_name; //ex. "IMPULSE THROTTLE"
-    private List<string> input_descriptions = null; //ex. "INCREASE"
-    private List<int> corresponding_inputs = null; //based on primary_inputs in ControlScript  
+    private List<Button> buttons;
     public HUDInfo(string title)
     {
         control_name = title;
     }
 
-    public bool setInputs(List<string> new_descriptions, List<int> new_inputs)
+    public void setButtons(List<Button> buttons)
     {
-        input_descriptions = new_descriptions;
-        corresponding_inputs = new_inputs;
-        return true;
+        this.buttons = buttons;
+    }
+    public List<Button> getButtons()
+    {
+        return buttons;
     }
     public string getName()
     {
@@ -24,21 +31,6 @@ public class HUDInfo
     }
     public int numOptions()
     {
-        return input_descriptions.Count;
-    }
-
-    public List<string> getInputDescriptions()
-    {
-        return input_descriptions;
-    }
-
-    public List<int> getInputIndexes()
-    {
-        return corresponding_inputs;
-    }
-
-    public bool isInteractable()
-    {
-        return (numOptions() > 0);
+        return buttons.Count;
     }
 }

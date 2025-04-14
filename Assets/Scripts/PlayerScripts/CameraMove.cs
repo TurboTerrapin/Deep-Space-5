@@ -4,7 +4,7 @@
     - Handles looking around
     - Handles camera zoom (using CTRL)
     Contributor(s): John Aylward, Jake Schott
-    Last Updated: 4/2/2025
+    Last Updated: 4/11/2025
 */
 
 using UnityEngine;
@@ -13,9 +13,9 @@ using System.Globalization;
 public class PlayerCameraMove : MonoBehaviour
 {
     private Vector2 mouseMove = new Vector2();
-    private Vector2 prevPos = new Vector2();
+    private Vector2 prevPos = new Vector2(180f, 0);
 
-    private float mouseSensitivity = 200f;
+    private float mouseSensitivity = 1f;
     public Camera my_camera;
     private float zoom_FOV = 40f;
     private ControlScript control_script;
@@ -61,12 +61,9 @@ public class PlayerCameraMove : MonoBehaviour
         Cursor.visible = false;
         //Gets mouse input
         mouseMove = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
-        if (mouseMove.magnitude > 1)
-        {
-            mouseMove.Normalize();
-        }
+ 
         //Increases the sensitivity to movement
-        mouseMove *= mouseSensitivity * Time.deltaTime * Mathf.Min(1f, (1.1f - ((60f - my_camera.fieldOfView) / 20f)));
+        mouseMove *= mouseSensitivity * Mathf.Min(1f, (1.1f - ((60f - my_camera.fieldOfView) / 20f)));
 
         prevPos.y = Mathf.Clamp(prevPos.y, -90f, 90f);
 

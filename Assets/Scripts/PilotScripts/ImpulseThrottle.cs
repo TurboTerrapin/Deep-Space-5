@@ -3,7 +3,7 @@
     - Handles inputs for impulse throttle
     - Moves throttle lever accordingly
     Contributor(s): Jake Schott
-    Last Updated: 4/6/2025
+    Last Updated: 4/12/2025
 */
 
 using UnityEngine;
@@ -16,6 +16,7 @@ public class ImpulseThrottle : MonoBehaviour, IControllable
     private string CONTROL_NAME = "IMPULSE THROTTLE";
     private List<string> CONTROL_DESCS = new List<string> {"DECREASE", "INCREASE"};
     private List<int> CONTROL_INDEXES = new List<int>() {4, 5};
+    private List<Button> BUTTONS = new List<Button>();
 
     public GameObject handle;
     public GameObject display_canvas; //used to display the bars beneath the handle
@@ -32,11 +33,13 @@ public class ImpulseThrottle : MonoBehaviour, IControllable
     private void Start()
     {
         hud_info = new HUDInfo(CONTROL_NAME);
-        hud_info.setInputs(CONTROL_DESCS, CONTROL_INDEXES);
+        BUTTONS.Add(new Button(CONTROL_DESCS[0], CONTROL_INDEXES[0], false, false));
+        BUTTONS.Add(new Button(CONTROL_DESCS[1], CONTROL_INDEXES[1], true, false));
+        hud_info.setButtons(BUTTONS);
 
         initial_pos = handle.transform.position; //sets the initial position
     }
-    public HUDInfo getHUDinfo()
+    public HUDInfo getHUDinfo(GameObject current_target)
     {
         return hud_info;
     }
@@ -76,11 +79,27 @@ public class ImpulseThrottle : MonoBehaviour, IControllable
             {
                 impulse = Mathf.Max(0.0f, impulse - (0.002f * (impulse / 0.5f) + 0.001f) * Time.deltaTime * 50.0f);
             }
+            if (impulse <= 0f)
+            {
+                hud_info.getButtons()[0].updateInteractable(false);
+            }
+            else
+            {
+                hud_info.getButtons()[0].updateInteractable(true);
+            }
+            if (impulse >= 1f)
+            {
+                hud_info.getButtons()[1].updateInteractable(false);
+            }
+            else
+            {
+                hud_info.getButtons()[1].updateInteractable(true);
+            }
             displayAdjustment();
         }
         keys_down.Clear();
     }
-    public void handleInputs(List<KeyCode> inputs)
+    public void handleInputs(List<KeyCode> inputs, GameObject current_target, int position)
     {
         keys_down = inputs;
     }

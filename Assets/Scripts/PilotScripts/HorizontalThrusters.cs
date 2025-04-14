@@ -3,8 +3,9 @@
     - Handles inputs for horizontal thrusters
     - Extends ThrusterControl.cs
     Contributor(s): Jake Schott
-    Last Updated: 4/4/2025
+    Last Updated: 4/13/2025
 */
+
 
 using UnityEngine;
 using System.Collections.Generic;
@@ -17,18 +18,21 @@ public class HorizontalThrusters : ThrusterControl, IControllable
     private string CONTROL_NAME = "HORIZONTAL THRUSTERS";
     private List<string> CONTROL_DESCS = new List<string> { "MOVE LEFT", "MOVE RIGHT" };
     private List<int> CONTROL_INDEXES = new List<int>() { 1, 3 };
+    private List<Button> BUTTONS = new List<Button>();
 
     private List<KeyCode> keys_down = new List<KeyCode>();
     private float delay_timer = 0.0f;
 
     private static HUDInfo hud_info = null;
 
-    public HUDInfo getHUDinfo()
+    public HUDInfo getHUDinfo(GameObject current_target)
     {
         if (hud_info == null)
         {
             hud_info = new HUDInfo(CONTROL_NAME);
-            hud_info.setInputs(CONTROL_DESCS, CONTROL_INDEXES);
+            BUTTONS.Add(new Button(CONTROL_DESCS[0], CONTROL_INDEXES[0], true, false));
+            BUTTONS.Add(new Button(CONTROL_DESCS[1], CONTROL_INDEXES[1], true, false));
+            hud_info.setButtons(BUTTONS);
         }
         return hud_info;
     }
@@ -101,7 +105,7 @@ public class HorizontalThrusters : ThrusterControl, IControllable
         }
         keys_down.Clear();
     }
-    public void handleInputs(List<KeyCode> inputs)
+    public void handleInputs(List<KeyCode> inputs, GameObject current_target, int position)
     {
         keys_down = inputs;
     }
