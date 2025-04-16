@@ -2,7 +2,7 @@
     Button.cs
     - Stores information for a button 
     Contributor(s): Jake Schott
-    Last Updated: 4/12/2025
+    Last Updated: 4/16/2025
 */
 
 using UnityEngine;
@@ -21,7 +21,7 @@ public class Button
     {
         new float[] {0f}, //1 button
         new float[] {-76f, 76f}, //2 buttons
-        new float[] {-116f, 0f, 116f}, //3 buttons
+        new float[] {-114f, 0f, 114f}, //3 buttons
         new float[] {-138f, -46f, 46f, 138f} //4 buttons
     };
 
@@ -118,7 +118,7 @@ public class Button
         this.interactable = interactable;
         if (visual_button != null)
         { 
-            if (visual_button.transform.childCount > 0) //default view only
+            if (visual_button.transform.childCount > 0) //ensures default view only
             {
                 if (this.interactable == false)
                 {
@@ -161,6 +161,11 @@ public class Button
     public void toggle()
     {
         is_toggled = true;
+    }
+
+    public void untoggle()
+    {
+        is_toggled = false;
     }
 
     public void createVisual(int HUD_setting, int num_buttons, int order_index, GameObject frame)
