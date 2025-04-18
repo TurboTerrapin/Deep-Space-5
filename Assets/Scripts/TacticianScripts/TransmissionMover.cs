@@ -9,8 +9,6 @@ using NUnit.Framework;
 using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor.SceneManagement;
-using UnityEditor.Experimental.GraphView;
 
 public class TransmissionMover : MonoBehaviour, IControllable
 {

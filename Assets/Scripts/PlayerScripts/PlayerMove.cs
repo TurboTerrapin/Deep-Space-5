@@ -7,7 +7,6 @@
     Last Updated: 4/13/2025
 */
 
-
 using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
