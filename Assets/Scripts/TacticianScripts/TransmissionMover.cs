@@ -114,7 +114,6 @@ public class TransmissionMover : MonoBehaviour, IControllable
         frequency_text.GetComponent<TMP_Text>().SetText(frequencies[frequency_index] + "Mh");
         if (fa_cooling_down == true)
         {
-            fa_cool_down_timer = Mathf.Max(0.0f, fa_cool_down_timer - Time.deltaTime);
             float push_distance = 1f - ((fa_cool_down_timer - 0.125f) / 0.125f);
             if (fa_cool_down_timer <= 0.125f)
             {
@@ -124,16 +123,9 @@ public class TransmissionMover : MonoBehaviour, IControllable
                 new Vector3(initial_positions[fa_last_pressed - 1].x + push_distance * frequency_push_direction.x,
                             initial_positions[fa_last_pressed - 1].y + push_distance * frequency_push_direction.y,
                             initial_positions[fa_last_pressed - 1].z);
-            if (fa_cool_down_timer <= 0.0f)
-            {
-                BUTTON_LISTS[0][1].updateInteractable(true);
-                BUTTON_LISTS[0][2].updateInteractable(true);
-                fa_cooling_down = false;
-            }
         }
         if (signal_cooling_down == true)
         {
-            signal_cool_down_timer = Mathf.Max(0.0f, signal_cool_down_timer - Time.deltaTime);
             if (signal_stage == 1)
             {
                 float push_distance = 1f - ((signal_cool_down_timer - 0.125f) / 0.125f);
@@ -268,6 +260,20 @@ public class TransmissionMover : MonoBehaviour, IControllable
                     }
                 }
             }
+        }
+        if (fa_cooling_down == true)
+        {
+            fa_cool_down_timer = Mathf.Max(0.0f, fa_cool_down_timer - Time.deltaTime);
+            if (fa_cool_down_timer <= 0.0f)
+            {
+                BUTTON_LISTS[0][1].updateInteractable(true);
+                BUTTON_LISTS[0][2].updateInteractable(true);
+                fa_cooling_down = false;
+            }
+        }
+        if (signal_cooling_down == true) 
+        {
+            signal_cool_down_timer = Mathf.Max(0.0f, signal_cool_down_timer - Time.deltaTime);
         }
         displayAdjustment();
         keys_down.Clear();

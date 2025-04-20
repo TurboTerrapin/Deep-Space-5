@@ -188,7 +188,7 @@ public class Button
 
             //resize
             visual_button.GetComponent<RectTransform>().sizeDelta = button_sizes[num_buttons - 1];
-            visual_button.transform.GetChild(0).gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(button_sizes[num_buttons - 1].x - 16f, button_sizes[num_buttons - 1].y * 0.8f);
+            visual_button.transform.GetChild(0).gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(button_sizes[num_buttons - 1].x - 16f, button_sizes[num_buttons - 1].y * 0.7f);
 
             //position
             visual_button.GetComponent<RectTransform>().anchoredPosition = new Vector3(default_x_positions[num_buttons - 1][order_index], 20f, 0f);
