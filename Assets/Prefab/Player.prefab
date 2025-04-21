@@ -154,7 +154,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mouseMove: {x: 0, y: 0}
-  mouseSensitivity: 200
+  mouseSensitivity: 1
 --- !u!114 &1085814333436493430
 MonoBehaviour:
   m_ObjectHideFlags: 0

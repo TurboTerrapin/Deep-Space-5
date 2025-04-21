@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -10,6 +11,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField]
     private GameObject createMenu, lobbyMenu;
+
+    //public Dictionary<ulong, GameObject> playerInfo = new Dictionary<ulong, GameObject>();
 
     public static GameManager Instance { get; private set; }
 
@@ -34,24 +37,26 @@ public class GameManager : MonoBehaviour
 
     public void HostCreated()
     {
-        createMenu.SetActive(false);
-        lobbyMenu.SetActive(true);
+        //createMenu.SetActive(false);
+        //lobbyMenu.SetActive(true);
         isHost = true;
         connected = true;
     }
 
     public void ConnectedAsAClient()
     {
-        createMenu.SetActive(false);
-        lobbyMenu.SetActive(true);
+        //createMenu.SetActive(false);
+        //lobbyMenu.SetActive(true);
         isHost = false;
         connected = true;
     }
 
     public void Disconnect()
     {
-        createMenu.SetActive(true);
-        lobbyMenu.SetActive(false);
+        //playerInfo.clear();
+
+        //createMenu.SetActive(true);
+        //lobbyMenu.SetActive(false);
         isHost = false;
         connected = false;
     }

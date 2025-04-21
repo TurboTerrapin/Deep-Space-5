@@ -82,6 +82,21 @@ public class GameNetworkManager : MonoBehaviour
         }
     }
 
+    public async void JoinWithButton(Lobby lobby)
+    {
+        RoomEnter joinedLobby = await lobby.Join();
+        if (joinedLobby != RoomEnter.Success)
+        {
+            Debug.Log("Failed to join lobby");
+        }
+        else
+        {
+            currentLobby = lobby;
+            GameManager.Instance.ConnectedAsAClient();
+            Debug.Log("Successfully joined lobby");
+        }
+    }
+
     private void SteamMatchmaking_OnLobbyGameCreated(Lobby lobby, uint ip, ushort port, SteamId steamId)
     {
         Debug.Log("Lobby created successfully");
