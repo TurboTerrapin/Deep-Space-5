@@ -10,7 +10,7 @@
 using UnityEngine;
 using System.Globalization;
 
-public class PlayerCameraMove : MonoBehaviour
+public class CameraMove : MonoBehaviour
 {
     private Vector2 mouseMove = new Vector2();
     private Vector2 prevPos = new Vector2(180f, 0);

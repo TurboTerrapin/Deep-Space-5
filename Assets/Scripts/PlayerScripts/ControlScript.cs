@@ -63,6 +63,7 @@ public class ControlScript : MonoBehaviour
     void Start()
     {
         control_info.SetActive(false); //hide UI indicator to start
+        script_holder = GameObject.FindWithTag("ControlHandler");
     }
 
     //used to instantiate buttons/list entries for either trapezoid or minimized list

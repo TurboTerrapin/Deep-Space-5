@@ -8,22 +8,26 @@
 */
 
 using UnityEngine;
+using Unity.Netcode;
 
-public class PlayerMove : MonoBehaviour
+public class PlayerMove : NetworkBehaviour
 {
-    /*[SerializeField]
+    [SerializeField]
     private GameObject camera = null;
     [SerializeField]
     private Vector2 moveDir = new Vector2();
     [SerializeField]
     private Rigidbody playerRB = null;
-    public float moveSpeed = 100f;*/
+    public float moveSpeed = 100f;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
     private float MOVE_FACTOR = 2.0f;
 
     private bool is_pilot = true;
     private bool is_shifting = false;
+    [SerializeField]
+    private bool sitting = true;
     private float shift_direction = -1.0f;
     private float lean_direction = 1.0f;
     private float shift_percentage = 0.0f; //0 is default position, 1.0 is 
@@ -37,50 +41,67 @@ public class PlayerMove : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Tab))
+        if (sitting)
         {
-            shift_percentage = 0.0f;
-            shift_direction = -1f;
-            lean_direction *= -1f;
-            is_shifting = false;
-            is_pilot = !is_pilot;
-            if (is_pilot == true)
+            if (Input.GetKeyDown(KeyCode.Tab))
             {
-                transform.localPosition = new Vector3(2.1f, 0.8f, -2f);
+                sitting = false;
+            }
+            /*
+            if (Input.GetKeyDown(KeyCode.Tab))
+            {
+                shift_percentage = 0.0f;
+                shift_direction = -1f;
+                lean_direction *= -1f;
+                is_shifting = false;
+                is_pilot = !is_pilot;
+                if (is_pilot == true)
+                {
+                    transform.localPosition = new Vector3(2.1f, 0.8f, -2f);
+                }
+                else
+                {
+                    transform.localPosition = new Vector3(-2.1f, 0.8f, -2f);
+                }
+                default_x = transform.localPosition.x;
+            }
+            */
+            if (is_shifting)
+            {
+                if (shift_direction > 0.0f)
+                {
+                    shift_percentage = Mathf.Min(1f, shift_percentage += Time.deltaTime * MOVE_FACTOR);
+                    if (shift_percentage >= 1f)
+                    {
+                        is_shifting = false;
+                    }
+                }
+                else
+                {
+                    shift_percentage = Mathf.Max(0f, shift_percentage -= Time.deltaTime * MOVE_FACTOR);
+                    if (shift_percentage <= 0f)
+                    {
+                        is_shifting = false;
+                    }
+                }
+                transform.localPosition = new Vector3(default_x + (shift_percentage * 0.6f * lean_direction), transform.localPosition.y, transform.localPosition.z);
             }
             else
             {
-                transform.localPosition = new Vector3(-2.1f, 0.8f, -2f);
-            }
-            default_x = transform.localPosition.x;
-        }
-        if (is_shifting)
-        {
-            if (shift_direction > 0.0f)
-            {
-                shift_percentage = Mathf.Min(1f, shift_percentage += Time.deltaTime * MOVE_FACTOR);
-                if (shift_percentage >= 1f)
+                if (Input.GetKeyDown(KeyCode.LeftShift))
                 {
-                    is_shifting = false;
+                    is_shifting = true;
+                    shift_direction *= -1.0f;
                 }
             }
-            else
-            {
-                shift_percentage = Mathf.Max(0f, shift_percentage -= Time.deltaTime * MOVE_FACTOR);
-                if (shift_percentage <= 0f)
-                {
-                    is_shifting = false;
-                }
-            }
-            transform.localPosition = new Vector3(default_x + (shift_percentage * 0.6f * lean_direction), transform.localPosition.y, transform.localPosition.z);
         }
         else
         {
-            if (UnityEngine.Input.GetKeyDown(KeyCode.LeftShift))
+            if (Input.GetKeyDown(KeyCode.Tab))
             {
-                is_shifting = true;
-                shift_direction *= -1.0f;
+                sitting = true;
             }
+            Move();
         }
     }
 
@@ -108,12 +129,12 @@ public class PlayerMove : MonoBehaviour
 
 
     }
-
+    */
     void Move()
     {
         //transform.localPosition += new Vector3  (moveDir.x, 0, moveDir.y) * moveSpeed * Time.deltaTime;
         transform.localPosition += transform.right * moveDir.x * moveSpeed * Time.deltaTime;
         transform.localPosition += transform.forward * moveDir.y * moveSpeed * Time.deltaTime;
-    }*/
+    }
 
 }
