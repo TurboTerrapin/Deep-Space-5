@@ -1,24 +1,30 @@
+using Nova;
 using UnityEngine;
 using TMPro;
 using System.Collections;
 
-public class BlinkingText : MonoBehaviour
+public class TitleScreen : MonoBehaviour
 {
+    //TitleScreen
     public TextMeshProUGUI pressStartText;
     public float fadeDuration = 1.5f; // Time for a full fade in/out
     public GameObject titleScreenCanvas;
-    public GameObject mainMenuCanvas;
+
+    //MainMenu
+    public UIBlock2D mainMenu;
 
     void Start()
     {
         StartCoroutine(FadeText());
+        mainMenu.gameObject.SetActive(false);
     }
 
+    // Call SwitchCanvas() if any key is pressed
     void Update()
     {
         if (Input.anyKeyDown)
         {
-            SwitchCanvas();
+            SwitchScreens();
         }
     }
 
@@ -48,16 +54,10 @@ public class BlinkingText : MonoBehaviour
         pressStartText.color = new Color(color.r, color.g, color.b, targetAlpha);
     }
 
-    void SwitchCanvas()
+    // Switches canvas from TitleScreen to MainMenu
+    void SwitchScreens()
     {
-        if (titleScreenCanvas != null)
-        {
-            titleScreenCanvas.SetActive(false);
-        }
-
-        if (mainMenuCanvas != null)
-        {
-            mainMenuCanvas.SetActive(true);
-        }
+         titleScreenCanvas.SetActive(false);
+         mainMenu.gameObject.SetActive(true);
     }
 }

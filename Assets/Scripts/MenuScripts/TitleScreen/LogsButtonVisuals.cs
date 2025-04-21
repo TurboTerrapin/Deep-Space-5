@@ -5,7 +5,7 @@ using UnityEngine;
 
 [System.Serializable]
 
-public class XButtonVisuals : ItemVisuals
+public class LogsButtonVisuals : ItemVisuals
 {
     public TextBlock Label = null;
     public UIBlock2D Background = null;
@@ -18,41 +18,32 @@ public class XButtonVisuals : ItemVisuals
     public Color PressedGradientColor;
     public Color HoveredGradientColor;
 
-    internal static void HandleHover(Gesture.OnHover evt, XButtonVisuals target)
+    internal static void HandleHover(Gesture.OnHover evt, LogsButtonVisuals target)
     {
         target.Background.Color = target.HoveredColor;
         target.Background.Gradient.Color = target.HoveredGradientColor;
     }
 
-    internal static void HandleUnhover(Gesture.OnUnhover evt, XButtonVisuals target)
+    internal static void HandleUnhover(Gesture.OnUnhover evt, LogsButtonVisuals target)
     {
         target.Background.Color = target.DefaultColor;
         target.Background.Gradient.Color = target.DefaultGradientColor;
     }
 
-    internal static void HandlePress(Gesture.OnPress evt, XButtonVisuals target)
+    internal static void HandlePress(Gesture.OnPress evt, LogsButtonVisuals target)
     {
         target.Background.Color = target.PressedColor;
         target.Background.Gradient.Color = target.PressedGradientColor;
     }
 
-    internal static void HandleRelease(Gesture.OnRelease evt, XButtonVisuals target)
+    internal static void HandleRelease(Gesture.OnRelease evt, LogsButtonVisuals target)
     {
         target.Background.Color = target.HoveredColor;
         target.Background.Gradient.Color = target.HoveredGradientColor;
     }
 
-    internal static void HandleXButtonClick(Gesture.OnClick evt, XButtonVisuals target)
+    internal static void HandleLogsButtonClick(Gesture.OnClick evt, LogsButtonVisuals target)
     {
-        Transform settingsMenu = target.Background.transform;
 
-        while (settingsMenu.parent.name != "Main Camera") //will loop through parents until reaches camera
-        { 
-            settingsMenu = settingsMenu.parent;
-        }
-
-        settingsMenu.gameObject.SetActive(false);
-        settingsMenu.parent.GetChild(1).gameObject.SetActive(true);
     }
-
 }

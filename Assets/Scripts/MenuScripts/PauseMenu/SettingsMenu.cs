@@ -27,15 +27,15 @@ public class SettingsMenu : MonoBehaviour
 
     private void Start()
     {
-
         ResolutionSetting.Initialize();
 
-        //visuals only
+        //Toggle
         Root.AddGestureHandler<Gesture.OnHover, ToggleVisuals>(ToggleVisuals.HandleHover);
         Root.AddGestureHandler<Gesture.OnUnhover, ToggleVisuals>(ToggleVisuals.HandleUnhover);
         Root.AddGestureHandler<Gesture.OnPress, ToggleVisuals>(ToggleVisuals.HandlePress);
         Root.AddGestureHandler<Gesture.OnRelease, ToggleVisuals>(ToggleVisuals.HandleRelease);
 
+        //Resolution
         Root.AddGestureHandler<Gesture.OnHover, DropDownVisuals>(DropDownVisuals.HandleHover);
         Root.AddGestureHandler<Gesture.OnUnhover, DropDownVisuals>(DropDownVisuals.HandleUnhover);
         Root.AddGestureHandler<Gesture.OnPress, DropDownVisuals>(DropDownVisuals.HandlePress);
@@ -60,14 +60,12 @@ public class SettingsMenu : MonoBehaviour
         Root.AddGestureHandler<Gesture.OnClick, DropDownVisuals>(HandleDropDownClicked);
         Root.AddGestureHandler<Gesture.OnClick, HUDDropDownVisuals>(HandleHUDDropDownClicked);
 
-        //initialize UI elements
+        //Initialize UI elements
         BindToggle(BoolSetting, ToggleItemView.Visuals as ToggleVisuals);
         BindSlider(FloatSetting, SliderItemView.Visuals as SliderVisuals);
         BindDropDown(MultiOptionSetting, DropDownItemView.Visuals as DropDownVisuals);
-        //resolution
-        BindDropDown(ResolutionSetting, ResolutionDropDownItemView?.Visuals as DropDownVisuals);
-        //hud
-        BindHUDDropDown(HUDMultiOptionSetting, HUDDropDownItemView.Visuals as HUDDropDownVisuals);
+        BindDropDown(ResolutionSetting, ResolutionDropDownItemView?.Visuals as DropDownVisuals); //resolution
+        BindHUDDropDown(HUDMultiOptionSetting, HUDDropDownItemView.Visuals as HUDDropDownVisuals); //hud
     }
 
     private void HandleToggleClicked(Gesture.OnClick evt, ToggleVisuals target)
@@ -157,11 +155,6 @@ public class SettingsMenu : MonoBehaviour
         visuals.Label.Text = setting.Name;
         visuals.SelectedLabel.Text = setting.HUDCurrentSelection;
         visuals.HUDCollapse();
-    }
-
-    public void ToggleSettingsMenu()
-    {
-        
     }
 
 }
