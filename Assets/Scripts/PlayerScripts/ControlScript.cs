@@ -229,6 +229,15 @@ public class ControlScript : MonoBehaviour
                     target_control.handleInputs(current_inputs, hit.collider.gameObject, 1); //call when all inputs have been checked
                     return;
                 }
+
+                else if(hit.collider.gameObject.layer == 7) //Seat Layer
+                {
+                    if(UnityEngine.Input.GetMouseButtonDown(0))
+                    {
+
+                    }
+                }
+
             }
         }
         control_info.SetActive(false); //hide UI indicator if not looking at a control

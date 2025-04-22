@@ -101,7 +101,20 @@ public class PlayerMove : NetworkBehaviour
             {
                 sitting = true;
             }
+            moveDir.x = Input.GetAxis("Horizontal");
+            moveDir.y = Input.GetAxis("Vertical");
+            Debug.DrawLine(transform.position, transform.position + transform.forward * 10);
+            if (moveDir.magnitude > 1)
+            {
+                moveDir.Normalize();
+            }
             Move();
+
+            if (transform.localPosition.y < -10)
+            {
+                transform.localPosition = Vector3.zero;
+                playerRB.linearVelocity = Vector3.zero;
+            }
         }
     }
 
