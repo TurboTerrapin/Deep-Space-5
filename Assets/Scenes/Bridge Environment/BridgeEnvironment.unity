@@ -25748,6 +25748,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 780580258}
   m_CullTransparentMesh: 1
+--- !u!1 &782774524 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2689120167927778243, guid: 06db6c98fcf16d544bf36bfd42f2b192, type: 3}
+  m_PrefabInstance: {fileID: 1027180199}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &783783550 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5112223617314217113, guid: 63ea947e49bdea3409abb32012f86396, type: 3}
@@ -34230,6 +34235,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Root: {fileID: 1025649321}
+  InputHandler: {fileID: 782774524}
 --- !u!114 &1025649320
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -34558,7 +34564,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2689120167927778243, guid: 06db6c98fcf16d544bf36bfd42f2b192, type: 3}
       propertyPath: m_Name
-      value: InputManager
+      value: NovaInputHandler
       objectReference: {fileID: 0}
     - target: {fileID: 5074331826214443038, guid: 06db6c98fcf16d544bf36bfd42f2b192, type: 3}
       propertyPath: m_LocalPosition.x

@@ -1,4 +1,5 @@
 using Nova;
+using NovaSamples.UIControls;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,9 +8,17 @@ using UnityEngine;
 public class PauseMenu : MonoBehaviour
 {
     public UIBlock Root = null;
+    public GameObject InputHandler;
 
     private void Start()
     {
+        GameObject control_script = transform.gameObject;
+        while (control_script.name != "Canvas")
+        {
+            control_script = control_script.transform.parent.gameObject;
+        }
+        InputHandler.GetComponent<InputManager>().Cam = control_script.GetComponent<ControlScript>().my_camera;
+
         //Resume Button
         Root.AddGestureHandler<Gesture.OnHover, ResumeButtonVisuals>(ResumeButtonVisuals.HandleHover);
         Root.AddGestureHandler<Gesture.OnUnhover, ResumeButtonVisuals>(ResumeButtonVisuals.HandleUnhover);
@@ -36,7 +45,6 @@ public class PauseMenu : MonoBehaviour
         Root.AddGestureHandler<Gesture.OnPress, QuitButtonVisuals>(QuitButtonVisuals.HandlePress);
         Root.AddGestureHandler<Gesture.OnRelease, QuitButtonVisuals>(QuitButtonVisuals.HandleRelease);
 
-        //Debug.Log("Pause");
 
     }
 }

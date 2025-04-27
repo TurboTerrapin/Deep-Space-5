@@ -45,15 +45,14 @@ public class XButtonVisuals : ItemVisuals
 
     internal static void HandleXButtonClick(Gesture.OnClick evt, XButtonVisuals target)
     {
-        Transform settingsMenu = target.Background.transform;
+        Transform panel = target.Background.transform;
 
-        while (settingsMenu.parent.name != "Main Camera") //will loop through parents until reaches camera
-        { 
-            settingsMenu = settingsMenu.parent;
+        while (panel.gameObject.name != "Panel")
+        {
+            panel = panel.parent;
         }
-
-        settingsMenu.gameObject.SetActive(false);
-        settingsMenu.parent.GetChild(1).gameObject.SetActive(true);
+        panel.GetChild(0).gameObject.SetActive(false);
+        panel.GetChild(1).gameObject.SetActive(true);
     }
 
 }
