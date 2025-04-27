@@ -3,13 +3,12 @@
     - Handles inputs for impulse throttle
     - Moves throttle lever accordingly
     Contributor(s): Jake Schott
-    Last Updated: 4/12/2025
+    Last Updated: 4/26/2025
 */
 
 using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
-using UnityEngine.Windows;
 
 public class ImpulseThrottle : MonoBehaviour, IControllable
 {
@@ -43,20 +42,23 @@ public class ImpulseThrottle : MonoBehaviour, IControllable
     {
         return hud_info;
     }
-    private void displayAdjustment()
+    private void displayAdjustment(float display_impulse)
     {
         //update bars on screen
-        int impulse_as_int = (int)(impulse * 100.0f);
+        int impulse_as_int = (int)(display_impulse * 100.0f);
         if (impulse_as_int < 100)
         { 
             display_canvas.transform.GetChild((impulse_as_int / 5) + 1).gameObject.GetComponent<UnityEngine.UI.RawImage>().color = new Color(0, 0.93f, 1.0f, (0.2f * (impulse_as_int % 5)));
         }
 
         //update lever position
-        handle.transform.position = new Vector3(initial_pos.x + ((final_pos.x - initial_pos.x) * impulse), initial_pos.y + ((final_pos.y - initial_pos.y) * impulse), initial_pos.z + ((final_pos.z - initial_pos.z) * impulse));
+        handle.transform.position = 
+            new Vector3(initial_pos.x + ((final_pos.x - initial_pos.x) * display_impulse), 
+                        initial_pos.y + ((final_pos.y - initial_pos.y) * display_impulse), 
+                        initial_pos.z + ((final_pos.z - initial_pos.z) * display_impulse));
         
         //update speedometer text
-        speed_information.transform.GetChild(1).gameObject.GetComponent<TMP_Text>().SetText("" + Mathf.Round(impulse * 100.0f));
+        speed_information.transform.GetChild(1).gameObject.GetComponent<TMP_Text>().SetText("" + Mathf.Round(display_impulse * 100.0f));
     }
     void Update()
     {
@@ -95,7 +97,7 @@ public class ImpulseThrottle : MonoBehaviour, IControllable
             {
                 hud_info.getButtons()[1].updateInteractable(true);
             }
-            displayAdjustment();
+            displayAdjustment(impulse);
         }
         keys_down.Clear();
     }

@@ -2,22 +2,24 @@
     Phasers.cs
     - Handles short-and-long-range phasers
     Contributor(s): Jake Schott
-    Last Updated: 4/20/2025
+    Last Updated: 4/26/2025
 */
 
 using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
 using System;
+using UnityEditor.Build;
 
 public class Phasers : MonoBehaviour, IControllable
 {
-    private string[] CONTROL_NAMES = new string[]{"SHORT-RANGE PHASERS", "LONG-RANGE PHASERS", "LONG-RANGE PHASER DIRECTION"};
-    private List<string> CONTROL_DESCS = new List<string>{"REDUCE", "ENERGIZE", "ROTATE LEFT", "ROTATE RIGHT"};
-    private List<int> CONTROL_INDEXES = new List<int>(){4, 5};
-    private List<Button>[] BUTTON_LISTS = new List<Button>[3]{ new List<Button>(), new List<Button>(), new List<Button>()};
+    private string[] CONTROL_NAMES = new string[]{"SHORT-RANGE PHASERS", "LONG-RANGE PHASERS", "LONG-RANGE PHASER DIRECTION", "PHASER POWER SWITCHES"};
+    private List<string> CONTROL_DESCS = new List<string>{"REDUCE", "ENERGIZE", "ROTATE LEFT", "ROTATE RIGHT", "LONG-RANGE", "SHORT-RANGE LEFT", "SHORT-RANGE RIGHT"};
+    private List<int> CONTROL_INDEXES = new List<int>(){4, 5, 4, 0, 5};
+    private List<Button>[] BUTTON_LISTS = new List<Button>[4]{ new List<Button>(), new List<Button>(), new List<Button>(), new List<Button>()};
 
     public List<GameObject> phaser_display_canvases = null;
+    public List<GameObject> phaser_coverups = null;
     public List<GameObject> phaser_sliders = null;
     private float[] phaser_powers = new float[2]{0.0f, 0.0f};
     private Vector3[] phaser_slider_initial_positions = new Vector3[2];
@@ -27,9 +29,16 @@ public class Phasers : MonoBehaviour, IControllable
     public GameObject long_range_indicator = null;
     private float long_range_angle = 0.0f;
 
+    public List<GameObject> phaser_switches = null;
+    public GameObject phaser_switch_canvas;
+    private float[] phaser_cooldowns = { 0.0f, 0.0f, 0.0f };
+    private bool[] phaser_is_cooling_down = { false, false, false };
+    private bool[] phaser_prev_is_enabled = { false, false, false };
+    private float[] phaser_is_enabled = {1.0f, 1.0f, 1.0f}; //phaser enabled is binary, 0-1 used to go left to right
+
     private List<KeyCode> keys_down = new List<KeyCode>();
 
-    private List<string> ray_targets = new List<string> {"short_range_phasers", "long_range_phasers", "long_range_direction"};
+    private List<string> ray_targets = new List<string> {"short_range_phasers", "long_range_phasers", "long_range_direction", "phaser_switches"};
     private int target_index = 0;
 
     private static HUDInfo hud_info = null;
@@ -46,6 +55,10 @@ public class Phasers : MonoBehaviour, IControllable
 
         BUTTON_LISTS[2].Add(new Button(CONTROL_DESCS[2], CONTROL_INDEXES[0], true, false));
         BUTTON_LISTS[2].Add(new Button(CONTROL_DESCS[3], CONTROL_INDEXES[1], true, false));
+
+        BUTTON_LISTS[3].Add(new Button(CONTROL_DESCS[4], CONTROL_INDEXES[2], true, true));
+        BUTTON_LISTS[3].Add(new Button(CONTROL_DESCS[5], CONTROL_INDEXES[3], true, true));
+        BUTTON_LISTS[3].Add(new Button(CONTROL_DESCS[6], CONTROL_INDEXES[4], true, true));
     }
     public HUDInfo getHUDinfo(GameObject current_target)
     {
@@ -83,9 +96,17 @@ public class Phasers : MonoBehaviour, IControllable
 
         long_range_indicator.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, long_range_angle);
         long_range_lever.transform.localRotation = Quaternion.Euler(-69.416f, 0.0f, -90f + long_range_angle);
+
+        for (int i = 0; i < 3; i++)
+        {
+            phaser_switches[i].transform.GetChild(0).localRotation = Quaternion.Euler(0, 22f + phaser_is_enabled[i] * -44f, 0f);
+            phaser_switch_canvas.transform.GetChild(2 + (2 * i)).gameObject.GetComponent<UnityEngine.UI.Image>().fillAmount = phaser_is_enabled[i];
+            phaser_coverups[i].SetActive(phaser_is_enabled[i] != 1.0f);
+        }
     }
     void Update()
     {
+        bool display_necessary = false;
         if (target_index < 2) //looking at either short-range phasers or long-range phasers
         {
             int power_direction = 0;
@@ -123,10 +144,10 @@ public class Phasers : MonoBehaviour, IControllable
                 {
                     BUTTON_LISTS[target_index][0].updateInteractable(true);
                 }
-                displayAdjustment();
+                display_necessary = true;
             }
         }
-        else
+        else if (target_index == 2)
         {
             int angle_direction = 0;
             if (keys_down.Contains(KeyCode.E) || keys_down.Contains(KeyCode.RightArrow))
@@ -155,8 +176,52 @@ public class Phasers : MonoBehaviour, IControllable
                 {
                     long_range_angle += 360.0f;
                 }
-                displayAdjustment();
+                display_necessary = true;
             }
+        }
+        else
+        {
+            KeyCode[] keys_to_check = new KeyCode[] {KeyCode.Q, KeyCode.W, KeyCode.E, KeyCode.LeftArrow, KeyCode.UpArrow,  KeyCode.RightArrow};
+            for (int i = 0; i <= 2; i++)
+            {
+                if (phaser_is_cooling_down[i] == false)
+                {
+                    if (keys_down.Contains(keys_to_check[i]) || keys_down.Contains(keys_to_check[i + 3]))
+                    {
+                        phaser_is_cooling_down[i] = true;
+                        phaser_cooldowns[i] = 1.0f;
+                        BUTTON_LISTS[3][i].toggle();
+                        BUTTON_LISTS[3][i].updateInteractable(false);
+                    }
+                }
+            }
+        }
+        for (int i = 0; i <= 2; i++)
+        {
+            if (phaser_is_cooling_down[i] == true)
+            {
+                phaser_cooldowns[i] = Mathf.Max(0.0f, phaser_cooldowns[i] - Time.deltaTime);
+                if (phaser_prev_is_enabled[i] == false) //turning off
+                {
+                    phaser_is_enabled[i] = phaser_cooldowns[i];
+                }
+                else //turning on
+                {
+                    phaser_is_enabled[i] = 1.0f - phaser_cooldowns[i];
+                }
+                if (phaser_cooldowns[i] <= 0.0f)
+                {
+                    phaser_prev_is_enabled[i] = !phaser_prev_is_enabled[i];
+                    phaser_is_cooling_down[i] = false;
+                    BUTTON_LISTS[3][i].untoggle();
+                    BUTTON_LISTS[3][i].updateInteractable(true);
+                }
+                display_necessary = true;
+            }
+        }
+        if (display_necessary == true)
+        {
+            displayAdjustment();
         }
         keys_down.Clear();
     }
