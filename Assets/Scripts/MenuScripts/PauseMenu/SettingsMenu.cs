@@ -68,6 +68,11 @@ public class SettingsMenu : MonoBehaviour
         BindDropDown(ResolutionSetting, ResolutionDropDownItemView?.Visuals as DropDownVisuals);
         //hud
         BindHUDDropDown(HUDMultiOptionSetting, HUDDropDownItemView.Visuals as HUDDropDownVisuals);
+
+
+        //Debug.Log("Settings");
+
+
     }
 
     private void HandleToggleClicked(Gesture.OnClick evt, ToggleVisuals target)

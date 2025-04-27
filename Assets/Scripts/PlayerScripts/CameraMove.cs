@@ -18,13 +18,13 @@ public class CameraMove : MonoBehaviour
     private float mouseSensitivity = 1f;
     public Camera my_camera;
     private float zoom_FOV = 40f;
-    private ControlScript control_script;
+    //private ControlScript control_script;
 
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         gameObject.SetActive(true);
-        control_script = (ControlScript)transform.parent.GetComponent("ControlScript");
+        //ControlScript.Instance = (ControlScript)transform.parent.GetComponent("ControlScript");
     }
 
     // Update is called once per frame
@@ -34,18 +34,18 @@ public class CameraMove : MonoBehaviour
         {
             if (Cursor.lockState == CursorLockMode.Locked)
             {
-                control_script.pause();
+                ControlScript.Instance.pause();
             }
             else
             {
-                control_script.unpause();
+                ControlScript.Instance.unpause();
             }
         }
         if (Cursor.lockState == CursorLockMode.Locked)
         {
             MouseMove();
         }
-        if (!control_script.isPaused())
+        if (!ControlScript.Instance.isPaused())
         {
             if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl) || Input.GetKey(KeyCode.Mouse1))
             {

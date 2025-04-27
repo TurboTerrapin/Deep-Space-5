@@ -92,8 +92,8 @@ public class HUDDropDownVisuals : ItemVisuals
       
         dataSource.HUDSelectedIndex = index;
         Debug.Log($"Setting HUDSelectedIndex to {dataSource.HUDSelectedIndex}");
-        ControlScript x = (ControlScript)control_script_holder.GetComponent("ControlScript");
-        x.setHUD(dataSource.HUDSelectedIndex);
+        //ControlScript x = (ControlScript)control_script_holder.GetComponent("ControlScript");
+        ControlScript.Instance.setHUD(dataSource.HUDSelectedIndex);
 
         SelectedLabel.Text = dataSource.HUDCurrentSelection;
         evt.Consume();

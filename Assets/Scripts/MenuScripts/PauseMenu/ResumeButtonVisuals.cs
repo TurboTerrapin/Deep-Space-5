@@ -44,14 +44,33 @@ public class ResumeButtonVisuals : ItemVisuals
 
     internal static void HandleResumeButtonClick(Gesture.OnClick evt, ResumeButtonVisuals target)
     {
+        /*
         Transform player = target.Background.transform;
 
         while (player.name != "Player")
         {
             player = player.parent;
         }
-        ControlScript control_script = (ControlScript)player.GetComponent("ControlScript");
-        control_script.unpause();
+
+        */
+        Transform thisPlayer = null;
+
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject player in players)
+        {
+            Debug.Log(players.Length + " " + player.GetComponent<PlayerMove>().IsOwner);
+            if (player.GetComponent<PlayerMove>().IsOwner)
+            {
+                thisPlayer = target.Background.transform;
+            }
+        }
+        if (thisPlayer == null)
+        {
+            Debug.Log("Shit not working");
+            return;
+        }
+        //ControlScript control_script = thisPlayer.GetComponent<ControlScript>();
+        ControlScript.Instance.unpause();
     }
 
 }

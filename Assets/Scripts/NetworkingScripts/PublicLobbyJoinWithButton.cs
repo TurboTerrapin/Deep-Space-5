@@ -2,7 +2,6 @@ using UnityEngine;
 using Steamworks;
 using TMPro;
 using Unity.Netcode;
-using Steamworks;
 using Steamworks.Data;
 using Netcode.Transports.Facepunch;
 

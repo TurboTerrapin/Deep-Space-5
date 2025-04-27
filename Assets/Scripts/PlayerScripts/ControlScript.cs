@@ -60,8 +60,16 @@ public class ControlScript : MonoBehaviour
         new KeyCode[] {KeyCode.Alpha4, KeyCode.Keypad4},
     };
 
+    public static ControlScript Instance { get; private set; }
+
     void Start()
     {
+        if (Instance != null)
+        {
+            Destroy(this);
+        }
+        Instance = this;
+
         control_info.SetActive(false); //hide UI indicator to start
         script_holder = GameObject.FindWithTag("ControlHandler");
     }
@@ -161,6 +169,14 @@ public class ControlScript : MonoBehaviour
 
     void Update()
     {
+        if(my_camera == null)
+        {
+            if(Camera.main == null) return;
+            else my_camera = Camera.main;
+        }
+
+
+
         if (!paused)
         {
             if (Physics.Raycast(new Ray(my_camera.transform.position, my_camera.transform.forward), out RaycastHit hit, RAYCAST_RANGE)) //cast ray
@@ -229,14 +245,38 @@ public class ControlScript : MonoBehaviour
                     target_control.handleInputs(current_inputs, hit.collider.gameObject, 1); //call when all inputs have been checked
                     return;
                 }
-
+                /*
                 else if(hit.collider.gameObject.layer == 7) //Seat Layer
                 {
-                    if(UnityEngine.Input.GetMouseButtonDown(0))
-                    {
+                    
+                    IControllable target_control =
+                        (IControllable)script_holder.GetComponent(corresponding_scripts[collider_names.IndexOf(hit.collider.gameObject.name)]); //get corresponding class
 
+                    HUDInfo temp_info = target_control.getHUDinfo(hit.collider.gameObject);
+
+                    if (title.GetComponent<TMP_Text>().text.CompareTo(temp_info.getName()) != 0 || current_info.numOptions() != temp_info.numOptions())
+                    {
+                        title.GetComponent<TMP_Text>().SetText(temp_info.getName()); //set title of that control
+                        current_info = temp_info;
+                        if (HUD_setting < 2)
+                        {
+                            createButtons();
+                        }
                     }
+                    else
+                    {
+                        if (HUD_setting < 2)
+                        {
+                            updateButtons(temp_info);
+                        }
+                    }
+                    if (UnityEngine.Input.GetMouseButtonDown(0))
+                    {
+                        
+                    }
+                    
                 }
+                */
 
             }
         }

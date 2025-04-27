@@ -35,5 +35,8 @@ public class PauseMenu : MonoBehaviour
         Root.AddGestureHandler<Gesture.OnUnhover, QuitButtonVisuals>(QuitButtonVisuals.HandleUnhover);
         Root.AddGestureHandler<Gesture.OnPress, QuitButtonVisuals>(QuitButtonVisuals.HandlePress);
         Root.AddGestureHandler<Gesture.OnRelease, QuitButtonVisuals>(QuitButtonVisuals.HandleRelease);
+
+        //Debug.Log("Pause");
+
     }
 }
