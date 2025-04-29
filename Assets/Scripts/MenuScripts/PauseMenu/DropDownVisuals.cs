@@ -8,7 +8,6 @@ public class DropDownItemVisuals : ItemVisuals
 {
     public TextBlock Label = null;
     public UIBlock2D Background = null;
-    // public UIBlock2D SelectedIndicator = null;
 }
 
 [System.Serializable]
@@ -99,7 +98,6 @@ public class DropDownVisuals : ItemVisuals
     private void BindItem(Data.OnBind<string> evt, DropDownItemVisuals target, int index)
     {
         target.Label.Text = evt.UserData;
-        //target.SelectedIndicator.gameObject.SetActive(index == dataSource.SelectedIndex);
         target.Background.Color = index % 2 == 0 ? PrimaryRowColor : SecondaryRowColor;
     }
 

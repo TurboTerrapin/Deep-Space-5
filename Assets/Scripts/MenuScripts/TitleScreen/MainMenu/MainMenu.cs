@@ -39,11 +39,11 @@ public class MainMenuScreen : MonoBehaviour
         Root.AddGestureHandler<Gesture.OnClick, TSSettingsButtonVisuals>(TSSettingsButtonVisuals.HandleTSSettingsButtonClick);
 
         //TSQuitButtonVisuals
-        Root.AddGestureHandler<Gesture.OnHover, TSQuitButtonVisuals>(TSQuitButtonVisuals.HandleHover);
-        Root.AddGestureHandler<Gesture.OnUnhover, TSQuitButtonVisuals>(TSQuitButtonVisuals.HandleUnhover);
-        Root.AddGestureHandler<Gesture.OnPress, TSQuitButtonVisuals>(TSQuitButtonVisuals.HandlePress);
-        Root.AddGestureHandler<Gesture.OnRelease, TSQuitButtonVisuals>(TSQuitButtonVisuals.HandleRelease);
-        Root.AddGestureHandler<Gesture.OnClick, TSQuitButtonVisuals>(TSQuitButtonVisuals.HandleTSQuitButtonClick);
+        Root.AddGestureHandler<Gesture.OnHover, MMQuitButtonVisuals>(MMQuitButtonVisuals.HandleHover);
+        Root.AddGestureHandler<Gesture.OnUnhover, MMQuitButtonVisuals>(MMQuitButtonVisuals.HandleUnhover);
+        Root.AddGestureHandler<Gesture.OnPress, MMQuitButtonVisuals>(MMQuitButtonVisuals.HandlePress);
+        Root.AddGestureHandler<Gesture.OnRelease, MMQuitButtonVisuals>(MMQuitButtonVisuals.HandleRelease);
+        Root.AddGestureHandler<Gesture.OnClick, MMQuitButtonVisuals>(MMQuitButtonVisuals.HandleMMQuitButtonClick);
 
         //TSXButtonVisuals
         Root.AddGestureHandler<Gesture.OnHover, TSXButtonVisuals>(TSXButtonVisuals.HandleHover);

@@ -30187,12 +30187,12 @@ MonoBehaviour:
       data:
         Label: {fileID: 5842627081650903091}
         Background: {fileID: 3850162664282082650}
-        DefaultColor: {r: 0.48235294, g: 0, b: 0, a: 1}
-        PressedColor: {r: 0.30980393, g: 0, b: 0, a: 1}
-        HoveredColor: {r: 0.40392157, g: 0, b: 0, a: 1}
-        DefaultGradientColor: {r: 0.7176471, g: 0, b: 0, a: 1}
-        PressedGradientColor: {r: 0.42352942, g: 0, b: 0, a: 1}
-        HoveredGradientColor: {r: 0.5294118, g: 0, b: 0, a: 1}
+        DefaultColor: {r: 0.7176471, g: 0, b: 0, a: 1}
+        PressedColor: {r: 0.6226415, g: 0.0029369951, b: 0.0029369951, a: 1}
+        HoveredColor: {r: 0.8396226, g: 0, b: 0, a: 1}
+        DefaultGradientColor: {r: 0, g: 0, b: 0, a: 0}
+        PressedGradientColor: {r: 0, g: 0, b: 0, a: 0}
+        HoveredGradientColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &3496738901632854339
 GameObject:
   m_ObjectHideFlags: 0
@@ -36747,7 +36747,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &7235860444537856159
 GameObject:
   m_ObjectHideFlags: 0
