@@ -18,8 +18,8 @@ public class VerticalThrusters : ThrusterControl, IControllable
     private float UPDATE_DELAY = 0.02f; //time in seconds between updates
 
     private string CONTROL_NAME = "VERTICAL THRUSTERS";
-    private List<string> CONTROL_DESCS = new List<string>{"DESCEND", "ASCEND"};
-    private List<int> CONTROL_INDEXES = new List<int>(){2, 0};
+    private List<string> CONTROL_DESCS = new List<string> { "DESCEND", "ASCEND" };
+    private List<int> CONTROL_INDEXES = new List<int>() { 2, 0 };
     private List<Button> BUTTONS = new List<Button>();
 
     public GameObject altitude_canvas;
@@ -30,6 +30,8 @@ public class VerticalThrusters : ThrusterControl, IControllable
     private int altitude = 0;
 
     private static HUDInfo hud_info = null;
+
+    private float verticalThrust = 0;
 
     public HUDInfo getHUDinfo(GameObject current_target)
     {
@@ -42,12 +44,17 @@ public class VerticalThrusters : ThrusterControl, IControllable
         }
         return hud_info;
     }
+
+    public float getVerticalThrust()
+    {
+        return verticalThrust;
+    }
     private void displayAdjustment()
     {
         //adjust physical buttons
         adjustButton(physical_buttons[0], 0);
         adjustButton(physical_buttons[1], 1);
-        
+
         //update corresponding thruster screen
         GameObject diamond = display_canvas.transform.GetChild(1).gameObject;
         if (thrust_direction == 0) //bring back to center
@@ -97,6 +104,7 @@ public class VerticalThrusters : ThrusterControl, IControllable
             {
                 buttons[0] = false;
                 buttons[1] = false;
+                verticalThrust = 0f;
             }
             else
             {
@@ -105,16 +113,20 @@ public class VerticalThrusters : ThrusterControl, IControllable
                 if (buttons[1]) //W to move up
                 {
                     temp_thrust = 1;
+
                 }
                 buttons[0] = (keys_down.Contains(KeyCode.S) || keys_down.Contains(KeyCode.DownArrow));
                 if (buttons[0]) //S to move down
                 {
                     temp_thrust -= 1;
+
                 }
                 if (thrust_direction != temp_thrust)
                 {
                     adjustThrust(temp_thrust);
                 }
+                verticalThrust = temp_thrust;
+
             }
 
             //update altitude

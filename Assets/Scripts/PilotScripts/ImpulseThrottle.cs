@@ -14,8 +14,8 @@ using UnityEngine.Windows;
 public class ImpulseThrottle : MonoBehaviour, IControllable
 {
     private string CONTROL_NAME = "IMPULSE THROTTLE";
-    private List<string> CONTROL_DESCS = new List<string> {"DECREASE", "INCREASE"};
-    private List<int> CONTROL_INDEXES = new List<int>() {4, 5};
+    private List<string> CONTROL_DESCS = new List<string> { "DECREASE", "INCREASE" };
+    private List<int> CONTROL_INDEXES = new List<int>() { 4, 5 };
     private List<Button> BUTTONS = new List<Button>();
 
     public GameObject handle;
@@ -43,18 +43,22 @@ public class ImpulseThrottle : MonoBehaviour, IControllable
     {
         return hud_info;
     }
+    public float getCurrentImpulse()
+    {
+        return impulse;
+    }
     private void displayAdjustment()
     {
         //update bars on screen
         int impulse_as_int = (int)(impulse * 100.0f);
         if (impulse_as_int < 100)
-        { 
+        {
             display_canvas.transform.GetChild((impulse_as_int / 5) + 1).gameObject.GetComponent<UnityEngine.UI.RawImage>().color = new Color(0, 0.93f, 1.0f, (0.2f * (impulse_as_int % 5)));
         }
 
         //update lever position
         handle.transform.position = new Vector3(initial_pos.x + ((final_pos.x - initial_pos.x) * impulse), initial_pos.y + ((final_pos.y - initial_pos.y) * impulse), initial_pos.z + ((final_pos.z - initial_pos.z) * impulse));
-        
+
         //update speedometer text
         speed_information.transform.GetChild(1).gameObject.GetComponent<TMP_Text>().SetText("" + Mathf.Round(impulse * 100.0f));
     }
@@ -71,7 +75,7 @@ public class ImpulseThrottle : MonoBehaviour, IControllable
         }
         if (impulse_direction != 0)
         {
-            if (impulse_direction > 0) 
+            if (impulse_direction > 0)
             {
                 impulse = Mathf.Min(1.0f, impulse + (0.002f * (impulse / 0.5f) + 0.001f) * Time.deltaTime * 50.0f);
             }

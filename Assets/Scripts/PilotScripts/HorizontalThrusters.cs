@@ -25,6 +25,8 @@ public class HorizontalThrusters : ThrusterControl, IControllable
 
     private static HUDInfo hud_info = null;
 
+    private float horizontalThrust = 0;
+
     public HUDInfo getHUDinfo(GameObject current_target)
     {
         if (hud_info == null)
@@ -36,6 +38,11 @@ public class HorizontalThrusters : ThrusterControl, IControllable
         }
         return hud_info;
     }
+    public float getHorizontalThrust()
+    {
+        return horizontalThrust;
+    }
+
     private void displayAdjustment()
     {
         //adjust physical buttons
@@ -77,6 +84,7 @@ public class HorizontalThrusters : ThrusterControl, IControllable
             {
                 buttons[0] = false;
                 buttons[1] = false;
+                horizontalThrust = 0;
             }
             else
             {
@@ -95,6 +103,7 @@ public class HorizontalThrusters : ThrusterControl, IControllable
                 {
                     adjustThrust(temp_thrust);
                 }
+                horizontalThrust = temp_thrust;
             }
 
             //display changes

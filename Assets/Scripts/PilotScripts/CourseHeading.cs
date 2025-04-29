@@ -17,8 +17,8 @@ using UnityEngine.Windows;
 public class CourseHeading : MonoBehaviour, IControllable
 {
     private string CONTROL_NAME = "COURSE HEADING";
-    private List<string> CONTROL_DESCS = new List<string>{"DECREASE", "INCREASE"};
-    private List<int> CONTROL_INDEXES = new List<int>(){4, 5};
+    private List<string> CONTROL_DESCS = new List<string> { "DECREASE", "INCREASE" };
+    private List<int> CONTROL_INDEXES = new List<int>() { 4, 5 };
     private List<Button> BUTTONS = new List<Button>();
 
     public GameObject wheel;
@@ -47,6 +47,10 @@ public class CourseHeading : MonoBehaviour, IControllable
     public HUDInfo getHUDinfo(GameObject current_target)
     {
         return hud_info;
+    }
+    public float getCurrentHeading()
+    {
+        return heading;
     }
     private void displayAdjustment()
     {
@@ -85,7 +89,7 @@ public class CourseHeading : MonoBehaviour, IControllable
             //check inputs
             if (keys_down.Contains(KeyCode.E) || keys_down.Contains(KeyCode.RightArrow)) //E to increase
             {
-                temp_wheel_direction = 1;       
+                temp_wheel_direction = 1;
             }
             if (keys_down.Contains(KeyCode.Q) || keys_down.Contains(KeyCode.LeftArrow))  //Q to decrease
             {
@@ -138,7 +142,7 @@ public class CourseHeading : MonoBehaviour, IControllable
                 heading += 360.0f;
             }
             rounded_heading = (Mathf.Round(heading * 10) / 10.0f);
-            
+
             //display new heading
             displayAdjustment();
             delay_timer = 0.01f;
