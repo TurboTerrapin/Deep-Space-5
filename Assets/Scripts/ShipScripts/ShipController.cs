@@ -68,9 +68,9 @@ public class ShipController : MonoBehaviour
 
     // *********** To Separate into own script in future ****************8
 
-    private readonly float maxThrusterSpeed = 15f;
-    private readonly float maxImpulseSpeed = 100f;
-    private readonly float rotationPower = 35f;
+    private readonly float maxThrusterSpeed = 20f;
+    private readonly float maxImpulseSpeed = 150f;
+    private readonly float rotationPower = 60f;
 
     private readonly float impulseAccelerationRate = 4f;
     private readonly float impulseDecelerationRate = 10f;
@@ -82,31 +82,37 @@ public class ShipController : MonoBehaviour
 
     private float horizontalThrusterActiveTime = 0f;
     private float verticalThrusterActiveTime = 0f;
-    public Vector3 currentVelocity;
+    private Vector3 currentVelocity;
 
     private void UpdateShipTransform()
     {
+        float dt = Time.deltaTime;
         Vector3 forward = transform.forward;
         Vector3 horizontal = transform.right;
         Vector3 vertical = transform.up;
 
-        UpdateThrusterActiveTimes();
+        UpdateThrusterActiveTime(dt);
 
-        currentVelocity =
-            CalculateAxisVelocity(forward, currentImpulse * maxImpulseSpeed, impulseAccelerationRate, impulseDecelerationRate) +
-            CalculateHorizontalThrusterVelocity(horizontal) +
-            CalculateVerticalThrusterVelocity(vertical);
+        Vector3 impulseVelocity = CalculateAxisVelocity(forward, currentImpulse * maxImpulseSpeed,
+                impulseAccelerationRate, impulseDecelerationRate, dt);
 
-        HandleRotation(forward);
+        Vector3 horizontalVelocity = CalculateAxisVelocity(horizontal, horizontalThrust * maxThrusterSpeed,
+                GetThrusterAccelerationRate(horizontalThrusterActiveTime), thrusterDecelerationRate, dt);
 
-        transform.position += currentVelocity * Time.deltaTime;
+        Vector3 verticalVelocity = CalculateAxisVelocity(vertical, verticalThrust * maxThrusterSpeed,
+                GetThrusterAccelerationRate(verticalThrusterActiveTime), thrusterDecelerationRate, dt);
+
+        currentVelocity = impulseVelocity + horizontalVelocity + verticalVelocity;
+
+        HandleRotation(forward, dt);
+        transform.position += currentVelocity * dt;
     }
 
-    private void UpdateThrusterActiveTimes()
+    private void UpdateThrusterActiveTime(float dt)
     {
         if (Mathf.Abs(horizontalThrust) > 0.1f)
         {
-            horizontalThrusterActiveTime += Time.deltaTime;
+            horizontalThrusterActiveTime += dt;
         }
         else
         {
@@ -115,47 +121,21 @@ public class ShipController : MonoBehaviour
 
         if (Mathf.Abs(verticalThrust) > 0.1f)
         {
-            verticalThrusterActiveTime += Time.deltaTime;
+            verticalThrusterActiveTime += dt;
         }
         else
         {
             verticalThrusterActiveTime = 0f;
         }
     }
-
-    private Vector3 CalculateHorizontalThrusterVelocity(Vector3 axis)
+    
+    private float GetThrusterAccelerationRate(float activeTime)
     {
-        float accelerationRate = Mathf.Lerp(
-            baseThrusterAccelerationRate,
-            maxThrusterAccelerationRate,
-            Mathf.Clamp01(horizontalThrusterActiveTime / timeToMaxThrustAccel) 
-        );
-
-        return CalculateAxisVelocity(
-            axis,
-            horizontalThrust * maxThrusterSpeed,
-            accelerationRate,
-            thrusterDecelerationRate
-        );
+        return Mathf.Lerp(baseThrusterAccelerationRate, maxThrusterAccelerationRate,
+            Mathf.Clamp01(activeTime / timeToMaxThrustAccel));
     }
 
-    private Vector3 CalculateVerticalThrusterVelocity(Vector3 axis)
-    {
-        float accelerationRate = Mathf.Lerp(
-            baseThrusterAccelerationRate,
-            maxThrusterAccelerationRate,
-            Mathf.Clamp01(verticalThrusterActiveTime / timeToMaxThrustAccel) 
-        );
-
-        return CalculateAxisVelocity(
-            axis,
-            verticalThrust * maxThrusterSpeed,
-            accelerationRate,
-            thrusterDecelerationRate
-        );
-    }
-
-    private Vector3 CalculateAxisVelocity(Vector3 axis, float targetSpeed, float accelerationRate, float decelerationRate)
+    private Vector3 CalculateAxisVelocity(Vector3 axis, float targetSpeed, float accelerationRate, float decelerationRate, float dt)
     {
         float currentSpeed = Vector3.Dot(currentVelocity, axis);
         float absoluteTarget = Mathf.Abs(targetSpeed);
@@ -170,12 +150,12 @@ public class ShipController : MonoBehaviour
             rate = decelerationRate;
         }
 
-        currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, rate * Time.deltaTime);
+        currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, rate * dt);
 
         return axis * currentSpeed;
     }
 
-    private void HandleRotation(Vector3 forwardDirection)
+    private void HandleRotation(Vector3 forwardDirection, float dt)
     {
         float currentForwardSpeed = Vector3.Dot(currentVelocity, forwardDirection);
         if (Mathf.Abs(currentForwardSpeed) > 0.01f)
@@ -184,7 +164,7 @@ public class ShipController : MonoBehaviour
             float headingDifference = Mathf.DeltaAngle(currentHeadingAngle, currentHeading);
 
             float rotationSpeed = Mathf.Clamp01(Mathf.Abs(currentForwardSpeed) / maxImpulseSpeed) * rotationPower;
-            float rotationStep = rotationSpeed * Time.deltaTime;
+            float rotationStep = rotationSpeed * dt;
             float newHeading = Mathf.MoveTowardsAngle(currentHeadingAngle, currentHeading, rotationStep * Mathf.Abs(headingDifference));
 
             transform.rotation = Quaternion.Euler(0, newHeading, 0);
