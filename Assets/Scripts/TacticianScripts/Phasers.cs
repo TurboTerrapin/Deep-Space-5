@@ -7,9 +7,6 @@
 
 using UnityEngine;
 using System.Collections.Generic;
-using TMPro;
-using System;
-using UnityEditor.Build;
 
 public class Phasers : MonoBehaviour, IControllable
 {
