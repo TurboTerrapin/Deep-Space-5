@@ -68,17 +68,17 @@ public class ShipController : MonoBehaviour
 
     // *********** To Separate into own script in future ****************8
 
-    private readonly float maxThrusterSpeed = 20f;
-    private readonly float maxImpulseSpeed = 150f;
-    private readonly float rotationPower = 60f;
+    private readonly float maxThrusterSpeed = 2f;
+    private readonly float maxImpulseSpeed = 25f;
+    private readonly float rotationPower = 6f; //60
 
-    private readonly float impulseAccelerationRate = 4f;
-    private readonly float impulseDecelerationRate = 10f;
+    private readonly float impulseAccelerationRate = 0.4f;
+    private readonly float impulseDecelerationRate = 1.5f;
 
-    private readonly float baseThrusterAccelerationRate = 1f;
-    private readonly float maxThrusterAccelerationRate = 5f;
+    private readonly float baseThrusterAccelerationRate = 0.1f;
+    private readonly float maxThrusterAccelerationRate = 0.5f;
     private readonly float timeToMaxThrustAccel = 2f;
-    private readonly float thrusterDecelerationRate = 3.5f;
+    private readonly float thrusterDecelerationRate = 0.5f;
 
     private float horizontalThrusterActiveTime = 0f;
     private float verticalThrusterActiveTime = 0f;
