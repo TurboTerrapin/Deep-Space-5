@@ -155,19 +155,20 @@ public class ShipController : MonoBehaviour
         return axis * currentSpeed;
     }
 
-    private void HandleRotation(Vector3 forwardDirection, float dt)
+    private void HandleRotation(Vector3 forwardDirection, float dt) 
     {
         float currentForwardSpeed = Vector3.Dot(currentVelocity, forwardDirection);
-        if (Mathf.Abs(currentForwardSpeed) > 0.01f)
-        {
-            float currentHeadingAngle = transform.eulerAngles.y;
-            float headingDifference = Mathf.DeltaAngle(currentHeadingAngle, currentHeading);
 
-            float rotationSpeed = Mathf.Clamp01(Mathf.Abs(currentForwardSpeed) / maxImpulseSpeed) * rotationPower;
-            float rotationStep = rotationSpeed * dt;
-            float newHeading = Mathf.MoveTowardsAngle(currentHeadingAngle, currentHeading, rotationStep * Mathf.Abs(headingDifference));
-
-            transform.rotation = Quaternion.Euler(0, newHeading, 0);
+        if (Mathf.Abs(currentForwardSpeed) < 0.01f) {
+            return;
         }
+
+        Quaternion desiredRotation = Quaternion.Euler(0, currentHeading, 0);
+
+        float forwardSpeedFactor = Mathf.Clamp01(currentForwardSpeed / maxImpulseSpeed);
+        float rotationSpeed = rotationPower * forwardSpeedFactor;
+
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, desiredRotation, rotationSpeed * dt);
     }
+
 }
