@@ -15,7 +15,7 @@ public class UniversalCommunicator : MonoBehaviour, IControllable
     //CLASS CONSTANTS
     Color[] COLOR_OPTIONS = new Color[4] { new Color(0f, 0.84f, 1f), new Color(0.129f, 1f, 0.04f), new Color(0.69f, 0f, 0.69f), new Color(0.84f, 0.62f, 0f) };
 
-    private string[] CONTROL_NAMES = new string[] {"CHARACTER INPUT", "COLOR SELECTOR", "CHARACTER CONFIGURATION", "RESET DISPLAY", "INPUT/OUTPUT TOGGLE"};
+    private string[] CONTROL_NAMES = new string[] {"CHARACTER INPUT", "COLOR SELECTOR", "SYMBOL MODE", "RESET DISPLAY", "INPUT/OUTPUT TOGGLE"};
     private List<string> CONTROL_DESCS = new List<string> { "INPUT", "SHIFT LEFT", "SHIFT RIGHT", "SWITCH", "RESET", "FLIP"};
     private List<int> CONTROL_INDEXES = new List<int>() {6, 4, 5, 6, 6, 6};
     private List<Button>[] BUTTON_LISTS = new List<Button>[5];
