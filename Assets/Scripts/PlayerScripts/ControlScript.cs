@@ -171,8 +171,17 @@ public class ControlScript : MonoBehaviour
     {
         if(my_camera == null)
         {
-            if(Camera.main == null) return;
-            else my_camera = Camera.main;
+            /*
+            foreach (GameObject cam in GameObject.FindGameObjectsWithTag("MainCamera"))
+            {
+                Debug.Log(cam.name);
+                if (transform.parent.gameObject.GetComponent<PlayerMove>().IsOwner)
+                {
+                    my_camera = cam.GetComponent<Camera>();
+                }
+            }
+            */
+            return;
         }
 
 

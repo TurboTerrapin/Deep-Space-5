@@ -35,12 +35,20 @@ public class PlayerMove : NetworkBehaviour
     void Start()
     {
         default_x = transform.localPosition.x;
+
+        
+
+
+
+
+
         //playerRB = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
     private void Update()
     {
+        if (!gameObject.GetComponent<PlayerMove>().IsOwner) return;
         if (sitting)
         {
             if (Input.GetKeyDown(KeyCode.Tab))

@@ -48716,8 +48716,6 @@ MonoBehaviour:
   inGame: 0
   isHost: 0
   myClientId: 0
-  createMenu: {fileID: 0}
-  lobbyMenu: {fileID: 0}
 --- !u!114 &1494388793
 MonoBehaviour:
   m_ObjectHideFlags: 0

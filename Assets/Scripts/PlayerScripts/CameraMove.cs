@@ -23,13 +23,27 @@ public class CameraMove : MonoBehaviour
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
-        gameObject.SetActive(true);
+        //gameObject.SetActive(true);
+        gameObject.name += Random.Range(0, 100);
+        //gameObject.GetComponent<Camera>().enabled = false;
+        if (!transform.parent.gameObject.GetComponent<PlayerMove>().IsOwner)
+        {
+            Destroy(gameObject);
+            //gameObject.GetComponent<Camera>().enabled = true;
+        }
+        else
+        {
+            ControlScript.Instance.my_camera = gameObject.GetComponent<Camera>();
+        }
+
+
         //ControlScript.Instance = (ControlScript)transform.parent.GetComponent("ControlScript");
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (!transform.parent.gameObject.GetComponent<PlayerMove>().IsOwner) return;
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (Cursor.lockState == CursorLockMode.Locked)

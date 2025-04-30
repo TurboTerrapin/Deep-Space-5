@@ -9,8 +9,8 @@ public class GameManager : MonoBehaviour
     public bool isHost;
     public ulong myClientId;
 
-    [SerializeField]
-    private GameObject createMenu, lobbyMenu;
+    //[SerializeField]
+    //private GameObject createMenu, lobbyMenu;
 
     //public Dictionary<ulong, GameObject> playerInfo = new Dictionary<ulong, GameObject>();
 

@@ -21,8 +21,10 @@ public class FriendJoinWithButton : MonoBehaviour
 
     public void JoinFriendLobby()
     {
+        
         if (friend.GameInfo.Value.Lobby.HasValue)
         {
+            Debug.Log(friend.GameInfo.Value.Lobby.Value.Id);
             GameNetworkManager.Instance.JoinWithButton(friend.GameInfo.Value.Lobby.Value);
         }
     }

@@ -8,6 +8,10 @@ public class PanelSwapper : MonoBehaviour
 
     public static PanelSwapper Instance { get; private set; } = null;
 
+    void Start()
+    {
+        Instance = this;
+    }
 
 
     public void SwitchPanel(int i)
