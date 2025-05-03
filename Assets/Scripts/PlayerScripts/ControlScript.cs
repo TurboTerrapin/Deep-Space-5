@@ -22,7 +22,7 @@ using UnityEngine.Android;
 public class ControlScript : MonoBehaviour
 {
     //CLASS CONSTANTS
-    private static float RAYCAST_RANGE = 1.25f;
+    private static float RAYCAST_RANGE = 2.5f;
 
     //GAME OBJECTS
     public GameObject cursor; //the diamond in the center of the screen
@@ -33,6 +33,7 @@ public class ControlScript : MonoBehaviour
     public GameObject settings_menu;
     public GameObject script_holder; //empty GameObject that contains all the control scripts as components
     public Camera my_camera; //player's camera
+    public GameObject ship;
 
     //CLASS VARIABLES
     private HUDInfo current_info;
@@ -163,6 +164,7 @@ public class ControlScript : MonoBehaviour
     {
         if (!paused)
         {
+            Physics.SyncTransforms();
             if (Physics.Raycast(new Ray(my_camera.transform.position, my_camera.transform.forward), out RaycastHit hit, RAYCAST_RANGE)) //cast ray
             {
                 if (hit.collider.gameObject.layer == 6) //the ray hit a control (Layer 6 = Control)

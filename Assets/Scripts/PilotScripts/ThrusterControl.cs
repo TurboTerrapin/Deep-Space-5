@@ -29,7 +29,7 @@ public class ThrusterControl : MonoBehaviour
         buttons[1] = false; //up, left
         button_increments[0] = 0;
         button_increments[1] = 0;
-        button_positions[0] = physical_buttons[0].position;
+        button_positions[0] = physical_buttons[0].localPosition;
         button_positions[1] = new Vector3(0f, -0.01864f, -17.89135f);
     }
     protected void adjustThrust(float new_thrust)
@@ -71,7 +71,7 @@ public class ThrusterControl : MonoBehaviour
             display_canvas.transform.GetChild(i + 1).gameObject.SetActive(visible);
         }
         int dist_from_zero = button_increments[button_index];
-        physical_buttons[button_index].transform.position = 
+        physical_buttons[button_index].transform.localPosition = 
             new Vector3(button_positions[0].x + ((button_positions[1].x - button_positions[0].x) * (dist_from_zero / 10f)), 
             button_positions[0].y + ((button_positions[1].y - button_positions[0].y) * (dist_from_zero / 10f)), 
             button_positions[0].z + ((button_positions[1].z - button_positions[0].z) * (dist_from_zero / 10f)));

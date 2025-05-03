@@ -37,7 +37,7 @@ public class ImpulseThrottle : MonoBehaviour, IControllable
         BUTTONS.Add(new Button(CONTROL_DESCS[1], CONTROL_INDEXES[1], true, false));
         hud_info.setButtons(BUTTONS);
 
-        initial_pos = handle.transform.position; //sets the initial position
+        initial_pos = handle.transform.localPosition; //sets the initial position
     }
     public HUDInfo getHUDinfo(GameObject current_target)
     {
@@ -57,7 +57,7 @@ public class ImpulseThrottle : MonoBehaviour, IControllable
         }
 
         //update lever position
-        handle.transform.position = new Vector3(initial_pos.x + ((final_pos.x - initial_pos.x) * impulse), initial_pos.y + ((final_pos.y - initial_pos.y) * impulse), initial_pos.z + ((final_pos.z - initial_pos.z) * impulse));
+        handle.transform.localPosition = new Vector3(initial_pos.x + ((final_pos.x - initial_pos.x) * impulse), initial_pos.y + ((final_pos.y - initial_pos.y) * impulse), initial_pos.z + ((final_pos.z - initial_pos.z) * impulse));
 
         //update speedometer text
         speed_information.transform.GetChild(1).gameObject.GetComponent<TMP_Text>().SetText("" + Mathf.Round(impulse * 100.0f));
