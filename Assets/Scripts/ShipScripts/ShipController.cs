@@ -3,6 +3,7 @@ public class ShipController : MonoBehaviour
 {
     // Object References
     private GameObject controlHandler;
+    public GameObject bridge;
 
     // Pilot Script References
     private ImpulseThrottle impulseThrottle;
@@ -57,11 +58,12 @@ public class ShipController : MonoBehaviour
     {
         if (shipReady)
         {
+            UpdateBridgeTransform();
             GetPilotInput();
             GetTacticianInput();
             GetEngineerInput();
             GetCaptainInput();
-
+            
             UpdateShipTransform();
         }
     }
@@ -84,6 +86,9 @@ public class ShipController : MonoBehaviour
     private float verticalThrusterActiveTime = 0f;
     private Vector3 currentVelocity;
 
+    private void UpdateBridgeTransform() {
+        bridge.transform.position = transform.position;
+    }
     private void UpdateShipTransform()
     {
         float dt = Time.deltaTime;
