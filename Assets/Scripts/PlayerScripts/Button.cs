@@ -124,6 +124,10 @@ public class Button
                 {
                     if (is_toggled == false)
                     {
+                        if (fill_button != null)
+                        {
+                            UnityEngine.Object.Destroy(fill_button);
+                        }
                         visual_button.GetComponent<UnityEngine.UI.Image>().color = new Color(DARK_GRAY.r, DARK_GRAY.g, DARK_GRAY.b, 0.03f);
                         visual_button.transform.GetChild(0).GetComponent<TMP_Text>().color = new Color(1f, 1f, 1f, 0.02f);
                     }

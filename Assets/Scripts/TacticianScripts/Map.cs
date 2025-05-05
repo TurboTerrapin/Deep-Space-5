@@ -12,7 +12,7 @@ using System.Collections.Generic;
 public class Map : MonoBehaviour, IControllable
 {
     private string CONTROL_NAME = "MAP OPTIONS";
-    private List<string> CONTROL_DESCS = new List<string> { "CHANGE MODE", "ZOOM OUT", "ZOOM IN"};
+    private List<string> CONTROL_DESCS = new List<string> {"CHANGE MODE", "ZOOM OUT", "ZOOM IN"};
     private List<int> CONTROL_INDEXES = new List<int>() {6, 4, 5 };
     private List<Button> BUTTONS = new List<Button>();
 
