@@ -7,7 +7,9 @@
     Last Updated: 4/13/2025
 */
 
+using NUnit.Framework;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class PlayerMove : MonoBehaviour
 {
@@ -22,6 +24,8 @@ public class PlayerMove : MonoBehaviour
 
     private float MOVE_FACTOR = 2.0f;
 
+    private int current_position = 0; //0 is pilot, 1 is tactician, 2 is captain
+    public List<GameObject> positional_empties = null;
     private bool is_pilot = true;
     private bool is_shifting = false;
     private float shift_direction = -1.0f;
@@ -30,6 +34,7 @@ public class PlayerMove : MonoBehaviour
     private float default_x;
     void Start()
     {
+        transform.localPosition = positional_empties[current_position].transform.localPosition;
         default_x = transform.localPosition.x;
         //playerRB = GetComponent<Rigidbody>();
     }
@@ -39,40 +44,47 @@ public class PlayerMove : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Tab))
         {
+            current_position++;
+            if (current_position > 2)
+            {
+                current_position = 0;
+            }
             shift_percentage = 0.0f;
             shift_direction = -1f;
-            lean_direction *= -1f;
-            is_shifting = false;
-            is_pilot = !is_pilot;
-            if (is_pilot == true)
+            if (current_position == 0)
             {
-                transform.localPosition = new Vector3(2.1f, 0.8f, -2f);
+                lean_direction = 1.0f;
             }
             else
             {
-                transform.localPosition = new Vector3(-2.1f, 0.8f, -2f);
+                lean_direction = -1.0f;
             }
+            is_shifting = false;
+            is_pilot = !is_pilot;
+            transform.localPosition = positional_empties[current_position].transform.localPosition;
             default_x = transform.localPosition.x;
         }
         if (is_shifting)
         {
-            if (shift_direction > 0.0f)
-            {
-                shift_percentage = Mathf.Min(1f, shift_percentage += Time.deltaTime * MOVE_FACTOR);
-                if (shift_percentage >= 1f)
+            if (current_position < 2) { 
+                if (shift_direction > 0.0f)
                 {
-                    is_shifting = false;
+                    shift_percentage = Mathf.Min(1f, shift_percentage += Time.deltaTime * MOVE_FACTOR);
+                    if (shift_percentage >= 1f)
+                    {
+                        is_shifting = false;
+                    }
                 }
-            }
-            else
-            {
-                shift_percentage = Mathf.Max(0f, shift_percentage -= Time.deltaTime * MOVE_FACTOR);
-                if (shift_percentage <= 0f)
+                else
                 {
-                    is_shifting = false;
+                    shift_percentage = Mathf.Max(0f, shift_percentage -= Time.deltaTime * MOVE_FACTOR);
+                    if (shift_percentage <= 0f)
+                    {
+                        is_shifting = false;
+                    }
                 }
+                transform.localPosition = new Vector3(default_x + (shift_percentage * 0.6f * lean_direction), transform.localPosition.y, transform.localPosition.z);
             }
-            transform.localPosition = new Vector3(default_x + (shift_percentage * 0.6f * lean_direction), transform.localPosition.y, transform.localPosition.z);
         }
         else
         {

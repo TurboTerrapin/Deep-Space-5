@@ -17,7 +17,7 @@ public class PlayerCameraMove : MonoBehaviour
 
     private float mouseSensitivity = 1f;
     public Camera my_camera;
-    private float zoom_FOV = 40f;
+    private float zoom_FOV = 38f;
     private ControlScript control_script;
 
     void Start()
@@ -63,7 +63,7 @@ public class PlayerCameraMove : MonoBehaviour
         mouseMove = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
  
         //Increases the sensitivity to movement
-        mouseMove *= mouseSensitivity * Mathf.Min(1f, (1.1f - ((60f - my_camera.fieldOfView) / 20f)));
+        mouseMove *= mouseSensitivity * Mathf.Min(1f, (1.1f - ((60f - my_camera.fieldOfView) / 22f)));
 
         prevPos.y = Mathf.Clamp(prevPos.y, -90f, 90f);
 
