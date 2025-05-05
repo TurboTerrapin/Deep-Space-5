@@ -9,9 +9,10 @@
 using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine.Windows;
 
-public class ImpulseThrottle : MonoBehaviour, IControllable
+public class ImpulseThrottle : NetworkBehaviour, IControllable
 {
     private string CONTROL_NAME = "IMPULSE THROTTLE";
     private List<string> CONTROL_DESCS = new List<string> {"DECREASE", "INCREASE"};
@@ -46,6 +47,8 @@ public class ImpulseThrottle : MonoBehaviour, IControllable
     private void displayAdjustment()
     {
         //update bars on screen
+        displayAdjustmentRPC(impulse);
+        /*
         int impulse_as_int = (int)(impulse * 100.0f);
         if (impulse_as_int < 100)
         { 
@@ -57,6 +60,7 @@ public class ImpulseThrottle : MonoBehaviour, IControllable
         
         //update speedometer text
         speed_information.transform.GetChild(1).gameObject.GetComponent<TMP_Text>().SetText("" + Mathf.Round(impulse * 100.0f));
+        */
     }
     void Update()
     {
@@ -103,4 +107,37 @@ public class ImpulseThrottle : MonoBehaviour, IControllable
     {
         keys_down = inputs;
     }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void displayAdjustmentServerRPC(float imp)
+    {
+        //Debug.Log("ServerRPC");
+        //displayAdjustmentClientRPC(imp);
+    }
+
+    [Rpc(SendTo.Everyone)]
+    private void displayAdjustmentRPC(float imp)
+    {
+        //Debug.Log("ClientRPC\nPrev impulse = " + impulse + ", newimpulse = " + imp);
+        impulse = imp;
+        updateImpulse(imp);
+    }
+
+
+    private void updateImpulse(float imp)
+    {
+        //impulse = imp;
+        int impulse_as_int = (int)(impulse * 100.0f);
+        if (impulse_as_int < 100)
+        {
+            display_canvas.transform.GetChild((impulse_as_int / 5) + 1).gameObject.GetComponent<UnityEngine.UI.RawImage>().color = new Color(0, 0.93f, 1.0f, (0.2f * (impulse_as_int % 5)));
+        }
+
+        //update lever position
+        handle.transform.position = new Vector3(initial_pos.x + ((final_pos.x - initial_pos.x) * impulse), initial_pos.y + ((final_pos.y - initial_pos.y) * impulse), initial_pos.z + ((final_pos.z - initial_pos.z) * impulse));
+
+        //update speedometer text
+        speed_information.transform.GetChild(1).gameObject.GetComponent<TMP_Text>().SetText("" + Mathf.Round(impulse * 100.0f));
+    }
+
 }

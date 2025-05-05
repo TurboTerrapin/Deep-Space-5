@@ -14387,6 +14387,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 401286164}
+  - component: {fileID: 401286191}
   - component: {fileID: 401286166}
   - component: {fileID: 401286167}
   - component: {fileID: 401286168}
@@ -14704,6 +14705,27 @@ MonoBehaviour:
   configuration_button: {fileID: 1164410512872139450}
   configuration_canvas: {fileID: 1452509108}
   map_canvas: {fileID: 144341430}
+--- !u!114 &401286191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 401286162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 3847733524
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 0
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1 &402325436
 GameObject:
   m_ObjectHideFlags: 0
@@ -24631,7 +24653,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &738785576
 RectTransform:
   m_ObjectHideFlags: 0
@@ -64931,7 +64953,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2016491961
 RectTransform:
   m_ObjectHideFlags: 0

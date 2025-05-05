@@ -111,7 +111,7 @@ public class PlayerMove : NetworkBehaviour
             }
             moveDir.x = Input.GetAxis("Horizontal");
             moveDir.y = Input.GetAxis("Vertical");
-            Debug.DrawLine(transform.position, transform.position + transform.forward * 10);
+            Debug.DrawLine(transform.position, transform.position + transform.forward * 1.25f);
             if (moveDir.magnitude > 1)
             {
                 moveDir.Normalize();
