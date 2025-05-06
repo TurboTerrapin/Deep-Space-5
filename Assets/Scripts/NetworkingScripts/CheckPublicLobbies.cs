@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Steamworks;
 
 using Unity.Netcode;
-using Steamworks;
 using Steamworks.Data;
 using Netcode.Transports.Facepunch;
 

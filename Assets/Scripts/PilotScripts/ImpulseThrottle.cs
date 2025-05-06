@@ -47,8 +47,8 @@ public class ImpulseThrottle : NetworkBehaviour, IControllable
     private void displayAdjustment()
     {
         //update bars on screen
-        displayAdjustmentRPC(impulse);
-        /*
+        
+        
         int impulse_as_int = (int)(impulse * 100.0f);
         if (impulse_as_int < 100)
         { 
@@ -60,7 +60,7 @@ public class ImpulseThrottle : NetworkBehaviour, IControllable
         
         //update speedometer text
         speed_information.transform.GetChild(1).gameObject.GetComponent<TMP_Text>().SetText("" + Mathf.Round(impulse * 100.0f));
-        */
+        
     }
     void Update()
     {
@@ -99,7 +99,8 @@ public class ImpulseThrottle : NetworkBehaviour, IControllable
             {
                 hud_info.getButtons()[1].updateInteractable(true);
             }
-            displayAdjustment();
+            //displayAdjustment();
+            displayAdjustmentRPC(impulse, impulse_direction);
         }
         keys_down.Clear();
     }
@@ -108,36 +109,13 @@ public class ImpulseThrottle : NetworkBehaviour, IControllable
         keys_down = inputs;
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    private void displayAdjustmentServerRPC(float imp)
-    {
-        //Debug.Log("ServerRPC");
-        //displayAdjustmentClientRPC(imp);
-    }
 
     [Rpc(SendTo.Everyone)]
-    private void displayAdjustmentRPC(float imp)
+    private void displayAdjustmentRPC(float imp, int dir)
     {
         //Debug.Log("ClientRPC\nPrev impulse = " + impulse + ", newimpulse = " + imp);
         impulse = imp;
-        updateImpulse(imp);
+        impulse_direction = dir;
+        displayAdjustment();
     }
-
-
-    private void updateImpulse(float imp)
-    {
-        //impulse = imp;
-        int impulse_as_int = (int)(impulse * 100.0f);
-        if (impulse_as_int < 100)
-        {
-            display_canvas.transform.GetChild((impulse_as_int / 5) + 1).gameObject.GetComponent<UnityEngine.UI.RawImage>().color = new Color(0, 0.93f, 1.0f, (0.2f * (impulse_as_int % 5)));
-        }
-
-        //update lever position
-        handle.transform.position = new Vector3(initial_pos.x + ((final_pos.x - initial_pos.x) * impulse), initial_pos.y + ((final_pos.y - initial_pos.y) * impulse), initial_pos.z + ((final_pos.z - initial_pos.z) * impulse));
-
-        //update speedometer text
-        speed_information.transform.GetChild(1).gameObject.GetComponent<TMP_Text>().SetText("" + Mathf.Round(impulse * 100.0f));
-    }
-
 }

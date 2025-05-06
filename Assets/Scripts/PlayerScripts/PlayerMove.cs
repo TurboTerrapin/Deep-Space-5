@@ -12,8 +12,9 @@ using Unity.Netcode;
 
 public class PlayerMove : NetworkBehaviour
 {
-    [SerializeField]
-    private GameObject camera = null;
+
+    //[SerializeField]
+    //private GameObject camera = null;
     [SerializeField]
     private Vector2 moveDir = new Vector2();
     [SerializeField]

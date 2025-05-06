@@ -31,7 +31,7 @@ public class ControlScript : MonoBehaviour
     public GameObject buttons_panel; //contains all the buttons/dividers inside the trapezoid
     public GameObject pause_menu;
     public GameObject settings_menu;
-    public GameObject script_holder; //empty GameObject that contains all the control scripts as components
+    //public GameObject script_holder; //empty GameObject that contains all the control scripts as components
     public Camera my_camera; //player's camera
 
     //CLASS VARIABLES
@@ -72,7 +72,7 @@ public class ControlScript : MonoBehaviour
         Instance = this;
 
         control_info.SetActive(false); //hide UI indicator to start
-        script_holder = GameObject.FindWithTag("ControlHandler");
+        //ControlScript.Instance = GameObject.FindWithTag("ControlHandler");
     }
 
     //used to instantiate buttons/list entries for either trapezoid or minimized list
@@ -194,7 +194,7 @@ public class ControlScript : MonoBehaviour
                 if (hit.collider.gameObject.layer == 6) //the ray hit a control (Layer 6 = Control)
                 {
                     IControllable target_control =
-                        (IControllable)script_holder.GetComponent(corresponding_scripts[collider_names.IndexOf(hit.collider.gameObject.name)]); //get corresponding class
+                        (IControllable)Instance.GetComponent(corresponding_scripts[collider_names.IndexOf(hit.collider.gameObject.name)]); //get corresponding class
                     
                     HUDInfo temp_info = target_control.getHUDinfo(hit.collider.gameObject);
 
