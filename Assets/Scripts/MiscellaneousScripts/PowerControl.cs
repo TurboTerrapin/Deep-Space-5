@@ -29,6 +29,7 @@ public class PowerControl : MonoBehaviour, IControllable
     private void Start()
     {
         hud_info = new HUDInfo(CONTROL_NAME);
+        hud_info.setLayout(0);
         for (int i = 0; i < 4; i++)
         {
             BUTTON_LISTS[i] = new List<Button>();

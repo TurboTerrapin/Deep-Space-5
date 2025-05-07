@@ -73,14 +73,14 @@ public class ControlScript : MonoBehaviour
         control_info.transform.GetChild(0).gameObject.SetActive(false); //make the trapezoid invisible
         control_info.transform.GetChild(1).gameObject.SetActive(false); //make the list visible
 
-        //clear trapezoid
-        for (int i = control_info.transform.GetChild(0).GetChild(0).childCount - 1; i >= 4; i--)
+        //clear trapezoid buttons
+        for (int i = control_info.transform.GetChild(0).GetChild(4).childCount - 1; i >= 3; i--)
         {
-            GameObject to_destroy = control_info.transform.GetChild(0).GetChild(0).GetChild(i).gameObject;
+            GameObject to_destroy = control_info.transform.GetChild(0).GetChild(4).GetChild(i).gameObject;
             UnityEngine.Object.Destroy(to_destroy);
         }
 
-        //clear list
+        //clear list entries
         for (int i = control_info.transform.GetChild(1).childCount - 1; i >= 1; i--)
         {
             GameObject to_destroy = control_info.transform.GetChild(1).GetChild(i).gameObject;
@@ -91,15 +91,15 @@ public class ControlScript : MonoBehaviour
         {
             control_info.transform.GetChild(HUD_setting).gameObject.SetActive(true);
 
-            GameObject frame = control_info.transform.GetChild(1).gameObject;
-            if (HUD_setting == 0)
+            GameObject frame = control_info.transform.GetChild(0).gameObject;
+            if (HUD_setting == 1)
             {
-                frame = control_info.transform.GetChild(0).GetChild(0).gameObject;
+                frame = control_info.transform.GetChild(1).gameObject;
             }
 
             for (int i = 0; i < current_info.numOptions(); i++)
             {
-                current_info.getButtons()[i].createVisual(HUD_setting, current_info.numOptions(), i, frame);
+                current_info.getButtons()[i].createVisual(HUD_setting, current_info.getLayout(), i, frame);
             }
         }
     }
