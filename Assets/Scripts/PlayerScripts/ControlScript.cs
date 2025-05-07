@@ -3,21 +3,13 @@
     - Manages the HUD display for control interaction
     - Sends user inputs to control script if looking at said control and within RAYCAST_RANGE
     Contributor(s): Jake Schott
-    Last Updated: 3/25/2025
+    Last Updated: 5/6/2025
 */
 
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
 using TMPro;
-using UnityEngine.Rendering.Universal.Internal;
-using UnityEngine.Windows;
-using Unity.VisualScripting;
-using UnityEngine.Device;
-using UnityEngine.UIElements.Experimental;
-using System;
-using UnityEngine.Android;
 
 public class ControlScript : MonoBehaviour
 {
@@ -101,6 +93,29 @@ public class ControlScript : MonoBehaviour
             {
                 current_info.getButtons()[i].createVisual(HUD_setting, current_info.getLayout(), i, frame);
             }
+
+            if (HUD_setting == 0)
+            {
+                StartCoroutine(adjustFontSize());
+            }
+        }
+    }
+
+    IEnumerator adjustFontSize()
+    {
+        yield return null;
+        float smallest_font_size = 999.9f;
+        for (int i = 0; i < current_info.numOptions(); i++)
+        {
+            if (current_info.getButtons()[i].getFontSize() < smallest_font_size)
+            {
+                smallest_font_size = current_info.getButtons()[i].getFontSize();
+            }
+        }
+        Debug.Log(smallest_font_size);
+        for (int i = 0; i < current_info.numOptions(); i++)
+        {
+            current_info.getButtons()[i].setMaxFontSize(smallest_font_size);
         }
     }
 
@@ -109,7 +124,7 @@ public class ControlScript : MonoBehaviour
     {
         for (int b = 0; b < current_info.numOptions(); b++)
         {
-            current_info.getButtons()[b].updateInteractable(temp_info.getButtons()[b].isInteractable());
+            current_info.getButtons()[b].updateInteractable(temp_info.getButtons()[b].getInteractable());
         }
     }
 
@@ -158,7 +173,6 @@ public class ControlScript : MonoBehaviour
             cursor.SetActive(true);
         }
     }
-
     void Update()
     {
         if (!paused)
@@ -193,12 +207,12 @@ public class ControlScript : MonoBehaviour
                     for (int b = 0; b < current_info.numOptions(); b++)
                     {
                         Button curr_button = current_info.getButtons()[b];
-                        if (curr_button.isInteractable() == true)
+                        if (curr_button.getInteractable() == true)
                         {
                             bool pressed = false;
                             for (int i = 0; i < input_options[curr_button.getControlIndex()].Length; i++)
                             {
-                                if (curr_button.isToggle() == false) { 
+                                if (curr_button.getTogglable() == false) { 
                                     if (UnityEngine.Input.GetKey(input_options[curr_button.getControlIndex()][i]))
                                     {
                                         pressed = true;
@@ -208,7 +222,6 @@ public class ControlScript : MonoBehaviour
                                 {
                                     if (UnityEngine.Input.GetKeyDown(input_options[curr_button.getControlIndex()][i]))
                                     {
-                                        curr_button.toggle();
                                         pressed = true;
                                     }
                                 }

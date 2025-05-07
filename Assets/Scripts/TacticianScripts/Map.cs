@@ -116,7 +116,7 @@ public class Map : MonoBehaviour, IControllable
         {
             if (keys_down.Contains(KeyCode.Mouse0) || keys_down.Contains(KeyCode.KeypadEnter))
             {
-                BUTTONS[0].toggle();
+                BUTTONS[0].toggle(0.2f);
                 BUTTONS[0].updateInteractable(false);
                 map_config += 1;
                 map_config_cooldown_timer = 0.5f;

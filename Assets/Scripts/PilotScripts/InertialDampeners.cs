@@ -2,7 +2,7 @@
     InertialDampeners.cs
     - Yet to be implemented
     Contributor(s): Jake Schott
-    Last Updated: 4/13/2025
+    Last Updated: 5/7/2025
 */
 
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ public class InertialDampeners : MonoBehaviour, IControllable
 {
     private string CONTROL_NAME = "INERTIAL DAMPENERS";
     private List<string> CONTROL_DESCS = new List<string>() { "DISABLE PRIMARY", "DISABLE SECONDARY", "DISABLE TERTIARY" };
-    private List<int> CONTROL_INDEXES = new List<int>() { 4, 0, 5 };
+    private List<int> CONTROL_INDEXES = new List<int>() {7, 8, 9};
     private List<Button> BUTTONS = new List<Button>();
 
     private static HUDInfo hud_info = null;

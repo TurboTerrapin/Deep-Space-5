@@ -3,7 +3,7 @@
     - Handles inputs for horizontal thrusters
     - Extends ThrusterControl.cs
     Contributor(s): Jake Schott
-    Last Updated: 4/13/2025
+    Last Updated: 5/7/2025
 */
 
 

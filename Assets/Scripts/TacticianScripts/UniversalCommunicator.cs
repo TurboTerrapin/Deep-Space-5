@@ -248,7 +248,7 @@ public class UniversalCommunicator : MonoBehaviour, IControllable
                     code_index.Add(selection_index);
                     code_color.Add(curr_color);
                     code_is_numeric.Add(curr_numeric);
-                    BUTTON_LISTS[0][0].toggle();
+                    BUTTON_LISTS[0][0].toggle(0.1f);
                     BUTTON_LISTS[0][0].updateInteractable(false);
                     currently_updating = 1;
                     displayAdjustment(currently_updating);
@@ -260,12 +260,12 @@ public class UniversalCommunicator : MonoBehaviour, IControllable
                 if (curr_color != 3 && (keys_down.Contains(KeyCode.E) || keys_down.Contains(KeyCode.RightArrow))) //E to increment
                 {
                     slider_direction = 1;
-                    BUTTON_LISTS[1][1].toggle();
+                    BUTTON_LISTS[1][1].toggle(0.2f);
                 }
                 else if (curr_color != 0 && (keys_down.Contains(KeyCode.Q) || keys_down.Contains(KeyCode.LeftArrow)))  //Q to decrement
                 {
                     slider_direction = -1;
-                    BUTTON_LISTS[1][0].toggle();
+                    BUTTON_LISTS[1][0].toggle(0.2f);
                 }
                 if (slider_direction != 0)
                 {
@@ -285,8 +285,7 @@ public class UniversalCommunicator : MonoBehaviour, IControllable
                 {
                     cooldown_timer = 0.5f;
                     cooling_down = true;
-                    BUTTON_LISTS[2][0].toggle();
-                    BUTTON_LISTS[2][0].updateInteractable(false);
+                    BUTTON_LISTS[2][0].toggle(0.1f);
                     curr_numeric = !curr_numeric;
                     currently_updating = 3;
                     displayAdjustment(currently_updating);
@@ -298,8 +297,7 @@ public class UniversalCommunicator : MonoBehaviour, IControllable
                 {
                     cooldown_timer = 0.5f;
                     cooling_down = true;
-                    BUTTON_LISTS[3][0].toggle();
-                    BUTTON_LISTS[3][0].updateInteractable(false);
+                    BUTTON_LISTS[3][0].toggle(0.1f);
                     code_index.Clear();
                     code_color.Clear();
                     code_is_numeric.Clear();
@@ -315,7 +313,6 @@ public class UniversalCommunicator : MonoBehaviour, IControllable
             if (cooldown_timer <= 0.0f)
             {
                 cooling_down = false;
-                BUTTON_LISTS[0][0].untoggle();
                 if (code_index.Count < 8)
                 {
                     BUTTON_LISTS[0][0].updateInteractable(true);
@@ -327,7 +324,6 @@ public class UniversalCommunicator : MonoBehaviour, IControllable
                 }
                 else
                 {
-                    BUTTON_LISTS[1][1].untoggle();
                     BUTTON_LISTS[1][1].updateInteractable(false);
                 }
                 if (curr_color != 0)
@@ -336,14 +332,11 @@ public class UniversalCommunicator : MonoBehaviour, IControllable
                 }
                 else
                 {
-                    BUTTON_LISTS[1][0].untoggle();
                     BUTTON_LISTS[1][0].updateInteractable(false);
                 }
 
-                BUTTON_LISTS[2][0].untoggle();
                 BUTTON_LISTS[2][0].updateInteractable(true);
 
-                BUTTON_LISTS[3][0].untoggle();
                 BUTTON_LISTS[3][0].updateInteractable(true);
             }
         }

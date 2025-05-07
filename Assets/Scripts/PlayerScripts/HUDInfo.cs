@@ -11,7 +11,7 @@ using System.Collections.Generic;
 public class HUDInfo
 {
     private string control_name; //ex. "IMPULSE THROTTLE"
-    private int layout;
+    private int layout = -1;
     private List<Button> buttons;
     public HUDInfo(string title)
     {
@@ -21,6 +21,12 @@ public class HUDInfo
     public void setButtons(List<Button> buttons)
     {
         this.buttons = buttons;
+        this.layout = buttons.Count - 1;
+    }
+    public void setButtons(List<Button> buttons, int new_layout)
+    {
+        this.buttons = buttons;
+        this.layout = new_layout;
     }
     public void setTitle(string new_title)
     {

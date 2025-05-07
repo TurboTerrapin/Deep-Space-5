@@ -3,7 +3,7 @@
     - Handles inputs for impulse throttle
     - Moves throttle lever accordingly
     Contributor(s): Jake Schott
-    Last Updated: 4/26/2025
+    Last Updated: 5/7/2025
 */
 
 using UnityEngine;

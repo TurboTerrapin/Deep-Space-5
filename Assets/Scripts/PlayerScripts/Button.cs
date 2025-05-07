@@ -20,31 +20,30 @@
 
     LAYOUT 2: 3 BUTTONS, ALL SEPARATED (ex. inertial dampeners)
 
-    LAYOUT 3: 3 BUTTONS, 1 SEPARATED ON LEFT, 2 TOUCHING ON RIGHT (ex. map options)
+    LAYOUT 3: 4 BUTTONS, ALL SEPARATED (ex. hangar clamps)
 
-    LAYOUT 4: 4 BUTTONS, ALL SEPARATED (ex. hangar clamps)
+    LAYOUT 4: 4 BUTTONS ALL CONNECTED BOTTOM ROW, 2 BUTTONS SEPARATED TOP ROW (ex. regulations manual)
 
-    LAYOUT 5: 4 BUTTONS ALL CONNECTED BOTTOM ROW, 2 BUTTONS SEPARATED TOP ROW (ex. regulations manual)
+    LAYOUT 5: 3 BUTTONS, 1 SEPARATED ON LEFT, 2 TOUCHING ON RIGHT (ex. map options)
 */
 
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 
-public class Button : MonoBehaviour
+public class Button
 {
     //CLASS CONSTANTS
     private static float COLOR_CHANGE_FACTOR = 10.0f;
-    private static Color DARK_GRAY = new Color(0.22f, 0.22f, 0.22f, 1.0f); //default color
-    private static Color LIGHT_BLUE = new Color(0f, 0.42f, 0.51f, 1.0f); //being pressed
+    private static Color DARK_GRAY = new Color(0.22f, 0.22f, 0.22f, 0.36f); //default color
+    private static Color LIGHT_BLUE = new Color(0.12f, 0.57f, 0.69f, 0.36f); //being pressed
 
     //BUTTON LAYOUT INFORMATION
     private static Vector2[] trapezoid_sizes = new Vector2[]
     {
         new Vector2(1100f, 250f),
-        new Vector2(1100f, 250f),
-        new Vector2(1100f, 250f),
+        new Vector2(1250f, 250f),
+        new Vector2(1800f, 250f),
         new Vector2(1100f, 250f),
         new Vector2(1100f, 250f),
         new Vector2(1600f, 350f)
@@ -53,8 +52,8 @@ public class Button : MonoBehaviour
     private static List<Vector2[]> button_positions = new List<Vector2[]>
     {
         new Vector2[] {new Vector2(0f, -45f)},
-        new Vector2[] {new Vector2(0f, 0f)},
-        new Vector2[] {new Vector2(0f, 0f)},
+        new Vector2[] {new Vector2(-294f, -45f), new Vector2(294f, -45f)},
+        new Vector2[] {new Vector2(-600f, -45f), new Vector2(0f, -45f), new Vector2(600f, -45f)},
         new Vector2[] {new Vector2(0f, 0f)},
         new Vector2[] {new Vector2(0f, 0f)},
         new Vector2[] {new Vector2(0f, 0f)},
@@ -63,8 +62,8 @@ public class Button : MonoBehaviour
     private static List<int[]> button_templates = new List<int[]>
     {
         new int[] {0},
-        new int[] {0},
-        new int[] {0},
+        new int[] {1, 2},
+        new int[] {0, 0, 0},
         new int[] {0},
         new int[] {0},
         new int[] {0}
@@ -73,8 +72,8 @@ public class Button : MonoBehaviour
     private static List<Vector2[]> button_sizes = new List<Vector2[]>
     {
         new Vector2[] {new Vector2(600f, 80f)},
-        new Vector2[] {new Vector2(0f, 0f)},
-        new Vector2[] {new Vector2(0f, 0f)},
+        new Vector2[] {new Vector2(500f, 80f), new Vector2(500f, 80f)},
+        new Vector2[] {new Vector2(500f, 80f), new Vector2(500f, 80f), new Vector2(500f, 80f)},
         new Vector2[] {new Vector2(0f, 0f)},
         new Vector2[] {new Vector2(0f, 0f)},
         new Vector2[] {new Vector2(0f, 0f)}
@@ -83,8 +82,8 @@ public class Button : MonoBehaviour
     private static List<Vector2[]> divider_positions = new List<Vector2[]>
     {
         new Vector2[] {},
-        new Vector2[] {new Vector2(0f, 0f)},
-        new Vector2[] {new Vector2(0f, 0f)},
+        new Vector2[] {new Vector2(0f, -45f)},
+        new Vector2[] {},
         new Vector2[] {new Vector2(0f, 0f)},
         new Vector2[] {new Vector2(0f, 0f)},
         new Vector2[] {new Vector2(0f, 0f)}
@@ -94,28 +93,17 @@ public class Button : MonoBehaviour
     private string button_desc; //ex. INCREASE
     private int control_index; //ex. 0 = KeyPad.W, based on array in ControlScript
     private bool interactable = true;
-    private bool toggle_only = false;
-    private bool is_toggled = false; //used to stay blue during toggles
+    private bool togglable = false;
+    private bool currently_toggled = false; //used to stay blue during toggles
     private GameObject visual_button;
-    private GameObject fill_button;
     private float percent_blue = 0.0f;
 
-    private void Start()
-    {
-        StartCoroutine(toggle_highlight());
-    }
-
-    IEnumerator toggle_highlight()
-    {
-        yield return new WaitForSecondsRealtime(1);
-    }
-
-    public Button(string button_desc, int control_index, bool interactable, bool toggle_only)
+    public Button(string button_desc, int control_index, bool interactable, bool togglable)
     {
         this.button_desc = button_desc;
         this.control_index = control_index;
         this.interactable = interactable;
-        this.toggle_only = toggle_only;
+        this.togglable = togglable;
     }
     public int getControlIndex()
     {
@@ -127,7 +115,7 @@ public class Button : MonoBehaviour
     }
     public bool getTogglable()
     {
-        return toggle_only;
+        return togglable;
     }
     public void updateDesc(string new_desc)
     {
@@ -145,7 +133,7 @@ public class Button : MonoBehaviour
             }
             if (visual_button.transform.childCount > 0) //trapezoid view
             {
-                visual_button.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().SetText(button_desc + " (" + key + ")"); 
+                visual_button.transform.GetChild(2).gameObject.GetComponent<TMP_Text>().SetText(button_desc + " (" + key + ")"); 
             }
             else //list view
             {
@@ -155,10 +143,6 @@ public class Button : MonoBehaviour
     }
     public void updateInteractable(bool interactable)
     {
-        if (interactable != this.interactable)
-        {
-            percent_blue = 0.0f;
-        }
         this.interactable = interactable;
         if (visual_button != null)
         { 
@@ -166,15 +150,41 @@ public class Button : MonoBehaviour
             {
                 if (this.interactable == true)
                 {
-                    is_toggled = false;
+                    currently_toggled = false;
                     visual_button.GetComponent<UnityEngine.UI.Image>().color = DARK_GRAY;
-                    visual_button.transform.GetChild(2).GetComponent<TMP_Text>().color = Color.white;
+                    visual_button.transform.GetChild(2).GetComponent<TMP_Text>().color = new Color(1f, 1f, 1f, 1f);
+                }
+                else
+                {
+                    if (currently_toggled == false)
+                    {
+                        percent_blue = 0.0f;
+                        visual_button.GetComponent<UnityEngine.UI.Image>().color = DARK_GRAY;
+                        visual_button.transform.GetChild(2).GetComponent<TMP_Text>().color = new Color(1f, 1f, 1f, 0.05f);
+                        updateColor(0.05f);
+                    }
+                    else
+                    {
+                        percent_blue = 1.0f;
+                        updateColor(0.36f);
+                    }
+                }
             }
         }
     }
     public void toggle(float toggle_length)
     {
-        is_toggled = true;
+        currently_toggled = true;
+        percent_blue = 1.0f;
+        updateColor(0.36f);
+        updateInteractable(false);
+        visual_button.transform.parent.GetComponent<ButtonHelper>().toggleHelper(this, toggle_length);
+    }
+    public void untoggle()
+    {
+        currently_toggled = false;
+        percent_blue = 0.0f;
+        updateInteractable(interactable);
     }
     public void createVisual(int HUD_setting, int layout, int order_index, GameObject frame)
     {
@@ -206,16 +216,16 @@ public class Button : MonoBehaviour
             //handle rounded edges
             if (button_templates[layout][order_index] == 1) //left 
             {
-                visual_button.transform.GetChild(0).GetComponent<UnityEngine.UIElements.Image>().image = null;
+                visual_button.transform.GetChild(1).GetComponent<UnityEngine.UI.Image>().sprite = null;
             }
             else if (button_templates[layout][order_index] == 2) //right
             {
-                visual_button.transform.GetChild(1).GetComponent<UnityEngine.UIElements.Image>().image = null;
+                visual_button.transform.GetChild(0).GetComponent<UnityEngine.UI.Image>().sprite = null;
             }
             else if (button_templates[layout][order_index] == 3) //rectangle
             {
-                visual_button.transform.GetChild(0).GetComponent<UnityEngine.UIElements.Image>().image = null;
-                visual_button.transform.GetChild(1).GetComponent<UnityEngine.UIElements.Image>().image = null;
+                visual_button.transform.GetChild(0).GetComponent<UnityEngine.UI.Image>().sprite = null;
+                visual_button.transform.GetChild(1).GetComponent<UnityEngine.UI.Image>().sprite = null;
             }
 
             //position
@@ -237,7 +247,7 @@ public class Button : MonoBehaviour
                     for (int i = 0; i < divider_positions[layout].Length; i++)
                     {
                         //copy divider
-                        GameObject divider = UnityEngine.Object.Instantiate(buttons_panel.transform.GetChild(3).gameObject, buttons_panel.transform);
+                        GameObject divider = UnityEngine.Object.Instantiate(buttons_panel.transform.GetChild(1).gameObject, buttons_panel.transform);
 
                         //position
                         divider.GetComponent<RectTransform>().anchoredPosition = new Vector3(divider_positions[layout][i].x, divider_positions[layout][i].y, 0f);
@@ -255,7 +265,7 @@ public class Button : MonoBehaviour
             }
 
             //set text info
-            visual_button.transform.GetChild(2).gameObject.GetComponent<TMP_Text>().SetText(button_desc + " (" + key + ")"); //set desc of that control
+            visual_button.transform.GetChild(2).GetComponent<TMP_Text>().SetText(button_desc + " (" + key + ")"); //set desc of that control
         }
         //Minimized: List format
         else if (HUD_setting == 1)
@@ -275,15 +285,37 @@ public class Button : MonoBehaviour
             visual_button.SetActive(true);
         }
     }
+    public float getFontSize()
+    {
+        if (visual_button != null)
+        {
+            if (visual_button.transform.childCount > 0) //means trapezoid format
+            {
+                return visual_button.transform.GetChild(2).GetComponent<TMP_Text>().fontSize;
+            }
+        }
+        return -1.0f;
+    }
+
+    public void setMaxFontSize(float new_max)
+    {
+        if (visual_button != null)
+        {
+            if (visual_button.transform.childCount > 0) //means trapezoid format
+            {
+                visual_button.transform.GetChild(2).GetComponent<TMP_Text>().fontSizeMax = new_max;
+            }
+        }
+    }
     
     //helper method 
-    private void updateColor()
+    private void updateColor(float transparency)
     {
         Color temp_color = 
             new Color(DARK_GRAY.r * (1 - percent_blue),
                       DARK_GRAY.g + (LIGHT_BLUE.g - DARK_GRAY.g) * percent_blue,
                       DARK_GRAY.b + (LIGHT_BLUE.b - DARK_GRAY.b) * percent_blue,
-                      0.36f);
+                      transparency);
         visual_button.GetComponent<UnityEngine.UI.Image>().color = temp_color;
         visual_button.transform.GetChild(0).GetComponent<UnityEngine.UI.Image>().color = temp_color;
         visual_button.transform.GetChild(1).GetComponent<UnityEngine.UI.Image>().color = temp_color;
@@ -293,9 +325,9 @@ public class Button : MonoBehaviour
         if (visual_button != null)
         {
             percent_blue = Mathf.Min(1f, percent_blue + delta_time * COLOR_CHANGE_FACTOR);
-            if (visual_button.transform.childCount > 0) //means default format
+            if (visual_button.transform.childCount > 0) //means trapezoid format
             {
-                updateColor();
+                updateColor(0.36f);
             }
         }
     }
@@ -304,9 +336,9 @@ public class Button : MonoBehaviour
         if (visual_button != null)
         {
             percent_blue = Mathf.Max(0f, percent_blue - delta_time * COLOR_CHANGE_FACTOR);
-            if (visual_button.transform.childCount > 0) //means default format
+            if (visual_button.transform.childCount > 0) //means trapezoid format
             {
-                updateColor();
+                updateColor(0.36f);
             }
         }
     }
