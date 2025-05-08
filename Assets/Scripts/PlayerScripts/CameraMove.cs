@@ -3,8 +3,8 @@
     - Handles pausing
     - Handles looking around
     - Handles camera zoom (using CTRL)
-    Contributor(s): John Aylward, Jake Schott
-    Last Updated: 4/2/2025
+    Contributor(s): John Aylward, Jake Schott, Beata Musial
+    Last Updated: 5/7/2025
 */
 
 using UnityEngine;
@@ -74,6 +74,11 @@ public class PlayerCameraMove : MonoBehaviour
         prevPos.x += mouseMove.x;
         transform.localRotation = Quaternion.AngleAxis(prevPos.y, Vector3.right);
         transform.parent.localRotation = Quaternion.AngleAxis(prevPos.x, Vector3.up);
+    }
+
+    public void SetMouseSensitvity(float newSensitivity)
+    {
+        mouseSensitivity = newSensitivity;
     }
 
 }
