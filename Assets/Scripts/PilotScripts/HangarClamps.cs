@@ -3,7 +3,7 @@
     - Meant to attach/detach from hangars
     - Does nothing
     Contributor(s): Jake Schott
-    Last Updated: 4/13/2025
+    Last Updated: 5/8/2025
 */
 
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ using UnityEngine;
 public class HangarClamps : MonoBehaviour, IControllable
 {
     private string CONTROL_NAME = "HANGAR CLAMPS";
-    private List<string> CONTROL_DESCS = new List<string>(){"ENABLE", "ENABLE", "ENABLE", "ENABLE"};
+    private List<string> CONTROL_DESCS = new List<string>(){"ENABLE CLAMP A", "ENABLE CLAMP B", "ENABLE CLAMP C", "ENABLE CLAMP D"};
     private List<int> CONTROL_INDEXES = new List<int>(){7, 8, 9, 10};
     private List<Button> BUTTONS = new List<Button>();
 

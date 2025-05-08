@@ -23,6 +23,7 @@ public class InertialDampeners : MonoBehaviour, IControllable
         BUTTONS.Add(new Button(CONTROL_DESCS[1], CONTROL_INDEXES[1], false, false));
         BUTTONS.Add(new Button(CONTROL_DESCS[2], CONTROL_INDEXES[2], false, false));
         hud_info.setButtons(BUTTONS);
+        hud_info.adjustButtonFontSizes(34.0f);
     }
     public HUDInfo getHUDinfo(GameObject current_target)
     {

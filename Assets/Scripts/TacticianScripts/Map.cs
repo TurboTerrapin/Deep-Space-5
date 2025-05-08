@@ -3,7 +3,7 @@
     - Handles inputs for map zoom, map configuration
     - Updates map
     Contributor(s): Jake Schott
-    Last Updated: 4/20/2025
+    Last Updated: 5/8/2025
 */
 
 using UnityEngine;
@@ -40,7 +40,8 @@ public class Map : MonoBehaviour, IControllable
         BUTTONS.Add(new Button(CONTROL_DESCS[0], CONTROL_INDEXES[0], true, true));
         BUTTONS.Add(new Button(CONTROL_DESCS[1], CONTROL_INDEXES[1], true, false));
         BUTTONS.Add(new Button(CONTROL_DESCS[2], CONTROL_INDEXES[2], false, false));
-        hud_info.setButtons(BUTTONS);
+        hud_info.setButtons(BUTTONS, 5);
+        hud_info.adjustButtonFontSizes(36.0f);
 
         initial_pos = slider.transform.position; //sets the initial position
         initial_config_button_pos = configuration_button.transform.position;

@@ -93,29 +93,6 @@ public class ControlScript : MonoBehaviour
             {
                 current_info.getButtons()[i].createVisual(HUD_setting, current_info.getLayout(), i, frame);
             }
-
-            if (HUD_setting == 0)
-            {
-                StartCoroutine(adjustFontSize());
-            }
-        }
-    }
-
-    IEnumerator adjustFontSize()
-    {
-        yield return null;
-        float smallest_font_size = 999.9f;
-        for (int i = 0; i < current_info.numOptions(); i++)
-        {
-            if (current_info.getButtons()[i].getFontSize() < smallest_font_size)
-            {
-                smallest_font_size = current_info.getButtons()[i].getFontSize();
-            }
-        }
-        Debug.Log(smallest_font_size);
-        for (int i = 0; i < current_info.numOptions(); i++)
-        {
-            current_info.getButtons()[i].setMaxFontSize(smallest_font_size);
         }
     }
 

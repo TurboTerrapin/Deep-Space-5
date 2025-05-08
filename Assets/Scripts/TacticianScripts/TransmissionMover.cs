@@ -2,7 +2,7 @@
     TransmissionMover.cs
     - Moves the waves
     Contributor(s): Jake Schott
-    Last Updated: 4/15/2025
+    Last Updated: 5/8/2025
 */
 
 using NUnit.Framework;
@@ -79,7 +79,15 @@ public class TransmissionMover : MonoBehaviour, IControllable
     {
         int index = ray_targets.IndexOf(current_target.name);
         hud_info.setTitle(CONTROL_NAMES[index]);
-        hud_info.setButtons(BUTTON_LISTS[index]);
+        if (index == 0)
+        {
+            hud_info.setButtons(BUTTON_LISTS[index], 5);
+        }
+        else
+        {
+            hud_info.setButtons(BUTTON_LISTS[index]);
+        }
+
         return hud_info;
     }
     private void turnoffSignalLights()

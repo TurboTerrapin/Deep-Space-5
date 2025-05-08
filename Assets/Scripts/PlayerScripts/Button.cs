@@ -3,7 +3,7 @@
     - Stores information for a button
     - Handles button, divider GUI
     Contributor(s): Jake Schott
-    Last Updated: 5/6/2025
+    Last Updated: 5/8/2025
 */
 
 /*
@@ -44,9 +44,9 @@ public class Button
         new Vector2(1100f, 250f),
         new Vector2(1250f, 250f),
         new Vector2(1800f, 250f),
-        new Vector2(1100f, 250f),
-        new Vector2(1100f, 250f),
-        new Vector2(1600f, 350f)
+        new Vector2(2300f, 250f),
+        new Vector2(1600f, 350f),
+        new Vector2(1600f, 250f)
     };
 
     private static List<Vector2[]> button_positions = new List<Vector2[]>
@@ -54,9 +54,9 @@ public class Button
         new Vector2[] {new Vector2(0f, -45f)},
         new Vector2[] {new Vector2(-294f, -45f), new Vector2(294f, -45f)},
         new Vector2[] {new Vector2(-600f, -45f), new Vector2(0f, -45f), new Vector2(600f, -45f)},
-        new Vector2[] {new Vector2(0f, 0f)},
-        new Vector2[] {new Vector2(0f, 0f)},
-        new Vector2[] {new Vector2(0f, 0f)},
+        new Vector2[] {new Vector2(-863f, -45f), new Vector2(-288f, -45f), new Vector2(288f, -45f), new Vector2(863f, -45f)},
+        new Vector2[] {new Vector2(-315f, 15f), new Vector2(315f, 15f), new Vector2(-582f, -90f), new Vector2(-194f, -90f), new Vector2(194f, -90f), new Vector2(582f, -90f)},
+        new Vector2[] {new Vector2(-510f, -45f), new Vector2(48f, -45f), new Vector2(536f, -45f)},
     };
 
     private static List<int[]> button_templates = new List<int[]>
@@ -64,9 +64,9 @@ public class Button
         new int[] {0},
         new int[] {1, 2},
         new int[] {0, 0, 0},
-        new int[] {0},
-        new int[] {0},
-        new int[] {0}
+        new int[] {0, 0, 0, 0},
+        new int[] {0, 0, 1, 3, 3, 2},
+        new int[] {0, 1, 2}
     };
 
     private static List<Vector2[]> button_sizes = new List<Vector2[]>
@@ -74,9 +74,9 @@ public class Button
         new Vector2[] {new Vector2(600f, 80f)},
         new Vector2[] {new Vector2(500f, 80f), new Vector2(500f, 80f)},
         new Vector2[] {new Vector2(500f, 80f), new Vector2(500f, 80f), new Vector2(500f, 80f)},
-        new Vector2[] {new Vector2(0f, 0f)},
-        new Vector2[] {new Vector2(0f, 0f)},
-        new Vector2[] {new Vector2(0f, 0f)}
+        new Vector2[] {new Vector2(450f, 80f), new Vector2(450f, 80f), new Vector2(450f, 80f), new Vector2(450f, 80f)},
+        new Vector2[] {new Vector2(500f, 80f), new Vector2(500f, 80f), new Vector2(300f, 80f), new Vector2(300f, 80f), new Vector2(300f, 80f), new Vector2(300f, 80f)},
+        new Vector2[] {new Vector2(450f, 80f), new Vector2(400f, 80f), new Vector2(400f, 80f)}
     };
 
     private static List<Vector2[]> divider_positions = new List<Vector2[]>
@@ -84,9 +84,9 @@ public class Button
         new Vector2[] {},
         new Vector2[] {new Vector2(0f, -45f)},
         new Vector2[] {},
-        new Vector2[] {new Vector2(0f, 0f)},
-        new Vector2[] {new Vector2(0f, 0f)},
-        new Vector2[] {new Vector2(0f, 0f)}
+        new Vector2[] {},
+        new Vector2[] {new Vector2(-388f, -90f), new Vector2(0f, -90f), new Vector2(388f, -90f)},
+        new Vector2[] {new Vector2(292f, -45f)}
     };
 
     //PRIVATE DATA MEMBERS
@@ -97,6 +97,7 @@ public class Button
     private bool currently_toggled = false; //used to stay blue during toggles
     private GameObject visual_button;
     private float percent_blue = 0.0f;
+    private float adjusted_font_size = -1.0f;
 
     public Button(string button_desc, int control_index, bool interactable, bool togglable)
     {
@@ -266,6 +267,11 @@ public class Button
 
             //set text info
             visual_button.transform.GetChild(2).GetComponent<TMP_Text>().SetText(button_desc + " (" + key + ")"); //set desc of that control
+
+            if (adjusted_font_size > 0.0f)
+            {
+                visual_button.transform.GetChild(2).GetComponent<TMP_Text>().fontSizeMax = adjusted_font_size;
+            }
         }
         //Minimized: List format
         else if (HUD_setting == 1)
@@ -285,29 +291,12 @@ public class Button
             visual_button.SetActive(true);
         }
     }
-    public float getFontSize()
-    {
-        if (visual_button != null)
-        {
-            if (visual_button.transform.childCount > 0) //means trapezoid format
-            {
-                return visual_button.transform.GetChild(2).GetComponent<TMP_Text>().fontSize;
-            }
-        }
-        return -1.0f;
-    }
 
     public void setMaxFontSize(float new_max)
     {
-        if (visual_button != null)
-        {
-            if (visual_button.transform.childCount > 0) //means trapezoid format
-            {
-                visual_button.transform.GetChild(2).GetComponent<TMP_Text>().fontSizeMax = new_max;
-            }
-        }
+        adjusted_font_size = new_max;
     }
-    
+
     //helper method 
     private void updateColor(float transparency)
     {
