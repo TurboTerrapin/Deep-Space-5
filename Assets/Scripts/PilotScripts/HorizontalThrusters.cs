@@ -8,6 +8,7 @@
 
 
 using UnityEngine;
+using Unity.Netcode;
 using System.Collections.Generic;
 
 public class HorizontalThrusters : ThrusterControl, IControllable
@@ -67,6 +68,15 @@ public class HorizontalThrusters : ThrusterControl, IControllable
             }
         }
     }
+
+    [Rpc(SendTo.Everyone)]
+    private void displayAdjustment3RPC(float thrust_dir)
+    {
+        thrust_direction = thrust_dir;
+        displayAdjustment();
+    }
+
+
     void Update()
     {
         delay_timer -= Time.deltaTime;
@@ -98,7 +108,7 @@ public class HorizontalThrusters : ThrusterControl, IControllable
             }
 
             //display changes
-            displayAdjustment();
+            displayAdjustment3RPC(thrust_direction);
 
             //reset timer
             delay_timer = UPDATE_DELAY;

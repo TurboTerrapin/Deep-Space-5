@@ -11,10 +11,11 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine.UIElements;
 using UnityEngine;
+using Unity.Netcode;
 using UnityEngine.UI;
 using UnityEngine.Windows;
 
-public class CourseHeading : MonoBehaviour, IControllable
+public class CourseHeading : NetworkBehaviour, IControllable
 {
     private string CONTROL_NAME = "COURSE HEADING";
     private List<string> CONTROL_DESCS = new List<string>{"DECREASE", "INCREASE"};
@@ -76,6 +77,20 @@ public class CourseHeading : MonoBehaviour, IControllable
         //move physical wheel
         wheel.transform.localRotation = Quaternion.Euler(-112.79f, 180f, 450f * wheel_angle);
     }
+
+    [Rpc(SendTo.Everyone)]
+    private void displayAdjustment1RPC(float head, float round_head, float wheel_ang, int wheel_dir)
+    {
+        heading = head;
+        rounded_heading = round_head;
+        wheel_angle = wheel_ang;
+        wheel_direction = wheel_dir;
+        displayAdjustment();
+}
+
+
+
+
     void Update()
     {
         delay_timer -= Time.deltaTime;
@@ -140,7 +155,7 @@ public class CourseHeading : MonoBehaviour, IControllable
             rounded_heading = (Mathf.Round(heading * 10) / 10.0f);
             
             //display new heading
-            displayAdjustment();
+            displayAdjustment1RPC(heading, rounded_heading, wheel_angle, wheel_direction);
             delay_timer = 0.01f;
         }
         keys_down.Clear();

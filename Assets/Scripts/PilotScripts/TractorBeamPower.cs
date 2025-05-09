@@ -9,6 +9,7 @@
 
 using UnityEngine;
 using System.Collections.Generic;
+using Unity.Netcode;
 using TMPro;
 using UnityEngine.Windows;
 
@@ -92,7 +93,7 @@ public class TractorBeamPower : MonoBehaviour, IControllable
             {
                 BUTTONS[1].updateInteractable(true);
             }
-            displayAdjustment();
+            displayAdjustment2RPC(power, power_direction);
         }
         keys_down.Clear();
     }
@@ -100,4 +101,13 @@ public class TractorBeamPower : MonoBehaviour, IControllable
     {
         keys_down = inputs;
     }
+
+    [Rpc(SendTo.Everyone)]
+    private void displayAdjustment2RPC(float pwr, int pwr_dir)
+    {
+        power = pwr;
+        power_direction = pwr_dir;
+        displayAdjustment();
+    }
+
 }

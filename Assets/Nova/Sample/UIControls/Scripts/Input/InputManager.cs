@@ -128,6 +128,15 @@ namespace NovaSamples.UIControls
 
         private void Update()
         {
+            if (cam == null)
+            {
+                cam = Camera.current;
+            }
+
+            if (cam == null)
+            {
+                cam = Camera.main;
+            }
             UpdateMouse();
             UpdateTouch();
             UpdateNavigation();

@@ -21895,6 +21895,7 @@ GameObject:
   - component: {fileID: 556775683}
   - component: {fileID: 556775682}
   - component: {fileID: 556775681}
+  - component: {fileID: 556775687}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -21909,7 +21910,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 556775680}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4d94ee80fff55334ab3b7fe4e6f0cbe6, type: 3}
   m_Name: 
@@ -22076,6 +22077,122 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &556775687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 556775680}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d94ee80fff55334ab3b7fe4e6f0cbe6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cursor: {fileID: 1207654059}
+  control_info: {fileID: 238543565}
+  title: {fileID: 367770766}
+  buttons_panel: {fileID: 225581546}
+  pause_menu: {fileID: 2055053787}
+  settings_menu: {fileID: 1343505529}
+  script_holder: {fileID: 401286162}
+  my_camera: {fileID: 0}
+  collider_names:
+  - impulse_throttle
+  - horizontal_thrusters
+  - course_heading
+  - vertical_thrusters
+  - warp_abort
+  - warp_throttle
+  - headlights
+  - inertial_dampeners
+  - tractor_beam_power
+  - tractor_beam_options
+  - hangar_clamps
+  - directional_shifter
+  - pilot_power
+  - tactician_power
+  - forward_torpedo_power
+  - port_torpedo_power
+  - starboard_torpedo_power
+  - aft_torpedo_power
+  - frequency_adjuster
+  - signal_options
+  - probe_orientation
+  - probe_lateral_movement
+  - probe_vertical_movement
+  - map_options
+  - short_range_phasers
+  - long_range_phasers
+  - long_range_direction
+  - torpedo_selector
+  - torpedo_trigger
+  - phaser_switches
+  - A0
+  - A1
+  - A2
+  - A3
+  - A4
+  - A5
+  - B0
+  - B1
+  - B2
+  - B3
+  - B4
+  - B5
+  - color_selector
+  - numeric_selector
+  - reset_button
+  - input_output_toggle
+  - captain_power
+  corresponding_scripts:
+  - ImpulseThrottle
+  - HorizontalThrusters
+  - CourseHeading
+  - VerticalThrusters
+  - Warp
+  - Warp
+  - Headlights
+  - InertialDampeners
+  - TractorBeamPower
+  - TractorBeamOptions
+  - HangarClamps
+  - DirectionalShifter
+  - PowerControl
+  - PowerControl
+  - Torpedoes
+  - Torpedoes
+  - Torpedoes
+  - Torpedoes
+  - TransmissionMover
+  - TransmissionMover
+  - Probe
+  - Probe
+  - Probe
+  - Map
+  - Phasers
+  - Phasers
+  - Phasers
+  - Torpedoes
+  - Torpedoes
+  - Phasers
+  - UniversalCommunicator
+  - UniversalCommunicator
+  - UniversalCommunicator
+  - UniversalCommunicator
+  - UniversalCommunicator
+  - UniversalCommunicator
+  - UniversalCommunicator
+  - UniversalCommunicator
+  - UniversalCommunicator
+  - UniversalCommunicator
+  - UniversalCommunicator
+  - UniversalCommunicator
+  - UniversalCommunicator
+  - UniversalCommunicator
+  - UniversalCommunicator
+  - UniversalCommunicator
+  - PowerControl
 --- !u!1 &558567002
 GameObject:
   m_ObjectHideFlags: 0

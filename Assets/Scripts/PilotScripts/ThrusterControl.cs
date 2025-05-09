@@ -10,10 +10,11 @@
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using Unity.Netcode;
 using UnityEngine.Windows;
 using static UnityEngine.Rendering.VirtualTexturing.Debugging;
 
-public class ThrusterControl : MonoBehaviour 
+public class ThrusterControl : NetworkBehaviour
 {
     public List<Transform> physical_buttons;
     public GameObject display_canvas;
