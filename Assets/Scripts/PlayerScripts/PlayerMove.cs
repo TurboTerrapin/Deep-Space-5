@@ -88,7 +88,7 @@ public class PlayerMove : MonoBehaviour
         }
         else
         {
-            if (UnityEngine.Input.GetKeyDown(KeyCode.LeftShift))
+            if (UnityEngine.Input.GetKeyDown(KeyCode.LeftControl))
             {
                 is_shifting = true;
                 shift_direction *= -1.0f;
