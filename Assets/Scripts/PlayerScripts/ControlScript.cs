@@ -3,21 +3,13 @@
     - Manages the HUD display for control interaction
     - Sends user inputs to control script if looking at said control and within RAYCAST_RANGE
     Contributor(s): Jake Schott
-    Last Updated: 3/25/2025
+    Last Updated: 5/6/2025
 */
 
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
 using TMPro;
-using UnityEngine.Rendering.Universal.Internal;
-using UnityEngine.Windows;
-using Unity.VisualScripting;
-using UnityEngine.Device;
-using UnityEngine.UIElements.Experimental;
-using System;
-using UnityEngine.Android;
 
 public class ControlScript : MonoBehaviour
 {
@@ -82,14 +74,14 @@ public class ControlScript : MonoBehaviour
         control_info.transform.GetChild(0).gameObject.SetActive(false); //make the trapezoid invisible
         control_info.transform.GetChild(1).gameObject.SetActive(false); //make the list visible
 
-        //clear trapezoid
-        for (int i = control_info.transform.GetChild(0).GetChild(0).childCount - 1; i >= 4; i--)
+        //clear trapezoid buttons
+        for (int i = control_info.transform.GetChild(0).GetChild(4).childCount - 1; i >= 3; i--)
         {
-            GameObject to_destroy = control_info.transform.GetChild(0).GetChild(0).GetChild(i).gameObject;
+            GameObject to_destroy = control_info.transform.GetChild(0).GetChild(4).GetChild(i).gameObject;
             UnityEngine.Object.Destroy(to_destroy);
         }
 
-        //clear list
+        //clear list entries
         for (int i = control_info.transform.GetChild(1).childCount - 1; i >= 1; i--)
         {
             GameObject to_destroy = control_info.transform.GetChild(1).GetChild(i).gameObject;
@@ -100,15 +92,15 @@ public class ControlScript : MonoBehaviour
         {
             control_info.transform.GetChild(HUD_setting).gameObject.SetActive(true);
 
-            GameObject frame = control_info.transform.GetChild(1).gameObject;
-            if (HUD_setting == 0)
+            GameObject frame = control_info.transform.GetChild(0).gameObject;
+            if (HUD_setting == 1)
             {
-                frame = control_info.transform.GetChild(0).GetChild(0).gameObject;
+                frame = control_info.transform.GetChild(1).gameObject;
             }
 
             for (int i = 0; i < current_info.numOptions(); i++)
             {
-                current_info.getButtons()[i].createVisual(HUD_setting, current_info.numOptions(), i, frame);
+                current_info.getButtons()[i].createVisual(HUD_setting, current_info.getLayout(), i, frame);
             }
         }
     }
@@ -118,7 +110,7 @@ public class ControlScript : MonoBehaviour
     {
         for (int b = 0; b < current_info.numOptions(); b++)
         {
-            current_info.getButtons()[b].updateInteractable(temp_info.getButtons()[b].isInteractable());
+            current_info.getButtons()[b].updateInteractable(temp_info.getButtons()[b].getInteractable());
         }
     }
 
@@ -167,7 +159,6 @@ public class ControlScript : MonoBehaviour
             cursor.SetActive(true);
         }
     }
-
     void Update()
     {
         if(my_camera == null)
@@ -219,12 +210,12 @@ public class ControlScript : MonoBehaviour
                     for (int b = 0; b < current_info.numOptions(); b++)
                     {
                         Button curr_button = current_info.getButtons()[b];
-                        if (curr_button.isInteractable() == true)
+                        if (curr_button.getInteractable() == true)
                         {
                             bool pressed = false;
                             for (int i = 0; i < input_options[curr_button.getControlIndex()].Length; i++)
                             {
-                                if (curr_button.isToggle() == false) { 
+                                if (curr_button.getTogglable() == false) { 
                                     if (UnityEngine.Input.GetKey(input_options[curr_button.getControlIndex()][i]))
                                     {
                                         pressed = true;
@@ -234,7 +225,6 @@ public class ControlScript : MonoBehaviour
                                 {
                                     if (UnityEngine.Input.GetKeyDown(input_options[curr_button.getControlIndex()][i]))
                                     {
-                                        curr_button.toggle();
                                         pressed = true;
                                     }
                                 }

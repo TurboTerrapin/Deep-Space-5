@@ -14,7 +14,7 @@ public class PowerControl : MonoBehaviour, IControllable
     private string CONTROL_NAME = "POWER CONTROL";
     private List<string> CONTROL_DESCS = new List<string>{"ENABLE"};
     private List<int> CONTROL_INDEXES = new List<int>(){6};
-    private List<Button>[] BUTTON_LISTS = new List<Button>[2];
+    private List<Button>[] BUTTON_LISTS = new List<Button>[4];
 
     public List<GameObject> dials = null;
     public List<GameObject> light_indicator_groups = null;
@@ -29,11 +29,11 @@ public class PowerControl : MonoBehaviour, IControllable
     private void Start()
     {
         hud_info = new HUDInfo(CONTROL_NAME);
-        BUTTON_LISTS[0] = new List<Button>();
-        BUTTON_LISTS[1] = new List<Button>();
-
-        BUTTON_LISTS[0].Add(new Button(CONTROL_DESCS[0], CONTROL_INDEXES[0], true, true));
-        BUTTON_LISTS[1].Add(new Button(CONTROL_DESCS[0], CONTROL_INDEXES[0], true, true));
+        for (int i = 0; i < 4; i++)
+        {
+            BUTTON_LISTS[i] = new List<Button>();
+            BUTTON_LISTS[i].Add(new Button(CONTROL_DESCS[0], CONTROL_INDEXES[0], true, true));
+        }
     }
     public HUDInfo getHUDinfo(GameObject current_target)
     {
@@ -48,20 +48,22 @@ public class PowerControl : MonoBehaviour, IControllable
         dials[index].transform.GetChild(1).GetChild(0).GetChild(1).gameObject.SetActive(active);
         for (int i = 0; i < light_indicator_groups.Count; i++)
         {
-            light_indicator_groups[i].transform.GetChild(index).GetChild(0).GetChild(1).gameObject.SetActive(active);
+            if (i != 2) //haven't added engineer yet
+            {
+                light_indicator_groups[i].transform.GetChild(index).GetChild(0).GetChild(1).gameObject.SetActive(active);
+            }
         }
     }
     public void Update()
     {
         float delta_time = Time.deltaTime;
-        for (int i = 0; i <= 1; i++)
+        for (int i = 0; i <= 3; i++)
         {
             if (is_turning[i])
             {
                 if (turn_timer[i] > 0.0f)
                 {
                     turn_timer[i] -= delta_time;
-                    BUTTON_LISTS[i][0].showProgress((turn_timer[i] + 0.25f) / 1.25f);
                     if (power_enabled[i] == false)
                     {
                         dials[i].transform.localRotation = Quaternion.Euler(dials[i].transform.localRotation.eulerAngles.x, dials[i].transform.localRotation.eulerAngles.y, -90 + (90f - (turn_timer[i] / 1.0f * 90f)));
@@ -95,13 +97,11 @@ public class PowerControl : MonoBehaviour, IControllable
                 if (turn_timer[i] > 0.0f)
                 {
                     turn_timer[i] -= delta_time;
-                    BUTTON_LISTS[i][0].showProgress(Mathf.Max(0.0f, turn_timer[i] / 1.25f));
                 }
                 else
                 {
                     turn_timer[i] = 0.0f;
                     cooling_down[i] = false;
-                    BUTTON_LISTS[i][0].showProgress(0.0f);
                     BUTTON_LISTS[i][0].updateInteractable(true);
                     if (power_enabled[i])
                     {
@@ -119,7 +119,7 @@ public class PowerControl : MonoBehaviour, IControllable
     {
         turn_timer[index] = 1.0f;
         is_turning[index] = true;
-        BUTTON_LISTS[index][0].updateInteractable(false);
+        BUTTON_LISTS[index][0].toggle(0.2f);
         if (power_enabled[index] == true)
         {
             changeIndicator(index, false);

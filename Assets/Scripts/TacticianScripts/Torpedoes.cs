@@ -221,12 +221,12 @@ public class Torpedoes : MonoBehaviour, IControllable
                 if (torpedo_option != 3 && (keys_down.Contains(KeyCode.E) || keys_down.Contains(KeyCode.RightArrow))) //E to increment
                 {
                     torpedo_direction = 1;
-                    BUTTON_LISTS[4][1].toggle();
+                    BUTTON_LISTS[4][1].toggle(0.2f);
                 }
                 else if (torpedo_option != 0 && (keys_down.Contains(KeyCode.Q) || keys_down.Contains(KeyCode.LeftArrow)))  //Q to decrement
                 {
                     torpedo_direction = -1;
-                    BUTTON_LISTS[4][0].toggle();
+                    BUTTON_LISTS[4][0].toggle(0.2f);
                 }
                 if (torpedo_direction != 0)
                 {
@@ -250,7 +250,6 @@ public class Torpedoes : MonoBehaviour, IControllable
                     }
                     else
                     {
-                        BUTTON_LISTS[4][1].untoggle();
                         BUTTON_LISTS[4][1].updateInteractable(false);
                     }
                     if (torpedo_option != 0)
@@ -259,7 +258,6 @@ public class Torpedoes : MonoBehaviour, IControllable
                     }
                     else
                     {
-                        BUTTON_LISTS[4][0].untoggle();
                         BUTTON_LISTS[4][0].updateInteractable(false);
                     }
                     selector_cooling_down = false;
@@ -284,7 +282,7 @@ public class Torpedoes : MonoBehaviour, IControllable
                 {
                     trigger_cooldown_timer = 3.0f;
                     trigger_cooling_down = true;
-                    BUTTON_LISTS[5][0].toggle();
+                    BUTTON_LISTS[5][0].toggle(0.2f);
                     BUTTON_LISTS[5][0].updateInteractable(false);
                     BUTTON_LISTS[5][1].updateInteractable(false);
                     displayAdjustment(5);
@@ -313,7 +311,6 @@ public class Torpedoes : MonoBehaviour, IControllable
                 }
                 else if (trigger_cooldown_timer <= 2.5f)
                 {
-                    BUTTON_LISTS[5][0].untoggle();
                     BUTTON_LISTS[5][0].updateInteractable(false);
                 }
             }

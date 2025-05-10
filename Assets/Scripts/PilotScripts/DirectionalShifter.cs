@@ -3,13 +3,11 @@
     - Handles shifting between forward and reverse
     - Moves shift lever accordingly
     Contributor(s): Jake Schott
-    Last Updated: 4/12/2025
+    Last Updated: 5/7/2025
 */
 
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Windows;
-
 public class DirectionalShifter : MonoBehaviour, IControllable
 {
     private string CONTROL_NAME = "DIRECTIONAL SHIFTER";

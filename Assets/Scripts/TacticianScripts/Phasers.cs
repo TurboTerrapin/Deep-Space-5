@@ -187,7 +187,7 @@ public class Phasers : MonoBehaviour, IControllable
                     {
                         phaser_is_cooling_down[i] = true;
                         phaser_cooldowns[i] = 1.0f;
-                        BUTTON_LISTS[3][i].toggle();
+                        BUTTON_LISTS[3][i].toggle(0.2f);
                         BUTTON_LISTS[3][i].updateInteractable(false);
                     }
                 }
@@ -210,7 +210,6 @@ public class Phasers : MonoBehaviour, IControllable
                 {
                     phaser_prev_is_enabled[i] = !phaser_prev_is_enabled[i];
                     phaser_is_cooling_down[i] = false;
-                    BUTTON_LISTS[3][i].untoggle();
                     BUTTON_LISTS[3][i].updateInteractable(true);
                 }
                 display_necessary = true;
