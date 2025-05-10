@@ -29,9 +29,9 @@ public class FriendJoinWithButton : MonoBehaviour
         }
     }
 
-    public void ChangeCanvasMode()
+    public void ChangeCanvasMode(int i)
     {
-        PanelSwapper.Instance.SwitchPanel(0);
+        PanelSwapper.Instance.SwitchPanel(i);
     }
 
     private int GetPlayers()
