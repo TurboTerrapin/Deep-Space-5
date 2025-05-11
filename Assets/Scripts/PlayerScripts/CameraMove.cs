@@ -87,4 +87,9 @@ public class CameraMove : MonoBehaviour
         transform.parent.localRotation = Quaternion.AngleAxis(prevPos.x, Vector3.up);
     }
 
+    public void SetMouseSensitvity(float newSensitivity)
+    {
+        mouseSensitivity = newSensitivity;
+    }
+
 }

@@ -146,7 +146,7 @@ public class BESettingsController : MonoBehaviour
     public void HandleCameraSensitivityDragged(float mouseSensitivity)
     {
         // Converts slider value (0-1) to (100-400)
-        float actualSensitivity = Mathf.Lerp(100f, 400f, mouseSensitivity);
+        float actualSensitivity = Mathf.Lerp(1f, 4f, mouseSensitivity);
 
         // Converts to % and updates sensitivity text
         int percent = Mathf.RoundToInt(mouseSensitivity * 100f);
@@ -156,7 +156,7 @@ public class BESettingsController : MonoBehaviour
         GameObject cameraObject = Camera.main.gameObject;
 
         // Gets the PlayerCameraMove component attached to camera
-        PlayerCameraMove camMove = cameraObject.GetComponent<PlayerCameraMove>();
+        CameraMove camMove = cameraObject.GetComponent<CameraMove>();
 
         // Apply sensitivity to camera controller
         camMove.SetMouseSensitvity(actualSensitivity);

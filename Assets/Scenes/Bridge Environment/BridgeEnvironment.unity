@@ -17988,7 +17988,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1966532321
+  GlobalObjectIdHash: 1479885644
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -57878,6 +57878,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed60a48c382244b91a292778807c1ce2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PauseMenu: {fileID: 1365157266}
+  SettingsMenu: {fileID: 2111309550}
 --- !u!114 &1365157269
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -91014,6 +91016,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dafae0e1eff0d4d548546527e80f7adc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SettingsMenu: {fileID: 2111309550}
+  PauseMenu: {fileID: 1365157266}
+  FullScreenToggle: {fileID: 1744483479}
+  ResolutionDropdown: {fileID: 1852229161}
+  MasterVolumeSlider: {fileID: 882709933}
+  MasterVolumeFillBar: {fileID: 1720127012}
+  ActualVolumeLabel: {fileID: 2062798368}
+  HUDVisibilityDropdown: {fileID: 1044026864}
+  control_script_holder: {fileID: 1593583437}
+  CameraSensitivitySlider: {fileID: 1051553958}
+  CameraSensitivityFillBar: {fileID: 440467402}
+  ActualCameraSensitivityLabel: {fileID: 81148458}
 --- !u!114 &2111309552
 MonoBehaviour:
   m_ObjectHideFlags: 0
