@@ -175,7 +175,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e81591fc113bfb408dcbec7f3e29282, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 5259488574847259791}
   moveDir: {x: 0, y: 0}
   playerRB: {fileID: 3147236109247125174}
   moveSpeed: 20
