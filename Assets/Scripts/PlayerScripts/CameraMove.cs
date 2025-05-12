@@ -14,6 +14,7 @@ public class CameraMove : MonoBehaviour
 {
     private Vector2 mouseMove = new Vector2();
     private Vector2 prevPos = new Vector2(180f, 0);
+    private Rigidbody rb = null;
 
     private float mouseSensitivity = 1f;
     public Camera my_camera;
@@ -22,6 +23,7 @@ public class CameraMove : MonoBehaviour
 
     void Start()
     {
+        rb = transform.parent.gameObject.GetComponent<Rigidbody>();
         Cursor.lockState = CursorLockMode.Locked;
         //gameObject.SetActive(true);
         gameObject.name += Random.Range(0, 100);
@@ -49,6 +51,7 @@ public class CameraMove : MonoBehaviour
             if (Cursor.lockState == CursorLockMode.Locked)
             {
                 ControlScript.Instance.pause();
+                rb.angularVelocity = Vector3.zero;
             }
             else
             {

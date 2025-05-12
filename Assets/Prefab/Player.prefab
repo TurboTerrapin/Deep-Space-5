@@ -167,7 +167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1331089472
+  GlobalObjectIdHash: 2241163275
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -334,7 +334,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1331089472
+  GlobalObjectIdHash: 3296313871
   InScenePlacedSourceGlobalObjectIdHash: 3296313871
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -355,7 +355,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e81591fc113bfb408dcbec7f3e29282, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 669740677073242485}
   moveDir: {x: 0, y: 0}
   playerRB: {fileID: 6081676483383891269}
   moveSpeed: 100
@@ -540,7 +539,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1331089472
+  GlobalObjectIdHash: 2476959605
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
