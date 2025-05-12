@@ -144,30 +144,35 @@ public class Button
     }
     public void updateInteractable(bool interactable)
     {
+        bool before_interactable = this.interactable;
         this.interactable = interactable;
-        if (visual_button != null)
-        { 
-            if (visual_button.transform.childCount > 0) //trapezoid view
+        if (before_interactable != interactable)
+        {
+            if (visual_button != null)
             {
-                if (this.interactable == true)
+                if (visual_button.transform.childCount > 0) //trapezoid view
                 {
-                    currently_toggled = false;
-                    visual_button.GetComponent<UnityEngine.UI.Image>().color = DARK_GRAY;
-                    visual_button.transform.GetChild(2).GetComponent<TMP_Text>().color = new Color(1f, 1f, 1f, 1f);
-                }
-                else
-                {
-                    if (currently_toggled == false)
+                    if (this.interactable == true)
                     {
+                        currently_toggled = false;
                         percent_blue = 0.0f;
-                        visual_button.GetComponent<UnityEngine.UI.Image>().color = DARK_GRAY;
-                        visual_button.transform.GetChild(2).GetComponent<TMP_Text>().color = new Color(1f, 1f, 1f, 0.05f);
-                        updateColor(0.05f);
+                        visual_button.transform.GetChild(2).GetComponent<TMP_Text>().color = new Color(1f, 1f, 1f, 1f);
+                        updateColor(0.36f);
                     }
                     else
                     {
-                        percent_blue = 1.0f;
-                        updateColor(0.36f);
+                        if (currently_toggled == false)
+                        {
+                            percent_blue = 0.0f;
+                            visual_button.GetComponent<UnityEngine.UI.Image>().color = DARK_GRAY;
+                            visual_button.transform.GetChild(2).GetComponent<TMP_Text>().color = new Color(1f, 1f, 1f, 0.05f);
+                            updateColor(0.05f);
+                        }
+                        else
+                        {
+                            percent_blue = 1.0f;
+                            updateColor(0.36f);
+                        }
                     }
                 }
             }
