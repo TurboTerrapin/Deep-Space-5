@@ -125,7 +125,7 @@ public class PowerControl : MonoBehaviour, IControllable
             changeIndicator(index, false);
         }
     }
-    public void handleInputs(List<KeyCode> inputs, GameObject current_target, int position)
+    public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)
     {
         int index = ray_targets.IndexOf(current_target.name);
         if (is_turning[index] == false && cooling_down[index] == false)

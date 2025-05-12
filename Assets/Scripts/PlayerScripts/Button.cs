@@ -164,7 +164,6 @@ public class Button
                         if (currently_toggled == false)
                         {
                             percent_blue = 0.0f;
-                            visual_button.GetComponent<UnityEngine.UI.Image>().color = DARK_GRAY;
                             visual_button.transform.GetChild(2).GetComponent<TMP_Text>().color = new Color(1f, 1f, 1f, 0.05f);
                             updateColor(0.05f);
                         }

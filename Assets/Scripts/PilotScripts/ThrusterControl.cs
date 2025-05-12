@@ -8,11 +8,8 @@
 */
 
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using Unity.Netcode;
-using UnityEngine.Windows;
-using static UnityEngine.Rendering.VirtualTexturing.Debugging;
 
 public class ThrusterControl : NetworkBehaviour
 {

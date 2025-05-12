@@ -139,7 +139,7 @@ public class VerticalThrusters : ThrusterControl, IControllable
         }
         keys_down.Clear();
     }
-    public void handleInputs(List<KeyCode> inputs, GameObject current_target, int position)
+    public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)
     {
         keys_down = inputs;
     }

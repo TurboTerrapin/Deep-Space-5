@@ -115,7 +115,7 @@ public class Headlights : MonoBehaviour, IControllable
             adjusting_slider = true;
         }
     }
-    public void handleInputs(List<KeyCode> inputs, GameObject current_target, int position)
+    public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)
     {
         if (!((inputs.Contains(KeyCode.W) || inputs.Contains(KeyCode.UpArrow)) && (inputs.Contains(KeyCode.S) || inputs.Contains(KeyCode.DownArrow)))){
             if (adjusting_slider == false)

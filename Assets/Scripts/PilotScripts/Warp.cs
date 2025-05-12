@@ -46,7 +46,7 @@ public class Warp : MonoBehaviour, IControllable
         }
     }
   
-    public void handleInputs(List<KeyCode> inputs, GameObject current_target, int position)
+    public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)
     {
         //does nothing
     }

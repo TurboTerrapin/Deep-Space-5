@@ -287,7 +287,7 @@ public class TransmissionMover : MonoBehaviour, IControllable
         keys_down.Clear();
     }
 
-    public void handleInputs(List<KeyCode> inputs, GameObject current_target, int position)
+    public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)
     {
         target_index = ray_targets.IndexOf(current_target.name);
         keys_down = inputs;

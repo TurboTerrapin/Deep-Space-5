@@ -52,6 +52,18 @@ public class ControlScript : MonoBehaviour
         new KeyCode[] {KeyCode.F}
     };
 
+    public static bool checkInputIndex(int input_index, List<KeyCode> inputs_to_check)
+    {
+        for (int i = 0; i < input_options[input_index].Length; i++)
+        {
+            if (inputs_to_check.Contains(input_options[input_index][i]))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static ControlScript Instance { get; private set; }
 
     void Start()
@@ -241,7 +253,8 @@ public class ControlScript : MonoBehaviour
                         }
                     }
                     control_info.SetActive(true); //show UI indicator
-                    target_control.handleInputs(current_inputs, hit.collider.gameObject, 1); //call when all inputs have been checked
+                    float dt = Mathf.Min(Time.deltaTime, 1.0f / 30.0f);
+                    target_control.handleInputs(current_inputs, hit.collider.gameObject, dt, 1); //call when all inputs have been checked
                     return;
                 }
                 /*

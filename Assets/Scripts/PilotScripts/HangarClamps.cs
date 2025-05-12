@@ -31,7 +31,7 @@ public class HangarClamps : MonoBehaviour, IControllable
         return hud_info;
     }
 
-    public void handleInputs(List<KeyCode> inputs, GameObject current_target, int position)
+    public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)
     {
         //does nothing
     }

@@ -50,7 +50,7 @@ public class ImpulseThrottle : NetworkBehaviour, IControllable
         }
 
         //update lever position
-        handle.transform.position = 
+        handle.transform.position =
             new Vector3(Mathf.Lerp(initial_pos.x, final_pos.x, impulse),
                         Mathf.Lerp(initial_pos.y, final_pos.y, impulse),
                         Mathf.Lerp(initial_pos.z, final_pos.z, impulse));
@@ -58,14 +58,14 @@ public class ImpulseThrottle : NetworkBehaviour, IControllable
         //update speedometer text
         speed_information.transform.GetChild(1).gameObject.GetComponent<TMP_Text>().SetText("" + Mathf.Round(impulse * 100.0f));
     }
-    public void handleInputs(List<KeyCode> inputs, GameObject current_target, int position)
+    public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)
     {
         int impulse_direction = 0;
-        if (inputs.Contains(KeyCode.E) || inputs.Contains(KeyCode.RightArrow)) //E to increment
+        if (ControlScript.checkInputIndex(CONTROL_INDEXES[1], inputs)) //E to increment
         {
             impulse_direction += 1;
         }
-        if (inputs.Contains(KeyCode.Q) || inputs.Contains(KeyCode.LeftArrow))  //Q to decrement
+        if (ControlScript.checkInputIndex(CONTROL_INDEXES[0], inputs))  //Q to decrement
         {
             impulse_direction -= 1;
         }
@@ -73,13 +73,13 @@ public class ImpulseThrottle : NetworkBehaviour, IControllable
         {
             if (impulse_direction > 0)
             {
-                impulse = Mathf.Min(1.0f, impulse + (0.002f * (impulse / 0.5f) + 0.001f) * Time.deltaTime * 50.0f);
+                impulse = Mathf.Min(1.0f, impulse + (0.002f * (impulse / 0.5f) + 0.001f) * dt * 50.0f);
             }
             else
             {
-                impulse = Mathf.Max(0.0f, impulse - (0.002f * (impulse / 0.5f) + 0.001f) * Time.deltaTime * 50.0f);
+                impulse = Mathf.Max(0.0f, impulse - (0.002f * (impulse / 0.5f) + 0.001f) * dt * 50.0f);
             }
-            if (impulse <= 0f)
+            if (impulse <= 0)
             {
                 hud_info.getButtons()[0].updateInteractable(false);
             }

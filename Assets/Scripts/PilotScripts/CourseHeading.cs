@@ -9,11 +9,8 @@
 
 using System.Collections.Generic;
 using TMPro;
-using UnityEngine.UIElements;
 using UnityEngine;
 using Unity.Netcode;
-using UnityEngine.UI;
-using UnityEngine.Windows;
 
 public class CourseHeading : NetworkBehaviour, IControllable
 {
@@ -86,7 +83,7 @@ public class CourseHeading : NetworkBehaviour, IControllable
         wheel_angle = wheel_ang;
         wheel_direction = wheel_dir;
         displayAdjustment();
-}
+    }
 
 
 
@@ -160,7 +157,7 @@ public class CourseHeading : NetworkBehaviour, IControllable
         }
         keys_down.Clear();
     }
-    public void handleInputs(List<KeyCode> inputs, GameObject current_target, int position)
+    public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)
     {
         keys_down = inputs;
     }
