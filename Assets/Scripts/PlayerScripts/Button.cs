@@ -179,7 +179,13 @@ public class Button
         percent_blue = 1.0f;
         updateColor(0.36f);
         updateInteractable(false);
-        visual_button.transform.parent.GetComponent<ButtonHelper>().toggleHelper(this, toggle_length);
+        if (visual_button != null)
+        {
+            if (visual_button.transform.childCount > 0) //ensures trapezoid format
+            {
+                visual_button.transform.parent.GetComponent<ButtonHelper>().toggleHelper(this, toggle_length);
+            }
+        }
     }
     public void untoggle()
     {
@@ -280,7 +286,7 @@ public class Button
             visual_button = UnityEngine.Object.Instantiate(frame.transform.GetChild(0).gameObject, frame.transform);
 
             //position button
-            visual_button.GetComponent<RectTransform>().anchoredPosition = new Vector3(46f, (10f * order_index) + 8f, 0f);
+            visual_button.GetComponent<RectTransform>().anchoredPosition = new Vector3(-1655f, (40f * (button_positions[layout].Length - order_index - 1)) - 1050f, 0f);
             
             //set text info
             visual_button.GetComponent<TMP_Text>().SetText(button_desc + " - " + key);
@@ -300,35 +306,30 @@ public class Button
     //helper method 
     private void updateColor(float transparency)
     {
-        Color temp_color = 
-            new Color(DARK_GRAY.r * (1 - percent_blue),
-                      DARK_GRAY.g + (LIGHT_BLUE.g - DARK_GRAY.g) * percent_blue,
-                      DARK_GRAY.b + (LIGHT_BLUE.b - DARK_GRAY.b) * percent_blue,
-                      transparency);
-        visual_button.GetComponent<UnityEngine.UI.Image>().color = temp_color;
-        visual_button.transform.GetChild(0).GetComponent<UnityEngine.UI.Image>().color = temp_color;
-        visual_button.transform.GetChild(1).GetComponent<UnityEngine.UI.Image>().color = temp_color;
+        if (visual_button != null)
+        {
+            if (visual_button.transform.childCount > 0) //means trapezoid format
+            {
+                Color temp_color =
+                    new Color(DARK_GRAY.r * (1 - percent_blue),
+                              DARK_GRAY.g + (LIGHT_BLUE.g - DARK_GRAY.g) * percent_blue,
+                              DARK_GRAY.b + (LIGHT_BLUE.b - DARK_GRAY.b) * percent_blue,
+                              transparency);
+                visual_button.GetComponent<UnityEngine.UI.Image>().color = temp_color;
+                visual_button.transform.GetChild(0).GetComponent<UnityEngine.UI.Image>().color = temp_color;
+                visual_button.transform.GetChild(1).GetComponent<UnityEngine.UI.Image>().color = temp_color;
+            }
+        }
+
     }
     public void highlight(float delta_time)
     {
-        if (visual_button != null)
-        {
-            percent_blue = Mathf.Min(1f, percent_blue + delta_time * COLOR_CHANGE_FACTOR);
-            if (visual_button.transform.childCount > 0) //means trapezoid format
-            {
-                updateColor(0.36f);
-            }
-        }
+        percent_blue = Mathf.Min(1f, percent_blue + delta_time * COLOR_CHANGE_FACTOR);
+        updateColor(0.36f);
     }
     public void darken(float delta_time)
     {
-        if (visual_button != null)
-        {
-            percent_blue = Mathf.Max(0f, percent_blue - delta_time * COLOR_CHANGE_FACTOR);
-            if (visual_button.transform.childCount > 0) //means trapezoid format
-            {
-                updateColor(0.36f);
-            }
-        }
+        percent_blue = Mathf.Max(0f, percent_blue - delta_time * COLOR_CHANGE_FACTOR);
+        updateColor(0.36f);
     }
 }
