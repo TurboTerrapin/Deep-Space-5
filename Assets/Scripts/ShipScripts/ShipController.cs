@@ -54,7 +54,7 @@ public class ShipController : MonoBehaviour
     private void GetEngineerInput() { }
     private void GetCaptainInput() { }
 
-    void Update()
+    void FixedUpdate()
     {
         if (shipReady)
         {
@@ -71,8 +71,8 @@ public class ShipController : MonoBehaviour
     // *********** To Separate into own script in future ****************8
 
     private readonly float maxThrusterSpeed = 2f;
-    private readonly float maxImpulseSpeed = 25f;
-    private readonly float rotationPower = 6f; //60
+    private readonly float maxImpulseSpeed = 250f;
+    private readonly float rotationPower = 60f; //60
 
     private readonly float impulseAccelerationRate = 0.4f;
     private readonly float impulseDecelerationRate = 1.5f;
@@ -115,8 +115,8 @@ public class ShipController : MonoBehaviour
 
         currentVelocity = impulseVelocity + horizontalVelocity + verticalVelocity;
 
-        HandleRotation(forward, dt);
-        transform.position += currentVelocity * dt;
+        //HandleRotation(forward, dt);
+        transform.GetComponent<Rigidbody>().MovePosition(transform.position + currentVelocity * dt);
     }
 
     private void UpdateThrusterActiveTime(float dt)
