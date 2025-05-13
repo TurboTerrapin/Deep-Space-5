@@ -3,26 +3,22 @@
     - Handles inputs for horizontal thrusters
     - Extends ThrusterControl.cs
     Contributor(s): Jake Schott
-    Last Updated: 5/7/2025
+    Last Updated: 5/12/2025
 */
 
-
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
-using System.Collections.Generic;
 
 public class HorizontalThrusters : ThrusterControl, IControllable
 {
-    //CLASS CONSTANTS
-    private float UPDATE_DELAY = 0.02f; //time in seconds between updates
-
     private string CONTROL_NAME = "HORIZONTAL THRUSTERS";
     private List<string> CONTROL_DESCS = new List<string> { "MOVE LEFT", "MOVE RIGHT" };
-    private List<int> CONTROL_INDEXES = new List<int>() { 1, 3 };
+    private List<int> CONTROL_INDEXES = new List<int>() {1, 3};
     private List<Button> BUTTONS = new List<Button>();
 
     private List<KeyCode> keys_down = new List<KeyCode>();
-    private float delay_timer = 0.0f;
 
     private static HUDInfo hud_info = null;
 
@@ -37,86 +33,74 @@ public class HorizontalThrusters : ThrusterControl, IControllable
         }
         return hud_info;
     }
+    IEnumerator adjustingThrust()
+    {
+        while (keys_down.Count > 0 || !checkNeutralState())
+        {
+            float dt = Mathf.Min(Time.deltaTime, 1.0f / 30.0f);
+
+            //check inputs and adjust thruster/button percentages
+            for (int i = 0; i < 2; i++)
+            {
+                if (ControlScript.checkInputIndex(CONTROL_INDEXES[i], keys_down))
+                {
+                    thruster_percentage[i] = Mathf.Min(1.0f, thruster_percentage[i] + (dt * MOVE_SPEED));
+                    button_push_percentage[i] = Mathf.Min(1.0f, button_push_percentage[i] + (dt * MOVE_SPEED * PUSH_SPEED));
+                }
+                else
+                {
+                    thruster_percentage[i] = Mathf.Max(0.0f, thruster_percentage[i] - (dt * MOVE_SPEED));
+                    button_push_percentage[i] = Mathf.Max(0.0f, button_push_percentage[i] - (dt * MOVE_SPEED * PUSH_SPEED));
+                }
+            }
+
+            transmitHorizontalThrusterRPC(thruster_percentage[0], thruster_percentage[1], button_push_percentage[0], button_push_percentage[1]);
+            keys_down.Clear();
+            yield return null;
+        }
+
+        thruster_coroutine = null;
+    }
     private void displayAdjustment()
     {
         //adjust physical buttons
-        adjustButton(physical_buttons[0], 0);
-        adjustButton(physical_buttons[1], 1);
+        adjustButton(thruster_buttons[0], 0);
+        adjustButton(thruster_buttons[1], 1);
 
-        //update corresponding thruster screen
+        //update diamond
         GameObject diamond = display_canvas.transform.GetChild(1).gameObject;
-        if (thrust_direction == 0) //bring back to center
-        {
-            if (diamond.transform.localPosition.x > 0f)
-            {
-                diamond.transform.localPosition = new Vector3(Mathf.Max(0, diamond.transform.localPosition.x - 0.0055f), diamond.transform.localPosition.y, diamond.transform.localPosition.z);
-            }
-            else if (diamond.transform.localPosition.x < 0f)
-            {
-                diamond.transform.localPosition = new Vector3(Mathf.Min(0, diamond.transform.localPosition.x + 0.0055f), diamond.transform.localPosition.y, diamond.transform.localPosition.z);
-            }
-        }
-        else //move to one side
-        {
-            if (thrust_direction == -1)
-            {
-                diamond.transform.localPosition = new Vector3(Mathf.Min(0.055f, diamond.transform.localPosition.x + 0.0055f), diamond.transform.localPosition.y, diamond.transform.localPosition.z);
-            }
-            else
-            {
-                diamond.transform.localPosition = new Vector3(Mathf.Max(-0.055f, diamond.transform.localPosition.x - 0.0055f), diamond.transform.localPosition.y, diamond.transform.localPosition.z);
-            }
-        }
+        float diamond_location = (thrust_direction + 1.0f) / 2.0f;
+
+        diamond.transform.localPosition =
+            new Vector3(Mathf.Lerp(0.055f, -0.055f, diamond_location),
+                        diamond.transform.localPosition.y,
+                        diamond.transform.localPosition.z);
     }
 
     [Rpc(SendTo.Everyone)]
-    private void displayAdjustment3RPC(float thrust_dir)
+    private void transmitHorizontalThrusterRPC(float left_thrust, float right_thrust, float left_button, float right_button)
     {
-        thrust_direction = thrust_dir;
+        thruster_percentage[0] = left_thrust;
+        thruster_percentage[1] = right_thrust;
+        button_push_percentage[0] = left_button;
+        button_push_percentage[1] = right_button;
+        updateThrust();
         displayAdjustment();
     }
 
-
-    void Update()
-    {
-        delay_timer -= Time.deltaTime;
-        if (delay_timer <= 0.0f)
-        {
-            //ensure thrust is updated
-            if (keys_down.Count == 0)
-            {
-                buttons[0] = false;
-                buttons[1] = false;
-            }
-            else
-            {
-                float temp_thrust = 0;
-                buttons[1] = (keys_down.Contains(KeyCode.D) || keys_down.Contains(KeyCode.RightArrow));
-                if (buttons[1]) //D to move right
-                {
-                    temp_thrust = 1;
-                }
-                buttons[0] = (keys_down.Contains(KeyCode.A) || keys_down.Contains(KeyCode.LeftArrow));
-                if (buttons[0]) //A to move left
-                {
-                    temp_thrust -= 1;
-                }
-                if (thrust_direction != temp_thrust)
-                {
-                    adjustThrust(temp_thrust);
-                }
-            }
-
-            //display changes
-            displayAdjustment3RPC(thrust_direction);
-
-            //reset timer
-            delay_timer = UPDATE_DELAY;
-        }
-        keys_down.Clear();
-    }
     public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)
     {
         keys_down = inputs;
+        if (thruster_coroutine == null)
+        {
+            for (int i = 0; i < CONTROL_INDEXES.Count; i++)
+            {
+                if (ControlScript.checkInputIndex(CONTROL_INDEXES[i], inputs))
+                {
+                    thruster_coroutine = StartCoroutine(adjustingThrust());
+                    return;
+                }
+            }
+        }
     }
 }

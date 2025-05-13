@@ -17811,7 +17811,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab05e082f7a3fd14d9a5d56911d805c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  physical_buttons:
+  thruster_buttons:
   - {fileID: 2096984734}
   - {fileID: 872077043}
   display_canvas: {fileID: 1640993950}
@@ -17831,7 +17831,7 @@ MonoBehaviour:
   fill_circle: {fileID: 994098880}
   compass: {fileID: 741110125}
   heading_text: {fileID: 888109293}
-  degrees: {fileID: 1925413614}
+  degrees_symbol: {fileID: 1925413614}
 --- !u!114 &401286169
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17844,7 +17844,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e61157ab47a0f9a458172268bf80efc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  physical_buttons:
+  thruster_buttons:
   - {fileID: 131479259}
   - {fileID: 2128600323}
   display_canvas: {fileID: 1431323147}
@@ -59679,6 +59679,8 @@ Transform:
   m_Children:
   - {fileID: 86898834}
   - {fileID: 522978651}
+  - {fileID: 4498314034462063341}
+  - {fileID: 4018994615913393700}
   m_Father: {fileID: 202290823}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1388648764
@@ -68005,8 +68007,6 @@ Transform:
   m_Children:
   - {fileID: 1770248719}
   - {fileID: 562767495}
-  - {fileID: 4498314034462063341}
-  - {fileID: 4018994615913393700}
   m_Father: {fileID: 202290823}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1569137706
@@ -82842,7 +82842,7 @@ GameObject:
   - component: {fileID: 1925413617}
   - component: {fileID: 1925413616}
   m_Layer: 3
-  m_Name: Degrees
+  m_Name: HeadingDegreesSymbol
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -101163,7 +101163,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1189108579}
-  m_Father: {fileID: 1567757669}
+  m_Father: {fileID: 1388387790}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4020985491445549820
 Transform:
@@ -101997,7 +101997,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2020037466}
-  m_Father: {fileID: 1567757669}
+  m_Father: {fileID: 1388387790}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4509530824683224208
 GameObject:

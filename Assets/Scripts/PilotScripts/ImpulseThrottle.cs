@@ -13,6 +13,9 @@ using Unity.Netcode;
 
 public class ImpulseThrottle : NetworkBehaviour, IControllable
 {
+    //CLASS CONSTANTS
+    private static float MOVE_SPEED = 50.0f;
+
     private string CONTROL_NAME = "IMPULSE THROTTLE";
     private List<string> CONTROL_DESCS = new List<string> {"DECREASE", "INCREASE"};
     private List<int> CONTROL_INDEXES = new List<int>() {4, 5};
@@ -73,11 +76,11 @@ public class ImpulseThrottle : NetworkBehaviour, IControllable
         {
             if (impulse_direction > 0)
             {
-                impulse = Mathf.Min(1.0f, impulse + (0.002f * (impulse / 0.5f) + 0.001f) * dt * 50.0f);
+                impulse = Mathf.Min(1.0f, impulse + (0.002f * (impulse / 0.5f) + 0.001f) * dt * MOVE_SPEED);
             }
             else
             {
-                impulse = Mathf.Max(0.0f, impulse - (0.002f * (impulse / 0.5f) + 0.001f) * dt * 50.0f);
+                impulse = Mathf.Max(0.0f, impulse - (0.002f * (impulse / 0.5f) + 0.001f) * dt * MOVE_SPEED);
             }
             if (impulse <= 0)
             {
@@ -102,7 +105,6 @@ public class ImpulseThrottle : NetworkBehaviour, IControllable
     [Rpc(SendTo.Everyone)]
     private void transmitImpulseAdjustmentRPC(float imp)
     {
-        //Debug.Log("ClientRPC\nPrev impulse = " + impulse + ", newimpulse = " + imp);
         impulse = imp;
         displayAdjustment();
     }

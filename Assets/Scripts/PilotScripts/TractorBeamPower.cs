@@ -3,18 +3,19 @@
     - Handles inputs for tractor beam power
     - Moves tractor beam lever accordingly
     Contributor(s): Jake Schott
-    Last Updated: 5/7/2025
+    Last Updated: 5/12/2025
 */
 
 
 using UnityEngine;
 using System.Collections.Generic;
 using Unity.Netcode;
-using TMPro;
-using UnityEngine.Windows;
 
-public class TractorBeamPower : MonoBehaviour, IControllable
+public class TractorBeamPower : NetworkBehaviour, IControllable
 {
+    //CLASS CONSTANTS
+    private static float MOVE_SPEED = 50.0f;
+
     private string CONTROL_NAME = "TRACTOR BEAM";
     private List<string> CONTROL_DESCS = new List<string> { "DECREASE", "INCREASE" };
     private List<int> CONTROL_INDEXES = new List<int>() { 4, 5 };
@@ -26,7 +27,6 @@ public class TractorBeamPower : MonoBehaviour, IControllable
     private List<KeyCode> keys_down = new List<KeyCode>();
 
     private float power = 0.0f;
-    private int power_direction = 0; //0 is neutral, 1 is increase, and -1 is decrease
 
     private static HUDInfo hud_info = null;
     private void Start()
@@ -40,6 +40,7 @@ public class TractorBeamPower : MonoBehaviour, IControllable
     {
         return hud_info;
     }
+
     private void displayAdjustment()
     {
         //update bars on screen
@@ -56,14 +57,14 @@ public class TractorBeamPower : MonoBehaviour, IControllable
         //update lever position
         lever.transform.localRotation = Quaternion.Euler(-30 + (-80 * power), 0f, 0f);
     }
-    void Update()
+    public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)
     {
-        power_direction = 0;
-        if (keys_down.Contains(KeyCode.E) || keys_down.Contains(KeyCode.RightArrow)) //E to increment
+        int power_direction = 0;
+        if (ControlScript.checkInputIndex(CONTROL_INDEXES[1], inputs)) //E to increment
         {
             power_direction += 1;
         }
-        if (keys_down.Contains(KeyCode.Q) || keys_down.Contains(KeyCode.LeftArrow))  //Q to decrement
+        if (ControlScript.checkInputIndex(CONTROL_INDEXES[0], inputs))  //Q to decrement
         {
             power_direction -= 1;
         }
@@ -71,43 +72,36 @@ public class TractorBeamPower : MonoBehaviour, IControllable
         {
             if (power_direction > 0)
             {
-                power = Mathf.Min(1.0f, power + (0.002f * (power / 0.5f) + 0.001f) * Time.deltaTime * 50.0f);
+                power = Mathf.Min(1.0f, power + (0.002f * (power / 0.5f) + 0.001f) * dt * MOVE_SPEED);
             }
             else
             {
-                power = Mathf.Max(0.0f, power - (0.002f * (power / 0.5f) + 0.001f) * Time.deltaTime * 50.0f);
+                power = Mathf.Max(0.0f, power - (0.002f * (power / 0.5f) + 0.001f) * dt * MOVE_SPEED);
             }
-            if (power <= 0f)
+            if (power <= 0)
             {
-                BUTTONS[0].updateInteractable(false);
+                hud_info.getButtons()[0].updateInteractable(false);
             }
             else
             {
-                BUTTONS[0].updateInteractable(true);
+                hud_info.getButtons()[0].updateInteractable(true);
             }
             if (power >= 1f)
             {
-                BUTTONS[1].updateInteractable(false);
+                hud_info.getButtons()[1].updateInteractable(false);
             }
             else
             {
-                BUTTONS[1].updateInteractable(true);
+                hud_info.getButtons()[1].updateInteractable(true);
             }
-            displayAdjustment2RPC(power, power_direction);
+            transmitTractorBeamPowerAdjustmentRPC(power);
         }
-        keys_down.Clear();
-    }
-    public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)
-    {
-        keys_down = inputs;
     }
 
     [Rpc(SendTo.Everyone)]
-    private void displayAdjustment2RPC(float pwr, int pwr_dir)
+    private void transmitTractorBeamPowerAdjustmentRPC(float pwr)
     {
         power = pwr;
-        power_direction = pwr_dir;
         displayAdjustment();
     }
-
 }
