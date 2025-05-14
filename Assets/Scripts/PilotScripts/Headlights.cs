@@ -63,6 +63,7 @@ public class Headlights : NetworkBehaviour, IControllable
         float starting_fill = screen.transform.GetChild(1).GetComponent<UnityEngine.UI.Image>().fillAmount;
         float dest_fill = headlight_configuration / 7.0f;
 
+        //move slider
         while (animation_time > 0.0f)
         {
             float dt = Mathf.Min(Time.deltaTime, 1.0f / 30.0f);
@@ -76,6 +77,7 @@ public class Headlights : NetworkBehaviour, IControllable
             yield return null;
         }
 
+        //cooldown
         yield return new WaitForSeconds(DELAY_TIME);
 
         headlight_shift_coroutine = null;

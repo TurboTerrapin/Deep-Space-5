@@ -3,14 +3,20 @@
     - Handles power-on/power-off procedure
     - Moves throttle lever accordingly
     Contributor(s): Jake Schott
-    Last Updated: 4/14/2025
+    Last Updated: 5/14/2025
 */
 
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
-public class PowerControl : MonoBehaviour, IControllable
+public class PowerControl : NetworkBehaviour, IControllable
 {
+    //CLASS CONSTANTS
+    private static float TURN_TIME = 1.0f;
+    private static float COOLDOWN_TIME = 0.25f;
+
     private string CONTROL_NAME = "POWER CONTROL";
     private List<string> CONTROL_DESCS = new List<string>{"ENABLE"};
     private List<int> CONTROL_INDEXES = new List<int>(){6};
@@ -21,9 +27,7 @@ public class PowerControl : MonoBehaviour, IControllable
 
     private List<string> ray_targets = new List<string>{"pilot_power", "tactician_power", "engineer_power", "captain_power"};
     private bool[] power_enabled = new bool[4] { false, false, false, false };
-    private bool[] is_turning = new bool[4] { false, false, false, false };
-    private bool[] cooling_down = new bool[4] { false, false, false, false };
-    private float[] turn_timer = new float[4] { 0.0f, 0.0f, 0.0f, 0.0f };
+    private Coroutine[] turn_coroutines = new Coroutine[4] {null, null, null, null};
 
     private static HUDInfo hud_info = null;
     private void Start()
@@ -54,86 +58,84 @@ public class PowerControl : MonoBehaviour, IControllable
             }
         }
     }
-    public void Update()
-    {
-        float delta_time = Time.deltaTime;
-        for (int i = 0; i <= 3; i++)
-        {
-            if (is_turning[i])
-            {
-                if (turn_timer[i] > 0.0f)
-                {
-                    turn_timer[i] -= delta_time;
-                    if (power_enabled[i] == false)
-                    {
-                        dials[i].transform.localRotation = Quaternion.Euler(dials[i].transform.localRotation.eulerAngles.x, dials[i].transform.localRotation.eulerAngles.y, -90 + (90f - (turn_timer[i] / 1.0f * 90f)));
-                    }
-                    else
-                    {
-                        dials[i].transform.localRotation = Quaternion.Euler(dials[i].transform.localRotation.eulerAngles.x, dials[i].transform.localRotation.eulerAngles.y, 0 - (90f - (turn_timer[i] / 1.0f * 90f)));
-                    }
-                }
-                else
-                {
-                    turn_timer[i] = 0.0f;
-                    if (power_enabled[i] == true)
-                    {
-                        dials[i].transform.localRotation = Quaternion.Euler(dials[i].transform.localRotation.eulerAngles.x, dials[i].transform.localRotation.eulerAngles.y, -90f);
-                    }
-                    else
-                    {
-                        dials[i].transform.localRotation = Quaternion.Euler(dials[i].transform.localRotation.eulerAngles.x, dials[i].transform.localRotation.eulerAngles.y, 0f);
-                        changeIndicator(i, true);
-                    }
-                    power_enabled[i] = !power_enabled[i];
 
-                    is_turning[i] = false;
-                    cooling_down[i] = true;
-                    turn_timer[i] = 0.25f;
-                }
-            }
-            else if (cooling_down[i])
-            {
-                if (turn_timer[i] > 0.0f)
-                {
-                    turn_timer[i] -= delta_time;
-                }
-                else
-                {
-                    turn_timer[i] = 0.0f;
-                    cooling_down[i] = false;
-                    BUTTON_LISTS[i][0].updateInteractable(true);
-                    if (power_enabled[i])
-                    {
-                        BUTTON_LISTS[i][0].updateDesc("DISABLE");
-                    }
-                    else
-                    {
-                        BUTTON_LISTS[i][0].updateDesc("ENABLE");
-                    }
-                }
-            }
-        }
-    }
-    private void switch_power(int index)
+    IEnumerator dialTurn(int index)
     {
-        turn_timer[index] = 1.0f;
-        is_turning[index] = true;
-        BUTTON_LISTS[index][0].toggle(0.2f);
+        bool increasing = true;
+
+        //disable indicator
         if (power_enabled[index] == true)
         {
             changeIndicator(index, false);
+            power_enabled[index] = false;
+            increasing = false;
         }
+        
+        float turn_time = TURN_TIME;
+
+        //turn physical dial
+        while (turn_time > 0)
+        {
+            float dt = Mathf.Min(Time.deltaTime, 1.0f / 30.0f);
+            turn_time = Mathf.Max(0.0f, turn_time - dt);
+
+            float dial_angle = Mathf.Lerp(-90, 0, turn_time / TURN_TIME);
+            if (increasing == true)
+            {
+                dial_angle = Mathf.Lerp(-90, 0, 1.0f - (turn_time / TURN_TIME));
+            }
+
+            dials[index].transform.localRotation =
+                Quaternion.Euler(dials[index].transform.localRotation.eulerAngles.x,
+                                 dials[index].transform.localRotation.eulerAngles.y,
+                                 dial_angle);
+            yield return null;
+        }
+
+        //enable indicator
+        if (increasing == true)
+        {
+            changeIndicator(index, true);
+            power_enabled[index] = true;
+        }
+
+        //cooldown
+        yield return new WaitForSeconds(COOLDOWN_TIME);
+
+        BUTTON_LISTS[index][0].updateInteractable(true);
+        if (power_enabled[index])
+        {
+            BUTTON_LISTS[index][0].updateDesc("DISABLE");
+        }
+        else
+        {
+            BUTTON_LISTS[index][0].updateDesc("ENABLE");
+        }
+
+        turn_coroutines[index] = null;
     }
+
     public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)
     {
         int index = ray_targets.IndexOf(current_target.name);
-        if (is_turning[index] == false && cooling_down[index] == false)
+        if (turn_coroutines[index] == null)
         {
-            if (inputs.Contains(KeyCode.Mouse0) || inputs.Contains(KeyCode.KeypadEnter))
+            if (ControlScript.checkInputIndex(CONTROL_INDEXES[0], inputs))
             {
-                switch_power(index);
+                BUTTON_LISTS[index][0].toggle(0.2f);
+                transmitPowerControlRPC(index, power_enabled[index]);
             }
         }
+    }
+
+    [Rpc(SendTo.Everyone)]
+    private void transmitPowerControlRPC(int index, bool is_enabled)
+    {
+        power_enabled[index] = is_enabled;
+        if (turn_coroutines[index] != null)
+        {
+            StopCoroutine(turn_coroutines[index]);
+        }
+        turn_coroutines[index] = StartCoroutine(dialTurn(index));
     }
 }

@@ -17688,8 +17688,10 @@ GameObject:
   - component: {fileID: 401286188}
   - component: {fileID: 401286189}
   - component: {fileID: 401286190}
-  - component: {fileID: 401286191}
   - component: {fileID: 401286192}
+  - component: {fileID: 401286196}
+  - component: {fileID: 401286195}
+  - component: {fileID: 401286194}
   m_Layer: 0
   m_Name: ControlHandler
   m_TagString: ControlHandler
@@ -18004,35 +18006,6 @@ MonoBehaviour:
   configuration_button: {fileID: 1164410512872139450}
   configuration_canvas: {fileID: 1452509108}
   map_canvas: {fileID: 144341430}
---- !u!114 &401286191
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 401286162}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 584dc2c54c3552144bdcabf72196afb6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  phaser_display_canvases:
-  - {fileID: 166111560}
-  - {fileID: 983227383}
-  phaser_coverups:
-  - {fileID: 669293345}
-  - {fileID: 554696669}
-  - {fileID: 1822792384}
-  phaser_sliders:
-  - {fileID: 9066504142751021004}
-  - {fileID: 6082717489676752131}
-  long_range_lever: {fileID: 374672914342469551}
-  long_range_indicator: {fileID: 1171193545}
-  phaser_switches:
-  - {fileID: 1467495189}
-  - {fileID: 1040265665}
-  - {fileID: 205725309}
-  phaser_switch_canvas: {fileID: 1345182485}
 --- !u!114 &401286192
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18097,6 +18070,59 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
+--- !u!114 &401286194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 401286162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36e297bd2d1bbe149a94ecae68d6448b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  phaser_display_canvases:
+  - {fileID: 166111560}
+  - {fileID: 983227383}
+  phaser_sliders:
+  - {fileID: 9066504142751021004}
+  - {fileID: 6082717489676752131}
+--- !u!114 &401286195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 401286162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efbfbbcd1cf460e49abe6d8fd8dfacb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  phaser_switches:
+  - {fileID: 1257861836}
+  - {fileID: 1064262642}
+  - {fileID: 6141916254539822634}
+  phaser_coverups:
+  - {fileID: 669293345}
+  - {fileID: 554696669}
+  - {fileID: 1822792384}
+  phaser_switch_canvas: {fileID: 1345182485}
+--- !u!114 &401286196
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 401286162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e9d3f2446f780c48ab4eb0044d24fcc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  long_range_lever: {fileID: 374672914342469551}
+  long_range_indicator: {fileID: 1171193545}
 --- !u!1 &402325436
 GameObject:
   m_ObjectHideFlags: 0
@@ -58089,7 +58115,7 @@ RectTransform:
   m_GameObject: {fileID: 1345182485}
   m_LocalRotation: {x: 0.19176215, y: -0, z: -0, w: 0.98144144}
   m_LocalPosition: {x: 0, y: 0, z: 0.008643001}
-  m_LocalScale: {x: 0.010168442, y: 0.009964443, z: 0.011111111}
+  m_LocalScale: {x: 0.010358592, y: 0.009964443, z: 0.011111111}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1554197751}
@@ -69722,12 +69748,12 @@ MonoBehaviour:
   - Probe
   - Probe
   - Map
-  - Phasers
-  - Phasers
-  - Phasers
+  - PhaserTemperatures
+  - PhaserTemperatures
+  - LongRangeDirection
   - Torpedoes
   - Torpedoes
-  - Phasers
+  - PhaserPowers
   - UniversalCommunicator
   - UniversalCommunicator
   - UniversalCommunicator

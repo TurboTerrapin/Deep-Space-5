@@ -1,0 +1,123 @@
+/*
+    PhaserPowers.cs
+    - Determines whether phasers are enabled or not
+    Contributor(s): Jake Schott
+    Last Updated: 5/14/2025
+*/
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using Unity.Netcode;
+
+public class PhaserPowers : NetworkBehaviour, IControllable
+{
+    //CLASS CONSTANTS
+    private static float SWITCH_TIME = 0.2f;
+    private static float ENABLE_TIME = 5.0f;
+
+    private string CONTROL_NAME = "PHASER POWER SWITCHES";
+    private List<string> CONTROL_DESCS = new List<string> {"LONG-RANGE", "SHORT-RANGE LEFT", "SHORT-RANGE RIGHT"};
+    private List<int> CONTROL_INDEXES = new List<int>() {4, 0, 5 };
+    private List<Button> BUTTONS = new List<Button>();
+
+    public List<GameObject> phaser_switches = null;
+    public List<GameObject> phaser_coverups = null;
+    public GameObject phaser_switch_canvas;
+
+    private Coroutine[] phaser_switch_coroutines = {null, null, null};
+    private bool[] phaser_is_enabled = {true, true, true};
+
+    private static HUDInfo hud_info = null;
+    private void Start()
+    {
+        hud_info = new HUDInfo(CONTROL_NAME);
+
+        BUTTONS.Add(new Button(CONTROL_DESCS[0], CONTROL_INDEXES[0], true, true));
+        BUTTONS.Add(new Button(CONTROL_DESCS[1], CONTROL_INDEXES[1], true, true));
+        BUTTONS.Add(new Button(CONTROL_DESCS[2], CONTROL_INDEXES[2], true, true));
+
+        hud_info.setButtons(BUTTONS);
+    }
+    public HUDInfo getHUDinfo(GameObject current_target)
+    {
+        return hud_info;
+    }
+
+    IEnumerator switchPhaser(int index)
+    {
+        bool increasing = true;
+
+        //disable phasers
+        if (phaser_is_enabled[index] == true)
+        {
+            phaser_coverups[index].SetActive(true);
+            phaser_is_enabled[index] = false;
+            increasing = false;
+        }
+
+        float switch_time = SWITCH_TIME;
+        float charge_time = ENABLE_TIME;
+
+        //flip switch, fill meter
+        while (charge_time > 0)
+        {
+            float dt = Mathf.Min(Time.deltaTime, 1.0f / 30.0f);
+            charge_time = Mathf.Max(0.0f, charge_time - dt);
+            switch_time = Mathf.Max(0.0f, switch_time - dt);
+
+            float lever_angle = Mathf.Lerp(22f, -22f, switch_time / SWITCH_TIME);
+            float charge_fill = charge_time / ENABLE_TIME;
+            if (increasing == true)
+            {
+                lever_angle = Mathf.Lerp(22f, -22f, 1.0f - (switch_time / SWITCH_TIME));
+                charge_fill = 1.0f - (charge_time / ENABLE_TIME);
+            }
+
+            phaser_switch_canvas.transform.GetChild(2 + (2 * index)).gameObject.GetComponent<UnityEngine.UI.Image>().fillAmount = charge_fill;
+            phaser_switches[index].transform.localRotation =
+                Quaternion.Euler(phaser_switches[index].transform.localRotation.eulerAngles.x,
+                                 lever_angle,
+                                 phaser_switches[index].transform.localRotation.eulerAngles.z);
+
+            yield return null;
+        }
+
+        //enable phasers
+        if (increasing == true)
+        {
+            phaser_coverups[index].SetActive(false);
+            phaser_is_enabled[index] = true;
+        }
+
+        BUTTONS[index].updateInteractable(true);
+
+        phaser_switch_coroutines[index] = null;
+    }
+
+    public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)
+    {
+        for (int i = 0; i <= 2; i++)
+        {
+            if (phaser_switch_coroutines[i] == null)
+            {
+                if (ControlScript.checkInputIndex(CONTROL_INDEXES[i], inputs))
+                {
+                    BUTTONS[i].toggle(0.2f);
+                    transmitPhaserPowerRPC(i, phaser_is_enabled[i]);
+                }
+            }
+        }
+    }
+
+    [Rpc(SendTo.Everyone)]
+    private void transmitPhaserPowerRPC(int index, bool is_enabled)
+    {
+        phaser_is_enabled[index] = is_enabled;
+        if (phaser_switch_coroutines[index] != null)
+        {
+            StopCoroutine(phaser_switch_coroutines[index]);
+        }
+        phaser_switch_coroutines[index] = StartCoroutine(switchPhaser(index));
+    }
+}
