@@ -4,15 +4,13 @@
     - Moves physical slider
     - Updates corresponding screen
     Contributor(s): Jake Schott
-    Last Updated: 5/12/2025
+    Last Updated: 5/13/2025
 */
 
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
-using Unity.VisualScripting;
-using UnityEngine.Windows;
 
 public class Headlights : NetworkBehaviour, IControllable
 {
