@@ -3,7 +3,6 @@ public class ShipController : MonoBehaviour
 {
     // Object References
     private GameObject controlHandler;
-    //public GameObject bridge;
 
     // Pilot Script References
     private ImpulseThrottle impulseThrottle;
@@ -58,7 +57,6 @@ public class ShipController : MonoBehaviour
     {
         if (shipReady)
         {
-            //SynchronizeBridgeTransform();
             GetPilotInput();
             GetTacticianInput();
             GetEngineerInput();
@@ -86,15 +84,7 @@ public class ShipController : MonoBehaviour
     private float verticalThrusterActiveTime = 0f;
     private Vector3 currentVelocity;
 
-    // Hopefully a temporary solution. Even though bridge is child of ship in sccene heirarchy, raycasts sent from 
-    // players to interact with control surfaces being to miss target at any meaningful ship velocity. This function
-    // synchronizes the bridge transform with the physics engine so raycasts can successfully hit control surfaces while
-    // the ship is moving. 
-    /*
-    private void SynchronizeBridgeTransform() {
-        bridge.transform.SetPositionAndRotation(transform.position, transform.rotation);
-    }
-    */
+
     private void UpdateShipTransform()
     {
         float dt = Time.deltaTime;
@@ -115,8 +105,8 @@ public class ShipController : MonoBehaviour
 
         currentVelocity = impulseVelocity + horizontalVelocity + verticalVelocity;
 
-        //HandleRotation(forward, dt);
-        transform.GetComponent<Rigidbody>().MovePosition(transform.position + currentVelocity * dt);
+        HandleRotation(forward, dt);
+        transform.position += currentVelocity * dt;
     }
 
     private void UpdateThrusterActiveTime(float dt)
