@@ -6,9 +6,8 @@
     Last Updated: 5/12/2025
 */
 
-
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 using Unity.Netcode;
 
 public class TractorBeamPower : NetworkBehaviour, IControllable
@@ -23,8 +22,6 @@ public class TractorBeamPower : NetworkBehaviour, IControllable
 
     public GameObject lever;
     public GameObject display_canvas; //used to display the bars beneath the handle
-
-    private List<KeyCode> keys_down = new List<KeyCode>();
 
     private float power = 0.0f;
 

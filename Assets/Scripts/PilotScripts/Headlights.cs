@@ -4,15 +4,22 @@
     - Moves physical slider
     - Updates corresponding screen
     Contributor(s): Jake Schott
-    Last Updated: 5/7/2025
+    Last Updated: 5/12/2025
 */
 
-
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
+using Unity.VisualScripting;
+using UnityEngine.Windows;
 
-public class Headlights : MonoBehaviour, IControllable
+public class Headlights : NetworkBehaviour, IControllable
 {
+    //CLASS CONSTANTS
+    private static float MOVE_TIME = 0.25f;
+    private static float DELAY_TIME = 0.1f;
+
     private string CONTROL_NAME = "HEADLIGHTS";
     private List<string> CONTROL_DESCS = new List<string> {"DIM", "BRIGHTEN"};
     private List<int> CONTROL_INDEXES = new List<int>() {2, 0};
@@ -21,15 +28,13 @@ public class Headlights : MonoBehaviour, IControllable
     public GameObject slider;
     public GameObject screen;
 
-    private int slider_configuration = 0;
-    private int iterations = 0;
-    private float move_factor = -1.0f;
-    private float cooldown_timer = 0.02f;
-    private float end_pos_y = 0.03994f;
-    private float end_pos_z = -18.0192f;
-    private float init_pos_y;
-    private float init_pos_z;
-    private bool adjusting_slider = false;
+    private int headlight_configuration = 0;
+    private Vector3 initial_pos;
+    private Vector3 final_pos;
+    private Coroutine headlight_shift_coroutine = null;
+    private Coroutine headlight_adjustment_coroutine = null;
+
+    private List<KeyCode> keys_down = new List<KeyCode>();
 
     private static HUDInfo hud_info = null;
     private void Start()
@@ -39,99 +44,131 @@ public class Headlights : MonoBehaviour, IControllable
         BUTTONS.Add(new Button(CONTROL_DESCS[1], CONTROL_INDEXES[1], true, false));
         hud_info.setButtons(BUTTONS);
 
-        init_pos_y = slider.transform.position.y;
-        init_pos_z = slider.transform.position.z;
+        initial_pos = slider.transform.localPosition;
+        final_pos = new Vector3(0, 0.03987f, -18.01891f);
     }
     public HUDInfo getHUDinfo(GameObject current_target)
     {
         return hud_info;
     }
-    void Update()
+
+    IEnumerator headlightShift()
     {
-        if (adjusting_slider == true)
+        float animation_time = MOVE_TIME;
+
+        Vector3 starting_pos = slider.transform.localPosition;
+        Vector3 dest_pos =
+            new Vector3(Mathf.Lerp(initial_pos.x, final_pos.x, headlight_configuration / 7.0f),
+                        Mathf.Lerp(initial_pos.y, final_pos.y, headlight_configuration / 7.0f),
+                        Mathf.Lerp(initial_pos.z, final_pos.z, headlight_configuration / 7.0f));
+
+        float starting_fill = screen.transform.GetChild(1).GetComponent<UnityEngine.UI.Image>().fillAmount;
+        float dest_fill = headlight_configuration / 7.0f;
+
+        while (animation_time > 0.0f)
         {
-            cooldown_timer -= Time.deltaTime;
-            if (cooldown_timer <= 0)
+            float dt = Mathf.Min(Time.deltaTime, 1.0f / 30.0f);
+            animation_time = Mathf.Max(0.0f, animation_time - dt);
+            slider.transform.localPosition =
+                new Vector3(Mathf.Lerp(starting_pos.x, dest_pos.x, 1.0f - (animation_time / MOVE_TIME)),
+                            Mathf.Lerp(starting_pos.y, dest_pos.y, 1.0f - (animation_time / MOVE_TIME)),
+                            Mathf.Lerp(starting_pos.z, dest_pos.z, 1.0f - (animation_time / MOVE_TIME)));
+            
+            screen.transform.GetChild(1).GetComponent<UnityEngine.UI.Image>().fillAmount = Mathf.Lerp(starting_fill, dest_fill, 1.0f - (animation_time / MOVE_TIME));
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(DELAY_TIME);
+
+        headlight_shift_coroutine = null;
+    }
+
+    private bool checkIfChangeNecessary()
+    {
+        if (ControlScript.checkInputIndex(CONTROL_INDEXES[0], keys_down) && headlight_configuration > 0){
+            return true;
+        }
+        if (ControlScript.checkInputIndex(CONTROL_INDEXES[1], keys_down) && headlight_configuration < 7)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    IEnumerator headlightAdjustment()
+    {
+        while (checkIfChangeNecessary())
+        {
+            bool shifted = false;
+            if (headlight_configuration < 7)
             {
-                slider.transform.position = new Vector3(0, slider.transform.position.y + (((end_pos_y - init_pos_y) / 70) * move_factor), slider.transform.position.z + (((end_pos_z - init_pos_z) / 70) * (move_factor * 1)));
-                if (move_factor > 0)
+                if (ControlScript.checkInputIndex(CONTROL_INDEXES[1], keys_down)) //brighten
                 {
-                    screen.transform.GetChild(slider_configuration + 1).gameObject.GetComponent<UnityEngine.UI.RawImage>().color = new Color(0, 0.93f, 1.0f, ((10 - iterations) / 10.0f) * (((float)slider_configuration) / 7));
-                }
-                else
-                {
-                    screen.transform.GetChild(slider_configuration + 2).gameObject.GetComponent<UnityEngine.UI.RawImage>().color = new Color(0, 0.93f, 1.0f, ((iterations - 1) / 10.0f) * (((float)slider_configuration) / 7));
-                }
-                iterations--;
-                if (iterations <= 0)
-                {
-                    float dest_pos_y = init_pos_y + (((float)slider_configuration) / 7) * (end_pos_y - init_pos_y);
-                    float dest_pos_z = init_pos_z + (((float)slider_configuration) / 7) * (end_pos_z - init_pos_z);
-                    slider.transform.position = new Vector3(0, dest_pos_y, dest_pos_z);
-                    adjusting_slider = false;
-                    if (slider_configuration <= 0)
-                    {
-                        BUTTONS[0].updateInteractable(false);
-                    }
-                    else
-                    {
-                        BUTTONS[0].updateInteractable(true);
-                    }
-                    if (slider_configuration >= 7)
-                    {
-                        BUTTONS[1].updateInteractable(false);
-                    }
-                    else
-                    {
-                        BUTTONS[1].updateInteractable(true);
-                    }
-                }
-                else
-                {
-                    cooldown_timer = 0.01f;
+                    shifted = true;
+                    BUTTONS[1].toggle();
+                    BUTTONS[0].updateInteractable(false);
+                    headlight_configuration++;
+                    transmitTractorHeadlightAdjustmentRPC(headlight_configuration);
                 }
             }
+            if (shifted == false)
+            {
+                if (headlight_configuration > 0)
+                {
+                    if (ControlScript.checkInputIndex(CONTROL_INDEXES[0], keys_down)) //dim
+                    {
+                        BUTTONS[0].toggle();
+                        BUTTONS[1].updateInteractable(false);
+                        headlight_configuration--;
+                        transmitTractorHeadlightAdjustmentRPC(headlight_configuration);
+                    }
+                }
+            }
+            keys_down.Clear();
+            //wait for coroutine to start
+            while (headlight_shift_coroutine == null)
+            {
+                yield return null;
+            }
+            //wait for coroutine to end
+            while (headlight_shift_coroutine != null)
+            {
+                yield return null;
+            }
+
+            BUTTONS[0].updateInteractable(headlight_configuration > 0);
+            BUTTONS[1].updateInteractable(headlight_configuration < 7);
+            BUTTONS[0].untoggle();
+            BUTTONS[1].untoggle();
         }
+
+        headlight_adjustment_coroutine = null;
     }
-    private void increment()
-    {
-        if (slider_configuration < 7)
-        {
-            cooldown_timer = 0.1f;
-            move_factor = 1.0f;
-            iterations = 10;
-            slider_configuration++;
-            adjusting_slider = true;
-        }
-    }
-    private void decrement()
-    {
-        if (slider_configuration > 0)
-        {
-            cooldown_timer = 0.1f;
-            move_factor = -1.0f;
-            iterations = 10;
-            slider_configuration--;
-            adjusting_slider = true;
-        }
-    }
+
     public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)
     {
-        if (!((inputs.Contains(KeyCode.W) || inputs.Contains(KeyCode.UpArrow)) && (inputs.Contains(KeyCode.S) || inputs.Contains(KeyCode.DownArrow)))){
-            if (adjusting_slider == false)
+        keys_down = inputs;
+        if (headlight_adjustment_coroutine == null)
+        {
+            for (int i = CONTROL_INDEXES.Count - 1; i >= 0; i--)
             {
-                if (inputs.Contains(KeyCode.W) || inputs.Contains(KeyCode.UpArrow)) //W to increment
+                if (ControlScript.checkInputIndex(CONTROL_INDEXES[i], inputs))
                 {
-                    increment();
-                }
-            }
-            if (adjusting_slider == false)
-            {
-                if (inputs.Contains(KeyCode.S) || inputs.Contains(KeyCode.DownArrow))  //S to decrement
-                {
-                    decrement();
+                    headlight_adjustment_coroutine = StartCoroutine(headlightAdjustment());
+                    return;
                 }
             }
         }
+    }
+
+    [Rpc(SendTo.Everyone)]
+    private void transmitTractorHeadlightAdjustmentRPC(int headlight_config)
+    {
+        headlight_configuration = headlight_config;
+        if (headlight_shift_coroutine != null)
+        {
+            StopCoroutine(headlight_shift_coroutine);
+        }
+        headlight_shift_coroutine = StartCoroutine(headlightShift());
     }
 }

@@ -221,35 +221,33 @@ public class ControlScript : MonoBehaviour
                     for (int b = 0; b < current_info.numOptions(); b++)
                     {
                         Button curr_button = current_info.getButtons()[b];
-                        if (curr_button.getInteractable() == true)
+                        bool pressed = false;
+                        for (int i = 0; i < input_options[curr_button.getControlIndex()].Length; i++)
                         {
-                            bool pressed = false;
-                            for (int i = 0; i < input_options[curr_button.getControlIndex()].Length; i++)
+                            if (curr_button.getTogglable() == false)
                             {
-                                if (curr_button.getTogglable() == false) { 
-                                    if (UnityEngine.Input.GetKey(input_options[curr_button.getControlIndex()][i]))
-                                    {
-                                        pressed = true;
-                                    }
-                                }
-                                else
+                                if (UnityEngine.Input.GetKey(input_options[curr_button.getControlIndex()][i]))
                                 {
-                                    if (UnityEngine.Input.GetKeyDown(input_options[curr_button.getControlIndex()][i]))
-                                    {
-                                        pressed = true;
-                                    }
-                                }
-                                if (pressed == true)
-                                {
-                                    current_inputs.Add(input_options[curr_button.getControlIndex()][i]);
-                                    curr_button.highlight(Time.deltaTime);
-                                    break;
+                                    pressed = true;
                                 }
                             }
-                            if (pressed == false)
+                            else
                             {
-                                curr_button.darken(Time.deltaTime);
+                                if (UnityEngine.Input.GetKeyDown(input_options[curr_button.getControlIndex()][i]))
+                                {
+                                    pressed = true;
+                                }
                             }
+                            if (pressed == true)
+                            {
+                                current_inputs.Add(input_options[curr_button.getControlIndex()][i]);
+                                curr_button.highlight(Time.deltaTime);
+                                break;
+                            }
+                        }
+                        if (pressed == false)
+                        {
+                            curr_button.darken(Time.deltaTime);
                         }
                     }
                     control_info.SetActive(true); //show UI indicator

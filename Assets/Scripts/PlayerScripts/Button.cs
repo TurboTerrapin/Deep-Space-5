@@ -118,6 +118,10 @@ public class Button
     {
         return togglable;
     }
+    public bool getToggled()
+    {
+        return currently_toggled;
+    }
     public void updateDesc(string new_desc)
     {
         button_desc = new_desc;
@@ -144,34 +148,29 @@ public class Button
     }
     public void updateInteractable(bool interactable)
     {
-        bool before_interactable = this.interactable;
         this.interactable = interactable;
-        if (before_interactable != interactable)
+        if (visual_button != null)
         {
-            if (visual_button != null)
+            if (visual_button.transform.childCount > 0) //trapezoid view
             {
-                if (visual_button.transform.childCount > 0) //trapezoid view
+                if (this.interactable == true)
                 {
-                    if (this.interactable == true)
+                    currently_toggled = false;
+                    visual_button.transform.GetChild(2).GetComponent<TMP_Text>().color = new Color(1f, 1f, 1f, 1f);
+                    updateColor(0.36f);
+                }
+                else
+                {
+                    if (currently_toggled == false)
                     {
-                        currently_toggled = false;
                         percent_blue = 0.0f;
-                        visual_button.transform.GetChild(2).GetComponent<TMP_Text>().color = new Color(1f, 1f, 1f, 1f);
-                        updateColor(0.36f);
+                        visual_button.transform.GetChild(2).GetComponent<TMP_Text>().color = new Color(1f, 1f, 1f, 0.05f);
+                        updateColor(0.05f);
                     }
                     else
                     {
-                        if (currently_toggled == false)
-                        {
-                            percent_blue = 0.0f;
-                            visual_button.transform.GetChild(2).GetComponent<TMP_Text>().color = new Color(1f, 1f, 1f, 0.05f);
-                            updateColor(0.05f);
-                        }
-                        else
-                        {
-                            percent_blue = 1.0f;
-                            updateColor(0.36f);
-                        }
+                        percent_blue = 1.0f;
+                        updateColor(0.36f);
                     }
                 }
             }
@@ -190,6 +189,13 @@ public class Button
                 visual_button.transform.parent.GetComponent<ButtonHelper>().toggleHelper(this, toggle_length);
             }
         }
+    }
+    public void toggle()
+    {
+        currently_toggled = true;
+        percent_blue = 1.0f;
+        updateColor(0.36f);
+        updateInteractable(false);
     }
     public void untoggle()
     {
@@ -328,12 +334,18 @@ public class Button
     }
     public void highlight(float delta_time)
     {
-        percent_blue = Mathf.Min(1f, percent_blue + delta_time * COLOR_CHANGE_FACTOR);
-        updateColor(0.36f);
+        if (interactable == true)
+        {
+            percent_blue = Mathf.Min(1f, percent_blue + delta_time * COLOR_CHANGE_FACTOR);
+            updateColor(0.36f);
+        }
     }
     public void darken(float delta_time)
     {
-        percent_blue = Mathf.Max(0f, percent_blue - delta_time * COLOR_CHANGE_FACTOR);
-        updateColor(0.36f);
+        if (interactable == true)
+        {
+            percent_blue = Mathf.Max(0f, percent_blue - delta_time * COLOR_CHANGE_FACTOR);
+            updateColor(0.36f);
+        }
     }
 }
