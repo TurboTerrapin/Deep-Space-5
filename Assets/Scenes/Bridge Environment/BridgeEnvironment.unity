@@ -3500,10 +3500,34 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -4083399210052558697, guid: f7a71c3a1697fa24cac85a12597b1b84, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -4083399210052558697, guid: f7a71c3a1697fa24cac85a12597b1b84, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -4083399210052558697, guid: f7a71c3a1697fa24cac85a12597b1b84, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -4083399210052558697, guid: f7a71c3a1697fa24cac85a12597b1b84, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.013
+      objectReference: {fileID: 0}
+    - target: {fileID: -4083399210052558697, guid: f7a71c3a1697fa24cac85a12597b1b84, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -19.551
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: f7a71c3a1697fa24cac85a12597b1b84, type: 3}
       propertyPath: m_Name
       value: BridgeV19
       objectReference: {fileID: 0}
+    - target: {fileID: 2706268485567811319, guid: f7a71c3a1697fa24cac85a12597b1b84, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 674340280032488212, guid: 8bead6d6799f8a64a931159b0baf95a4, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 2654713335656134247, guid: f7a71c3a1697fa24cac85a12597b1b84, type: 3}
