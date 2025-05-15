@@ -17684,7 +17684,6 @@ GameObject:
   - component: {fileID: 401286184}
   - component: {fileID: 401286185}
   - component: {fileID: 401286186}
-  - component: {fileID: 401286187}
   - component: {fileID: 401286188}
   - component: {fileID: 401286189}
   - component: {fileID: 401286192}
@@ -17692,6 +17691,9 @@ GameObject:
   - component: {fileID: 401286195}
   - component: {fileID: 401286194}
   - component: {fileID: 401286197}
+  - component: {fileID: 401286198}
+  - component: {fileID: 401286199}
+  - component: {fileID: 401286200}
   m_Layer: 0
   m_Name: ControlHandler
   m_TagString: ControlHandler
@@ -17893,37 +17895,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6dbe846930fc6fc488153a3aa97fb7a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &401286187
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 401286162}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 993d4f9feddda394f9a54619dc991258, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lit_red: {fileID: 2100000, guid: 2021fad35c27062489d7ad9f6ac32f93, type: 2}
-  unlit_red: {fileID: 2100000, guid: ee77301dc7e7f6a4ca719c4b23a9fa9b, type: 2}
-  lit_green: {fileID: 2100000, guid: 83c7156355581fc45ace5f41f5036d34, type: 2}
-  unlit_green: {fileID: 2100000, guid: 853b5f9e74daed54aa4672816a105b52, type: 2}
-  selector_lever: {fileID: 5955113757938454441}
-  selector_canvas: {fileID: 1142228909}
-  power_levers:
-  - {fileID: 3478230692634117773}
-  - {fileID: 2489995273581728773}
-  - {fileID: 6009059203940039671}
-  - {fileID: 5133280394538043723}
-  information_containers:
-  - {fileID: 1815246277}
-  - {fileID: 1138318363}
-  - {fileID: 361026567}
-  - {fileID: 2052264155}
-  trigger_base: {fileID: 613430672103103790}
-  trigger_green_light: {fileID: 6464640378977898069}
-  trigger_red_light: {fileID: 4876197281605831861}
 --- !u!114 &401286188
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18123,6 +18094,61 @@ MonoBehaviour:
   config_button: {fileID: 1164410512872139450}
   config_canvas: {fileID: 1452509108}
   map_canvas: {fileID: 144341430}
+--- !u!114 &401286198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 401286162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f741ef33d3075c47bf96e3b07d6965f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lit_red: {fileID: 2100000, guid: 2021fad35c27062489d7ad9f6ac32f93, type: 2}
+  unlit_red: {fileID: 2100000, guid: ee77301dc7e7f6a4ca719c4b23a9fa9b, type: 2}
+  lit_green: {fileID: 2100000, guid: 83c7156355581fc45ace5f41f5036d34, type: 2}
+  unlit_green: {fileID: 2100000, guid: 853b5f9e74daed54aa4672816a105b52, type: 2}
+  trigger_base: {fileID: 613430672103103790}
+  trigger_green_light: {fileID: 6464640378977898069}
+  trigger_red_light: {fileID: 4876197281605831861}
+--- !u!114 &401286199
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 401286162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dfee0568b9eaf742a321c719ac1cf02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selector_lever: {fileID: 5955113757938454441}
+  selector_canvas: {fileID: 1142228909}
+--- !u!114 &401286200
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 401286162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c87a8ea96036ba41bce4a6ecd2d0699, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  power_levers:
+  - {fileID: 3478230692634117773}
+  - {fileID: 2489995273581728773}
+  - {fileID: 6009059203940039671}
+  - {fileID: 5133280394538043723}
+  information_containers:
+  - {fileID: 1815246277}
+  - {fileID: 1138318363}
+  - {fileID: 361026567}
+  - {fileID: 2052264155}
 --- !u!1 &402325436
 GameObject:
   m_ObjectHideFlags: 0
@@ -69738,10 +69764,10 @@ MonoBehaviour:
   - DirectionalShifter
   - PowerControl
   - PowerControl
-  - Torpedoes
-  - Torpedoes
-  - Torpedoes
-  - Torpedoes
+  - TorpedoPower
+  - TorpedoPower
+  - TorpedoPower
+  - TorpedoPower
   - TransmissionMover
   - TransmissionMover
   - Probe
@@ -69751,8 +69777,8 @@ MonoBehaviour:
   - PhaserTemperatures
   - PhaserTemperatures
   - LongRangeDirection
-  - Torpedoes
-  - Torpedoes
+  - TorpedoSelector
+  - TorpedoTrigger
   - PhaserPowers
   - UniversalCommunicator
   - UniversalCommunicator

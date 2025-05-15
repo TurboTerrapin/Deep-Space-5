@@ -83,11 +83,11 @@ public class PhaserTemperatures : NetworkBehaviour, IControllable
         int index = ray_targets.IndexOf(current_target.name);
 
         int phaser_direction = 0;
-        if (ControlScript.checkInputIndex(CONTROL_INDEXES[1], inputs)) //E to increment
+        if (ControlScript.checkInputIndex(CONTROL_INDEXES[1], inputs) && phaser_powers[index] < 1.0f) //E to increment
         {
             phaser_direction += 1;
         }
-        if (ControlScript.checkInputIndex(CONTROL_INDEXES[0], inputs))  //Q to decrement
+        if (ControlScript.checkInputIndex(CONTROL_INDEXES[0], inputs) && phaser_powers[index] > 0.0f)  //Q to decrement
         {
             phaser_direction -= 1;
         }
