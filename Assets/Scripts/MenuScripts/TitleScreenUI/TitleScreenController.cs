@@ -14,6 +14,7 @@ public class TitleScreenController : MonoBehaviour
 
     void Start()
     {
+        TitleScreenCanvas.SetActive(true);
         StartCoroutine(FadeText());
         MainMenu.SetActive(false);
     }

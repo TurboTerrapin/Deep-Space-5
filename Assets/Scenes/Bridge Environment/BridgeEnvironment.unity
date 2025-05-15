@@ -6357,7 +6357,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 593032261}
-        m_TargetAssemblyTypeName: BESettingsController, Assembly-CSharp
+        m_TargetAssemblyTypeName: UniversalSettingsController, Assembly-CSharp
         m_MethodName: HandleXButtonClick
         m_Mode: 1
         m_Arguments:
@@ -11722,10 +11722,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 593032257}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dafae0e1eff0d4d548546527e80f7adc, type: 3}
+  m_Script: {fileID: 11500000, guid: 72a56636f1f10407cb9e7416aed9309d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   SettingsMenu: {fileID: 593032257}
+  MainMenu: {fileID: 0}
   PauseMenu: {fileID: 136019885}
   FullScreenToggle: {fileID: 1118918482}
   ResolutionDropdown: {fileID: 273362117}
@@ -20236,7 +20237,19 @@ MonoBehaviour:
   m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 593032261}
+        m_TargetAssemblyTypeName: UniversalSettingsController, Assembly-CSharp
+        m_MethodName: HandleFullScreenToggleClicked
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_IsOn: 1
 --- !u!1 &1120974818
 GameObject:
