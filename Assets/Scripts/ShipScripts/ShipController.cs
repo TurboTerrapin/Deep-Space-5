@@ -1,4 +1,4 @@
-using UnityEngine;
+ using UnityEngine;
 public class ShipController : MonoBehaviour
 {
     // Object References
@@ -54,23 +54,15 @@ public class ShipController : MonoBehaviour
     private void GetEngineerInput() { }
     private void GetCaptainInput() { }
 
-    void FixedUpdate()
-    {
-         if (shipReady)
-        {
-            GetPilotInput();
-            GetTacticianInput();
-            GetEngineerInput();
-            GetCaptainInput();
-        }
-
-
-    }
     void Update()
     {
         if (shipReady)
         {
-             UpdateShipTransform();
+                GetPilotInput();
+                GetTacticianInput();
+                GetEngineerInput();
+                GetCaptainInput();
+                UpdateShipTransform();
         }
     }
 
