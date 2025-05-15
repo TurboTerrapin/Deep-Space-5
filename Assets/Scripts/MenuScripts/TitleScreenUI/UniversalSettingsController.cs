@@ -162,7 +162,7 @@ public class UniversalSettingsController : MonoBehaviour
         if (Camera.main != null)
         {
             // Gets the PlayerCameraMove component attached to camera
-            PlayerCameraMove camMove = Camera.main.GetComponent<PlayerCameraMove>();
+            CameraMove camMove = Camera.main.GetComponent<CameraMove>();
 
             if (camMove != null)
             {

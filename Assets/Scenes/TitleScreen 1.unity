@@ -17345,6 +17345,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CampaignMenu: {fileID: 1829815638}
   HostCampaignMenu: {fileID: 219214139}
+  JoinCampaignMenu: {fileID: 0}
   MainMenu: {fileID: 992464527}
 --- !u!1 &1842469339
 GameObject:
