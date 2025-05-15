@@ -17685,7 +17685,6 @@ GameObject:
   - component: {fileID: 401286185}
   - component: {fileID: 401286186}
   - component: {fileID: 401286188}
-  - component: {fileID: 401286189}
   - component: {fileID: 401286192}
   - component: {fileID: 401286196}
   - component: {fileID: 401286195}
@@ -17694,6 +17693,9 @@ GameObject:
   - component: {fileID: 401286198}
   - component: {fileID: 401286199}
   - component: {fileID: 401286200}
+  - component: {fileID: 401286201}
+  - component: {fileID: 401286202}
+  - component: {fileID: 401286203}
   m_Layer: 0
   m_Name: ControlHandler
   m_TagString: ControlHandler
@@ -17938,29 +17940,6 @@ MonoBehaviour:
   lit_green: {fileID: 2100000, guid: 83c7156355581fc45ace5f41f5036d34, type: 2}
   unlit_green: {fileID: 2100000, guid: 853b5f9e74daed54aa4672816a105b52, type: 2}
   slow_button: {fileID: 4554702242133088258}
---- !u!114 &401286189
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 401286162}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3cbe4ba91befe4a4a9948d8d02ad57cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  probe: {fileID: 531269796}
-  orientation_lever: {fileID: 612127755}
-  orientation_canvas: {fileID: 711119226}
-  lateral_buttons:
-  - {fileID: 1345867784}
-  - {fileID: 1345867783}
-  - {fileID: 1345867782}
-  - {fileID: 1345867781}
-  lateral_canvas: {fileID: 125117639}
-  vertical_lever: {fileID: 1294164964}
-  vertical_canvas: {fileID: 2097237325}
 --- !u!114 &401286192
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18149,6 +18128,55 @@ MonoBehaviour:
   - {fileID: 1138318363}
   - {fileID: 361026567}
   - {fileID: 2052264155}
+--- !u!114 &401286201
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 401286162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b550451500d6efa4e8d6158a1014796a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lateral_buttons:
+  - {fileID: 1345867784}
+  - {fileID: 1345867783}
+  - {fileID: 1345867782}
+  - {fileID: 1345867781}
+  lateral_canvas: {fileID: 125117639}
+  probe: {fileID: 531269796}
+--- !u!114 &401286202
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 401286162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b044bb00547fb4f4592079230a14d36b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vertical_lever: {fileID: 1294164964}
+  vertical_canvas: {fileID: 2097237325}
+  probe: {fileID: 531269796}
+--- !u!114 &401286203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 401286162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bee8f381bee1f7340b6edd4079c5b556, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  orientation_lever: {fileID: 612127755}
+  orientation_canvas: {fileID: 711119226}
+  probe: {fileID: 531269796}
 --- !u!1 &402325436
 GameObject:
   m_ObjectHideFlags: 0
@@ -69770,9 +69798,9 @@ MonoBehaviour:
   - TorpedoPower
   - TransmissionMover
   - TransmissionMover
-  - Probe
-  - Probe
-  - Probe
+  - ProbeOrientation
+  - ProbeLateralMovement
+  - ProbeVerticalMovement
   - MapOptions
   - PhaserTemperatures
   - PhaserTemperatures
