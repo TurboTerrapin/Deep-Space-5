@@ -4,7 +4,7 @@ public class CampaignMenuController : MonoBehaviour
 {
     public GameObject CampaignMenu;
     public GameObject HostCampaignMenu;
-    //public GameObject JoinCampaignMenu;
+    public GameObject JoinCampaignMenu;
     public GameObject MainMenu;
 
     public void HandleHostGameButtonClick()
@@ -14,7 +14,7 @@ public class CampaignMenuController : MonoBehaviour
 
     public void HandleJoinGameButtonClick()
     {
-        //SwitchTo(JoinCampaignMenu);
+        SwitchTo(JoinCampaignMenu);
     }
 
     public void HandleBackButtonClick()
@@ -26,7 +26,7 @@ public class CampaignMenuController : MonoBehaviour
     {
         CampaignMenu.SetActive(false);
         HostCampaignMenu.SetActive(false);
-        //JoinCampaignMenu.SetActive(false);
+        JoinCampaignMenu.SetActive(false);
         MainMenu.SetActive(false);
 
         target.SetActive(true);
