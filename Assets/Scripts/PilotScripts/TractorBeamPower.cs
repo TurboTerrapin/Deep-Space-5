@@ -55,7 +55,7 @@ public class TractorBeamPower : MonoBehaviour, IControllable
         //update lever position
         lever.transform.localRotation = Quaternion.Euler(-30 + (-80 * power), 0f, 0f);
     }
-    void Update()
+    void LAteUpdate()
     {
         power_direction = 0;
         if (keys_down.Contains(KeyCode.E) || keys_down.Contains(KeyCode.RightArrow)) //E to increment

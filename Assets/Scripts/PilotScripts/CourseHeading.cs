@@ -80,7 +80,7 @@ public class CourseHeading : MonoBehaviour, IControllable
         //move physical wheel
         wheel.transform.localRotation = Quaternion.Euler(-112.79f, 180f, 450f * wheel_angle);
     }
-    void Update()
+    void LateUpdate()
     {
         delay_timer -= Time.deltaTime;
         if (delay_timer <= 0.0f)

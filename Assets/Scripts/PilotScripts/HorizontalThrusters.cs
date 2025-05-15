@@ -74,7 +74,7 @@ public class HorizontalThrusters : ThrusterControl, IControllable
             }
         }
     }
-    void Update()
+    void LateUpdate()
     {
         delay_timer -= Time.deltaTime;
         if (delay_timer <= 0.0f)

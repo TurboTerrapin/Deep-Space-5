@@ -94,7 +94,7 @@ public class VerticalThrusters : ThrusterControl, IControllable
         }
         altitude_canvas.transform.GetChild(2).transform.localPosition = new Vector3(0.0268f, (altitude / MAX_ALTITUDE) * 0.038f, 0f);
     }
-    void Update()
+    void LateUpdate()
     {
         delay_timer -= Time.deltaTime;
         if (delay_timer <= 0.0f)

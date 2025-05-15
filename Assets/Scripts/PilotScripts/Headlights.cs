@@ -46,7 +46,7 @@ public class Headlights : MonoBehaviour, IControllable
     {
         return hud_info;
     }
-    void Update()
+    void LateUpdate()
     {
         if (adjusting_slider == true)
         {

@@ -160,12 +160,15 @@ public class ControlScript : MonoBehaviour
         }
     }
 
+
     void Update()
     {
         if (!paused)
         {
             //Physics.SyncTransforms();
-            if (Physics.Raycast(new Ray(my_camera.transform.position, my_camera.transform.forward), out RaycastHit hit, RAYCAST_RANGE)) //cast ray
+
+
+            //if (Physics.Raycast(new Ray(my_camera.transform.position, my_camera.transform.forward), out RaycastHit hit, RAYCAST_RANGE)) //cast ray
             {
                 if (hit.collider.gameObject.layer == 6) //the ray hit a control (Layer 6 = Control)
                 {

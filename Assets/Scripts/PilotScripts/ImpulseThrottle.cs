@@ -62,7 +62,7 @@ public class ImpulseThrottle : MonoBehaviour, IControllable
         //update speedometer text
         speed_information.transform.GetChild(1).gameObject.GetComponent<TMP_Text>().SetText("" + Mathf.Round(impulse * 100.0f));
     }
-    void Update()
+    void LateUpdate()
     {
         impulse_direction = 0;
         if (keys_down.Contains(KeyCode.E) || keys_down.Contains(KeyCode.RightArrow)) //E to increment

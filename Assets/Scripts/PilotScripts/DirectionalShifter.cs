@@ -72,7 +72,7 @@ public class DirectionalShifter : MonoBehaviour, IControllable
             directional_arrow.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
         }
     }
-    public void Update()
+    public void LateUpdate()
     {
         //check inputs
         if (keys_down.Contains(KeyCode.Mouse0) || keys_down.Contains(KeyCode.KeypadEnter))
