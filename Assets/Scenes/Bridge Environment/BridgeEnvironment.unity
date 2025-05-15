@@ -9658,7 +9658,7 @@ MonoBehaviour:
   m_text: 1280 x 720
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 647b19b7360c549f09d1ac6149e70644, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: -2798455105913573538, guid: 647b19b7360c549f09d1ac6149e70644, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -9723,7 +9723,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &208316836
@@ -17687,11 +17687,11 @@ GameObject:
   - component: {fileID: 401286187}
   - component: {fileID: 401286188}
   - component: {fileID: 401286189}
-  - component: {fileID: 401286190}
   - component: {fileID: 401286192}
   - component: {fileID: 401286196}
   - component: {fileID: 401286195}
   - component: {fileID: 401286194}
+  - component: {fileID: 401286197}
   m_Layer: 0
   m_Name: ControlHandler
   m_TagString: ControlHandler
@@ -17990,22 +17990,6 @@ MonoBehaviour:
   lateral_canvas: {fileID: 125117639}
   vertical_lever: {fileID: 1294164964}
   vertical_canvas: {fileID: 2097237325}
---- !u!114 &401286190
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 401286162}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec633b4b06ff79e49919c83558cf6f37, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  slider: {fileID: 2718812470230916211}
-  configuration_button: {fileID: 1164410512872139450}
-  configuration_canvas: {fileID: 1452509108}
-  map_canvas: {fileID: 144341430}
 --- !u!114 &401286192
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18123,6 +18107,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   long_range_lever: {fileID: 374672914342469551}
   long_range_indicator: {fileID: 1171193545}
+--- !u!114 &401286197
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 401286162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec633b4b06ff79e49919c83558cf6f37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slider: {fileID: 2718812470230916211}
+  config_button: {fileID: 1164410512872139450}
+  config_canvas: {fileID: 1452509108}
+  map_canvas: {fileID: 144341430}
 --- !u!1 &402325436
 GameObject:
   m_ObjectHideFlags: 0
@@ -69747,7 +69747,7 @@ MonoBehaviour:
   - Probe
   - Probe
   - Probe
-  - Map
+  - MapOptions
   - PhaserTemperatures
   - PhaserTemperatures
   - LongRangeDirection
@@ -80059,7 +80059,7 @@ MonoBehaviour:
   m_text: Default
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 647b19b7360c549f09d1ac6149e70644, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: -2798455105913573538, guid: 647b19b7360c549f09d1ac6149e70644, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -80124,7 +80124,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &1851030359
