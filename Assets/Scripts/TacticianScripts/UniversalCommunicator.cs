@@ -151,68 +151,11 @@ public class UniversalCommunicator : MonoBehaviour, IControllable
         }
         else if (to_update == 2)
         {
-            float desired_x_pos = -0.412f + color_selector_x_dist * (curr_color / 3.0f);
-            float move_direction = -1f;
-            if (color_selector_slider.transform.localPosition.x > desired_x_pos)
-            {
-                move_direction = 1;
-            }
-
-            if (cooldown_timer <= 0.0f)
-            {
-                color_selector_slider.transform.localPosition =
-                    new Vector3(desired_x_pos,
-                                color_selector_slider.transform.localPosition.y,
-                                color_selector_slider.transform.localPosition.z);
-                for (int i = 0; i < 12; i++)
-                {
-                    character_displays[i].transform.GetChild(1).gameObject.GetComponent<TMP_Text>().color = COLOR_OPTIONS[curr_color];
-                    character_displays[i].transform.GetChild(2).gameObject.GetComponent<UnityEngine.UI.RawImage>().color = COLOR_OPTIONS[curr_color];
-                }
-            }
-            else
-            {
-                color_selector_slider.transform.localPosition =
-                    new Vector3(prev_color_selector_x_dist + move_direction * ((0.5f - cooldown_timer) / 0.5f) * (color_selector_x_dist / 3.0f),
-                                color_selector_slider.transform.localPosition.y,
-                                color_selector_slider.transform.localPosition.z);
-            }
+          
         }
         else if (to_update == 3)
         {
-            float x_pos = numeric_selector_x_dist;
-            if (cooldown_timer <= 0.0f)
-            {
-                if (curr_numeric == true)
-                {
-                    x_pos = 0.0f;
-                }
-                numeric_selector.transform.localPosition =
-                    new Vector3(
-                                x_pos,
-                                numeric_selector.transform.localPosition.y,
-                                numeric_selector.transform.localPosition.z);
-                for (int i = 0; i < 12; i++)
-                {
-                    character_displays[i].transform.GetChild(1).gameObject.SetActive(curr_numeric);
-                    character_displays[i].transform.GetChild(2).gameObject.SetActive(!curr_numeric);
-                }
-                numeric_indicator_display.transform.GetChild(1).gameObject.SetActive(curr_numeric);
-                numeric_indicator_display.transform.GetChild(2).gameObject.SetActive(!curr_numeric);
-            }
-            else
-            {
-                float percent_to_max = cooldown_timer / 0.5f;
-                if (curr_numeric == false)
-                {
-                    percent_to_max = 1.0f - percent_to_max;
-                }
-                numeric_selector.transform.localPosition =
-                    new Vector3(
-                                percent_to_max * numeric_selector_x_dist,
-                                numeric_selector.transform.localPosition.y,
-                                numeric_selector.transform.localPosition.z);
-            }
+         
         }
         else if (to_update == 4)
         {

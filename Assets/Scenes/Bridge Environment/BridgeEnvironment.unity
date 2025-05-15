@@ -17696,6 +17696,8 @@ GameObject:
   - component: {fileID: 401286201}
   - component: {fileID: 401286202}
   - component: {fileID: 401286203}
+  - component: {fileID: 401286204}
+  - component: {fileID: 401286205}
   m_Layer: 0
   m_Name: ControlHandler
   m_TagString: ControlHandler
@@ -18177,6 +18179,60 @@ MonoBehaviour:
   orientation_lever: {fileID: 612127755}
   orientation_canvas: {fileID: 711119226}
   probe: {fileID: 531269796}
+--- !u!114 &401286204
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 401286162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff2c59b7b8605224c81b815de32b38d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  character_displays:
+  - {fileID: 1212676614}
+  - {fileID: 321896060}
+  - {fileID: 1329132393}
+  - {fileID: 433955398}
+  - {fileID: 692233213}
+  - {fileID: 1969116227}
+  - {fileID: 1642395623}
+  - {fileID: 1313606937}
+  - {fileID: 1734007598}
+  - {fileID: 1294978410}
+  - {fileID: 2039910034}
+  - {fileID: 564669636}
+  numeric_selector: {fileID: 6648696367336580869}
+  numeric_indicator_display: {fileID: 235545285}
+--- !u!114 &401286205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 401286162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bf9910ac251d734a974ea1aecc1e6b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  character_displays:
+  - {fileID: 1212676614}
+  - {fileID: 321896060}
+  - {fileID: 1329132393}
+  - {fileID: 433955398}
+  - {fileID: 692233213}
+  - {fileID: 1969116227}
+  - {fileID: 1642395623}
+  - {fileID: 1313606937}
+  - {fileID: 1734007598}
+  - {fileID: 1294978410}
+  - {fileID: 2039910034}
+  - {fileID: 564669636}
+  selector_lever: {fileID: 3820886336702594465}
+  selector_canvas: {fileID: 1770920458}
 --- !u!1 &402325436
 GameObject:
   m_ObjectHideFlags: 0
@@ -69820,8 +69876,8 @@ MonoBehaviour:
   - UniversalCommunicator
   - UniversalCommunicator
   - UniversalCommunicator
-  - UniversalCommunicator
-  - UniversalCommunicator
+  - ColorSelector
+  - SymbolToggle
   - UniversalCommunicator
   - UniversalCommunicator
   - PowerControl

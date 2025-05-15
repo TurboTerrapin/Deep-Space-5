@@ -1,7 +1,7 @@
 /*
-    TorpedoSelector.cs
-    - Handles torpedo slider
-    - Updates arrow screen
+    ColorSelector.cs
+    - Handles color slider
+    - Updates characters
     Contributor(s): Jake Schott
     Last Updated: 5/15/2025
 */
@@ -10,24 +10,27 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using TMPro;
 
-public class TorpedoSelector : NetworkBehaviour, IControllable
+public class ColorSelector : NetworkBehaviour, IControllable
 {
     //CLASS CONSTANTS
+    Color[] COLOR_OPTIONS = new Color[4] { new Color(0f, 0.84f, 1f), new Color(0.129f, 1f, 0.04f), new Color(0.69f, 0f, 0.69f), new Color(0.84f, 0.62f, 0f) };
     private static float MOVE_TIME = 0.5f;
 
-    private string CONTROL_NAME = "TORPEDO SELECTOR";
-    private List<string> CONTROL_DESCS = new List<string>{"SHIFT LEFT", "SHIFT RIGHT"};
-    private List<int> CONTROL_INDEXES = new List<int>(){4, 5};
+    private string CONTROL_NAME = "COLOR SELECTOR";
+    private List<string> CONTROL_DESCS = new List<string> { "SHIFT LEFT", "SHIFT RIGHT" };
+    private List<int> CONTROL_INDEXES = new List<int>() {4, 5};
     private List<Button> BUTTONS = new List<Button>();
 
+    public List<GameObject> character_displays = null;
     public GameObject selector_lever;
     public GameObject selector_canvas;
     private Vector3 initial_pos;
-    private Vector3 final_pos = new Vector3(-0.08192f, -0.01329f, -17.8889f);
-    private int torpedo_option = 0;
+    private Vector3 final_pos = new Vector3(-0.4931f, -0.0132f, -17.8889f);
+    private int curr_color = 0;
 
-    private Coroutine torpedo_shift_coroutine = null;
+    private Coroutine color_shift_coroutine = null;
 
     private List<KeyCode> keys_down = new List<KeyCode>();
 
@@ -46,20 +49,24 @@ public class TorpedoSelector : NetworkBehaviour, IControllable
         return hud_info;
     }
 
+    private void displayAdjustment()
+    {
+        for (int i = 0; i < 12; i++)
+        {
+            character_displays[i].transform.GetChild(1).gameObject.GetComponent<TMP_Text>().color = COLOR_OPTIONS[curr_color];
+            character_displays[i].transform.GetChild(2).gameObject.GetComponent<UnityEngine.UI.RawImage>().color = COLOR_OPTIONS[curr_color];
+        }
+    }
+
     IEnumerator selectorShift()
     {
-        for (int i = 5; i <= 8; i++)
-        {
-            selector_canvas.transform.GetChild(i).gameObject.SetActive(false);
-        }
-
         float animation_time = MOVE_TIME;
 
         Vector3 starting_pos = selector_lever.transform.localPosition;
         Vector3 dest_pos =
-            new Vector3(Mathf.Lerp(initial_pos.x, final_pos.x, torpedo_option / 3.0f),
-                        Mathf.Lerp(initial_pos.y, final_pos.y, torpedo_option / 3.0f),
-                        Mathf.Lerp(initial_pos.z, final_pos.z, torpedo_option / 3.0f));
+            new Vector3(Mathf.Lerp(initial_pos.x, final_pos.x, curr_color / 3.0f),
+                        Mathf.Lerp(initial_pos.y, final_pos.y, curr_color / 3.0f),
+                        Mathf.Lerp(initial_pos.z, final_pos.z, curr_color / 3.0f));
 
         //move slider
         while (animation_time > 0.0f)
@@ -74,43 +81,43 @@ public class TorpedoSelector : NetworkBehaviour, IControllable
             yield return null;
         }
 
-        selector_canvas.transform.GetChild(torpedo_option + 5).gameObject.SetActive(true);
+        displayAdjustment();
 
-        BUTTONS[0].updateInteractable(torpedo_option > 0);
-        BUTTONS[1].updateInteractable(torpedo_option < 3);
+        BUTTONS[0].updateInteractable(curr_color > 0);
+        BUTTONS[1].updateInteractable(curr_color < 3);
         BUTTONS[0].untoggle();
         BUTTONS[1].untoggle();
 
-        torpedo_shift_coroutine = null;
+        color_shift_coroutine = null;
     }
 
     public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)
     {
         keys_down = inputs;
-        if (torpedo_shift_coroutine == null)
+        if (color_shift_coroutine == null)
         {
             bool shifted = false;
-            if (torpedo_option < 3)
+            if (curr_color < 3)
             {
                 if (ControlScript.checkInputIndex(CONTROL_INDEXES[1], keys_down)) //shift right
                 {
                     shifted = true;
                     BUTTONS[1].toggle();
                     BUTTONS[0].updateInteractable(false);
-                    torpedo_option++;
-                    transmitTorpedoSelectionAdjustmentRPC(torpedo_option);
+                    curr_color++;
+                    transmitColorSelectionAdjustmentRPC(curr_color);
                 }
             }
             if (shifted == false)
             {
-                if (torpedo_option > 0)
+                if (curr_color > 0)
                 {
                     if (ControlScript.checkInputIndex(CONTROL_INDEXES[0], keys_down)) //shift left
                     {
                         BUTTONS[0].toggle();
                         BUTTONS[1].updateInteractable(false);
-                        torpedo_option--;
-                        transmitTorpedoSelectionAdjustmentRPC(torpedo_option);
+                        curr_color--;
+                        transmitColorSelectionAdjustmentRPC(curr_color);
                     }
                 }
             }
@@ -118,13 +125,13 @@ public class TorpedoSelector : NetworkBehaviour, IControllable
     }
 
     [Rpc(SendTo.Everyone)]
-    private void transmitTorpedoSelectionAdjustmentRPC(int to)
+    private void transmitColorSelectionAdjustmentRPC(int co)
     {
-        torpedo_option = to;
-        if (torpedo_shift_coroutine != null)
+        curr_color = co;
+        if (color_shift_coroutine != null)
         {
-            StopCoroutine(torpedo_shift_coroutine);
+            StopCoroutine(color_shift_coroutine);
         }
-        torpedo_shift_coroutine = StartCoroutine(selectorShift());
+        color_shift_coroutine = StartCoroutine(selectorShift());
     }
 }
