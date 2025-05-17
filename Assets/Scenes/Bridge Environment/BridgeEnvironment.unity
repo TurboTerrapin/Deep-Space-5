@@ -17931,7 +17931,6 @@ GameObject:
   - component: {fileID: 401286185}
   - component: {fileID: 401286186}
   - component: {fileID: 401286188}
-  - component: {fileID: 401286192}
   - component: {fileID: 401286196}
   - component: {fileID: 401286195}
   - component: {fileID: 401286194}
@@ -17942,8 +17941,12 @@ GameObject:
   - component: {fileID: 401286201}
   - component: {fileID: 401286202}
   - component: {fileID: 401286203}
+  - component: {fileID: 401286192}
   - component: {fileID: 401286204}
   - component: {fileID: 401286205}
+  - component: {fileID: 401286206}
+  - component: {fileID: 401286207}
+  - component: {fileID: 401286208}
   m_Layer: 0
   m_Name: ControlHandler
   m_TagString: ControlHandler
@@ -18214,23 +18217,6 @@ MonoBehaviour:
   - {fileID: 2039910034}
   - {fileID: 564669636}
   code_display: {fileID: 144974416}
-  character_buttons:
-  - {fileID: 7067562842103931297}
-  - {fileID: 7722431995149971248}
-  - {fileID: 693733321152043693}
-  - {fileID: 8479167051079353403}
-  - {fileID: 6542724460704775945}
-  - {fileID: 2725135174804895692}
-  - {fileID: 7236549071401456441}
-  - {fileID: 4143784404821273744}
-  - {fileID: 4634696996320908348}
-  - {fileID: 3544155176877925870}
-  - {fileID: 5220781594002505420}
-  - {fileID: 4917560717663032069}
-  color_selector_slider: {fileID: 3820886336702594465}
-  numeric_selector: {fileID: 6648696367336580869}
-  numeric_indicator_display: {fileID: 235545285}
-  reset_button: {fileID: 1457145375931449823}
 --- !u!114 &401286193
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18479,6 +18465,56 @@ MonoBehaviour:
   - {fileID: 564669636}
   selector_lever: {fileID: 3820886336702594465}
   selector_canvas: {fileID: 1770920458}
+--- !u!114 &401286206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 401286162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d54e2d3d99a3ea7468a5810c12d1174c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  reset_button: {fileID: 1457145375931449823}
+--- !u!114 &401286207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 401286162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c563380236f42494cb0761d01936c2a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  character_buttons:
+  - {fileID: 7067562842103931297}
+  - {fileID: 7722431995149971248}
+  - {fileID: 693733321152043693}
+  - {fileID: 8479167051079353403}
+  - {fileID: 6542724460704775945}
+  - {fileID: 2725135174804895692}
+  - {fileID: 7236549071401456441}
+  - {fileID: 4143784404821273744}
+  - {fileID: 4634696996320908348}
+  - {fileID: 3544155176877925870}
+  - {fileID: 5220781594002505420}
+  - {fileID: 4917560717663032069}
+--- !u!114 &401286208
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 401286162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8f998b6eb14f2346a339c4d09f45df0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &402325436
 GameObject:
   m_ObjectHideFlags: 0
@@ -46432,7 +46468,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: o
+  m_text: _
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d4ac6254c39f96849b65e1002f3b3c8e, type: 2}
   m_sharedMaterial: {fileID: 8143332823266262665, guid: d4ac6254c39f96849b65e1002f3b3c8e, type: 2}
@@ -70749,7 +70785,7 @@ MonoBehaviour:
   title: {fileID: 1829927360}
   buttons_panel: {fileID: 1814052399}
   pause_menu: {fileID: 1365157266}
-  settings_menu: {fileID: 0}
+  settings_menu: {fileID: 230458610}
   script_holder: {fileID: 401286162}
   my_camera: {fileID: 0}
   collider_names:
@@ -70831,22 +70867,22 @@ MonoBehaviour:
   - TorpedoSelector
   - TorpedoTrigger
   - PhaserPowers
-  - UniversalCommunicator
-  - UniversalCommunicator
-  - UniversalCommunicator
-  - UniversalCommunicator
-  - UniversalCommunicator
-  - UniversalCommunicator
-  - UniversalCommunicator
-  - UniversalCommunicator
-  - UniversalCommunicator
-  - UniversalCommunicator
-  - UniversalCommunicator
-  - UniversalCommunicator
+  - CharacterInput
+  - CharacterInput
+  - CharacterInput
+  - CharacterInput
+  - CharacterInput
+  - CharacterInput
+  - CharacterInput
+  - CharacterInput
+  - CharacterInput
+  - CharacterInput
+  - CharacterInput
+  - CharacterInput
   - ColorSelector
   - SymbolToggle
-  - UniversalCommunicator
-  - UniversalCommunicator
+  - ResetDisplay
+  - InputOutputToggle
   - PowerControl
 --- !u!114 &1593583443
 MonoBehaviour:

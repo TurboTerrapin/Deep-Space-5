@@ -55,6 +55,15 @@ public class SymbolToggle : NetworkBehaviour, IControllable
         numeric_indicator_display.transform.GetChild(2).gameObject.SetActive(!symbol_mode);
     }
 
+    public int getIsNumeric()
+    {
+        if (symbol_mode == true)
+        {
+            return 0;
+        }
+        return 1;
+    }
+
     IEnumerator symbolSwitch()
     {
         float switch_time = SWITCH_TIME;
