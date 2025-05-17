@@ -61596,6 +61596,55 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1400729912}
   m_CullTransparentMesh: 1
+--- !u!1 &1402450207
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1402450209}
+  - component: {fileID: 1402450208}
+  m_Layer: 0
+  m_Name: SpaceShip
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1402450208
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1402450207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 780c5300605a9d04e93aaba810432f1e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentImpulse: 0
+  currentHeading: 0
+  horizontalThrust: 0
+  verticalThrust: 0
+--- !u!4 &1402450209
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1402450207}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1499603632}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1403228159
 GameObject:
   m_ObjectHideFlags: 0
@@ -65933,7 +65982,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1499603631}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -65948,7 +65997,7 @@ Transform:
   - {fileID: 664338695}
   - {fileID: 819358323}
   - {fileID: 415543803}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1402450209}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1500491069
 GameObject:
@@ -110535,7 +110584,6 @@ SceneRoots:
   - {fileID: 401286164}
   - {fileID: 13763884}
   - {fileID: 1312237236}
-  - {fileID: 1499603632}
   - {fileID: 877927442}
   - {fileID: 17234538}
   - {fileID: 2117430953}
@@ -110544,3 +110592,4 @@ SceneRoots:
   - {fileID: 531269800}
   - {fileID: 1593583441}
   - {fileID: 1412500031}
+  - {fileID: 1402450209}

@@ -50,6 +50,11 @@ public class CourseHeading : NetworkBehaviour, IControllable
     {
         return hud_info;
     }
+
+    public float getCurrentHeading()
+    {
+        return heading;
+    }
     private void displayAdjustment()
     {
         //rotate compass

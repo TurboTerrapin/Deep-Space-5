@@ -43,6 +43,11 @@ public class ImpulseThrottle : NetworkBehaviour, IControllable
     {
         return hud_info;
     }
+
+    public float getCurrentImpulse()
+    {
+        return impulse;
+    }
     private void displayAdjustment()
     {
         //update bars on screen
