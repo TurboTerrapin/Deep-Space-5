@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - ControlHandler
+  - Spaceship
   layers:
   - Default
   - TransparentFX
