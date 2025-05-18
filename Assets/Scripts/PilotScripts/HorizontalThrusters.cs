@@ -34,6 +34,10 @@ public class HorizontalThrusters : ThrusterControl, IControllable
         return hud_info;
     }
 
+    public int getHorizontalThrusterState()
+    {
+        return (thruster_percentage[0] > 0f || thruster_percentage[1] > 0f) ? 1 : 0;
+    }
 
     IEnumerator adjustingThrust()
     {

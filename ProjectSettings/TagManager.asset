@@ -6,6 +6,7 @@ TagManager:
   tags:
   - ControlHandler
   - Spaceship
+  - RayTargets
   layers:
   - Default
   - TransparentFX

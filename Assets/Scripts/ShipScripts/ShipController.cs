@@ -3,6 +3,7 @@ public class ShipController : MonoBehaviour
 {
     // Object References
     private GameObject controlHandler;
+    private GameObject rayTargets;
 
 
     // Pilot Script References
@@ -35,8 +36,10 @@ public class ShipController : MonoBehaviour
     void Start()
     {
         controlHandler = GameObject.FindGameObjectWithTag("ControlHandler");
+        rayTargets = GameObject.FindGameObjectWithTag("RayTargets");
 
-        if (controlHandler != null && AssignPilotControlRefs() && AssignTacticianControlRefs() &&
+
+        if (controlHandler != null && rayTargets != null && AssignPilotControlRefs() && AssignTacticianControlRefs() &&
                 AssignEngineerControlRefs() && AssignCaptainControlRefs())
         {
             shipReady = true;
@@ -47,8 +50,8 @@ public class ShipController : MonoBehaviour
     {
         currentImpulse = impulseThrottle.getCurrentImpulse();
         currentHeading = courseHeading.getCurrentHeading();
-        //horizontalThrust = horizontalThrusters.getHorizontalThrust();
-        //verticalThrust = verticalThrusters.getVerticalThrust();
+        horizontalThrust = horizontalThrusters.getHorizontalThrusterState();
+        verticalThrust = verticalThrusters.getVerticalThrusterState();
     }
     private void GetTacticianInput() { }
     private void GetEngineerInput() { }
