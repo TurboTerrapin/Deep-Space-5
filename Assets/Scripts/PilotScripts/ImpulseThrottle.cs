@@ -37,7 +37,7 @@ public class ImpulseThrottle : NetworkBehaviour, IControllable
         BUTTONS.Add(new Button(CONTROL_DESCS[1], CONTROL_INDEXES[1], true, false)); //increase button
         hud_info.setButtons(BUTTONS);
 
-        initial_pos = handle.transform.position; //sets the initial position
+        initial_pos = handle.transform.localPosition; //sets the initial position
     }
     public HUDInfo getHUDinfo(GameObject current_target)
     {
@@ -53,7 +53,7 @@ public class ImpulseThrottle : NetworkBehaviour, IControllable
         }
 
         //update lever position
-        handle.transform.position =
+        handle.transform.localPosition =
             new Vector3(Mathf.Lerp(initial_pos.x, final_pos.x, impulse),
                         Mathf.Lerp(initial_pos.y, final_pos.y, impulse),
                         Mathf.Lerp(initial_pos.z, final_pos.z, impulse));

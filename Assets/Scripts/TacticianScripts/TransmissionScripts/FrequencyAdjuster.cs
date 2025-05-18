@@ -9,14 +9,11 @@ using Unity.Netcode;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.Windows;
-using Unity.VisualScripting;
-using Unity.Networking.Transport.TLS;
 
 public class FrequencyAdjuster : NetworkBehaviour, IControllable
 {
     //CLASS CONSTANTS
-    private static float PUSH_TIME = 0.5f;
+    private static float PUSH_TIME = 0.25f;
     private static float SLOW_BUTTON_SPEED = 3.0f;
 
     private string CONTROL_NAME = "FREQUENCY ADJUSTER";
@@ -87,9 +84,9 @@ public class FrequencyAdjuster : NetworkBehaviour, IControllable
                 }
 
                 frequency_buttons[index].transform.localPosition =
-                    new Vector3(Mathf.Lerp(freq_initial_pos[i].x, final_pos.x, push_percentage),
-                                Mathf.Lerp(freq_initial_pos[i].y, final_pos.y, push_percentage),
-                                Mathf.Lerp(freq_initial_pos[i].z, final_pos.z, push_percentage));
+                    new Vector3(Mathf.Lerp(freq_initial_pos[index].x, final_pos.x, push_percentage),
+                                Mathf.Lerp(freq_initial_pos[index].y, final_pos.y, push_percentage),
+                                Mathf.Lerp(freq_initial_pos[index].z, final_pos.z, push_percentage));
 
                 yield return null;
             }
@@ -166,7 +163,7 @@ public class FrequencyAdjuster : NetworkBehaviour, IControllable
             {
                 if (ControlScript.checkInputIndex(CONTROL_INDEXES[i], inputs))
                 {
-                    BUTTONS[i].toggle(0.2f);
+                    BUTTONS[i].toggle(0.1f);
                     if (i == 1)
                     {
                         BUTTONS[2].updateInteractable(false);

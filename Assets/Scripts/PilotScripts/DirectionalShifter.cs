@@ -42,7 +42,7 @@ public class DirectionalShifter : NetworkBehaviour, IControllable
         BUTTONS.Add(new Button(CONTROL_DESCS[0], CONTROL_INDEXES[0], true, false));
         hud_info.setButtons(BUTTONS);
 
-        forward_pos = lever.transform.position;
+        forward_pos = lever.transform.localPosition;
     }
     public HUDInfo getHUDinfo(GameObject current_target)
     {

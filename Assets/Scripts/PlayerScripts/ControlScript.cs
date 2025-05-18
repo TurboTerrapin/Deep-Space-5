@@ -49,7 +49,8 @@ public class ControlScript : MonoBehaviour
         new KeyCode[] {KeyCode.Alpha2, KeyCode.Keypad2},
         new KeyCode[] {KeyCode.Alpha3, KeyCode.Keypad3},
         new KeyCode[] {KeyCode.Alpha4, KeyCode.Keypad4},
-        new KeyCode[] {KeyCode.F}
+        new KeyCode[] {KeyCode.F},
+        new KeyCode[] {KeyCode.Z}
     };
 
     public static bool checkInputIndex(int input_index, List<KeyCode> inputs_to_check)
