@@ -121,7 +121,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1780058632980948521}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 434479728554913060}
+        m_TargetAssemblyTypeName: FriendInviteWithButton, Assembly-CSharp
+        m_MethodName: InviteFriendToLobby
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &3476120474175800468
 GameObject:
   m_ObjectHideFlags: 0
@@ -264,8 +276,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Username
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 1797dcfb9d45ff74b9fd2bf71ef6fd4e, type: 2}
-  m_sharedMaterial: {fileID: 2311739105322250070, guid: 1797dcfb9d45ff74b9fd2bf71ef6fd4e, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -400,8 +412,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: INVITE
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 1797dcfb9d45ff74b9fd2bf71ef6fd4e, type: 2}
-  m_sharedMaterial: {fileID: 2311739105322250070, guid: 1797dcfb9d45ff74b9fd2bf71ef6fd4e, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -480,6 +492,7 @@ GameObject:
   - component: {fileID: 787357759882225759}
   - component: {fileID: 266648593565727385}
   - component: {fileID: 5465046355893786625}
+  - component: {fileID: 434479728554913060}
   m_Layer: 5
   m_Name: FriendItem
   m_TagString: Untagged
@@ -546,3 +559,16 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &434479728554913060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6776574227381304737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eced4ddd63a98d64b8f2e5b0b6c90bbd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  friendName: {fileID: 2176534944740446943}

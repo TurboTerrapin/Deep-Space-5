@@ -67,8 +67,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: JOIN
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 1797dcfb9d45ff74b9fd2bf71ef6fd4e, type: 2}
-  m_sharedMaterial: {fileID: 2311739105322250070, guid: 1797dcfb9d45ff74b9fd2bf71ef6fd4e, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -203,8 +203,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Username
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 1797dcfb9d45ff74b9fd2bf71ef6fd4e, type: 2}
-  m_sharedMaterial: {fileID: 2311739105322250070, guid: 1797dcfb9d45ff74b9fd2bf71ef6fd4e, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -339,8 +339,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 0/4
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 1797dcfb9d45ff74b9fd2bf71ef6fd4e, type: 2}
-  m_sharedMaterial: {fileID: 2311739105322250070, guid: 1797dcfb9d45ff74b9fd2bf71ef6fd4e, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -419,6 +419,7 @@ GameObject:
   - component: {fileID: 5114916838139178649}
   - component: {fileID: 8404105012449515464}
   - component: {fileID: 8858443589841714592}
+  - component: {fileID: 881835646765244292}
   m_Layer: 5
   m_Name: LobbyItem
   m_TagString: Untagged
@@ -486,6 +487,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &881835646765244292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7270812185531753691}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bd8bccf56f4233468808430c8df4ada, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  friendName: {fileID: 6544369668706378595}
+  players: {fileID: 1666544189228139900}
 --- !u!1 &8014456898186408415
 GameObject:
   m_ObjectHideFlags: 0
@@ -682,4 +697,16 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5593987914920044726}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 881835646765244292}
+        m_TargetAssemblyTypeName: FriendJoinWithButton, Assembly-CSharp
+        m_MethodName: JoinFriendLobby
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2

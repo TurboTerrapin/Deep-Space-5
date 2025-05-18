@@ -19,6 +19,7 @@ public class CheckFriendsList : MonoBehaviour
 
 
     public float timer = 2;
+    public bool lookingForFriends = false;
     public bool lookingForLobbies = true;
 
     public static CheckFriendsList Instance { get; private set; } = null;
@@ -32,24 +33,27 @@ public class CheckFriendsList : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        /*
-        if (lookingForLobbies)
+        if (lookingForFriends)
         {
-            friendsInGame.Clear();
             timer += Time.deltaTime;
             //Every two seconds
             if (timer > 2)
             {
                 timer = 0;
-                GetFriendsInGame();
-                CreateFriendObjects();
+                RefreshFriendList();
             }
         }
-        */
-
-        
-
-
+        else if (lookingForLobbies)
+        {
+            timer += Time.deltaTime;
+            //Every two seconds
+            if (timer > 2)
+            {
+                timer = 0;
+                RefreshFriendLobbies();
+            }
+        }
+        /*
         //Just displays the names of those ingame
         if (Input.GetKeyDown(KeyCode.N))
         {
@@ -58,6 +62,7 @@ public class CheckFriendsList : MonoBehaviour
                 Debug.Log(friend.Name + "\n");
             }
         }
+        */
     }
 
     public List<Friend> GetFriendsInGameList()
@@ -74,8 +79,20 @@ public class CheckFriendsList : MonoBehaviour
         }
         friendsInGame.Clear();
         friendObjects.Clear();
-        GetFriendsInGame();
+        GetFriendsInLobby();
         CreateFriendObjects();
+    }
+
+    public void RefreshFriendList()
+    {
+        foreach (GameObject friend in friendObjects)
+        {
+            Destroy(friend.gameObject);
+        }
+        friendsInGame.Clear();
+        friendObjects.Clear();
+        GetFriendsInGame();
+        CreateFriendInviteObjects();
     }
 
     private void GetFriendsInGame()
@@ -86,7 +103,39 @@ public class CheckFriendsList : MonoBehaviour
             //Friend.FriendGameInfo info = friend.GameInfo.Value;
 
             //If they're playing the game
-            if (friend.IsPlayingThisGame)
+            if (friend.IsPlayingThisGame && !friend.GameInfo.Value.Lobby.HasValue)
+            {
+                //Add to the list
+                friendsInGame.Add(friend);
+            }
+        }
+    }
+    
+    private void GetFriendsOnline()
+    {
+        //Check all your friends in your list
+        foreach (Friend friend in SteamFriends.GetFriends())
+        {
+            //Friend.FriendGameInfo info = friend.GameInfo.Value;
+
+            //If they're playing the game
+            if (friend.IsOnline)
+            {
+                //Add to the list
+                friendsInGame.Add(friend);
+            }
+        }
+    }
+
+    private void GetFriendsInLobby()
+    {
+        //Check all your friends in your list
+        foreach (Friend friend in SteamFriends.GetFriends())
+        {
+            //Friend.FriendGameInfo info = friend.GameInfo.Value;
+
+            //If they're playing the game
+            if (friend.IsPlayingThisGame && friend.GameInfo.Value.Lobby.HasValue)
             {
                 //Add to the list
                 friendsInGame.Add(friend);
@@ -108,14 +157,19 @@ public class CheckFriendsList : MonoBehaviour
 
         }
     }
-
-    public void JoinFriendsGame(Friend friend)
+    
+    private void CreateFriendInviteObjects()
     {
-        if (friend.GameInfo.Value.Lobby.HasValue)
+        foreach (Friend friend in friendsInGame)
         {
-            friend.GameInfo.Value.Lobby.Value.Join();
-            //friendGame.Join();
+            //Friend.FriendGameInfo info = friend.GameInfo.Value;
+            //if (info.Lobby.HasValue)
+            //{
+                GameObject friendObject = Instantiate<GameObject>(friendUITemplate, transform);
+                friendObject.GetComponent<FriendInviteWithButton>().SetFriend(friend);
+                friendObjects.Add(friendObject.gameObject);
+            //}
+
         }
     }
-
 }

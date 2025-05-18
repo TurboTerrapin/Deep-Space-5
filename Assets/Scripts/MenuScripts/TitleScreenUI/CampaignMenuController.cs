@@ -10,6 +10,7 @@ public class CampaignMenuController : MonoBehaviour
     public void HandleHostGameButtonClick()
     {
         SwitchTo(HostCampaignMenu);
+        GameNetworkManager.Instance.StartHost(4);
     }
 
     public void HandleJoinGameButtonClick()
