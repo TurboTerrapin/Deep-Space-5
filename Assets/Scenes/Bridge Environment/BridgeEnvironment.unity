@@ -864,7 +864,7 @@ MonoBehaviour:
   NetworkConfig:
     ProtocolVersion: 0
     NetworkTransport: {fileID: 13763879}
-    PlayerPrefab: {fileID: 5044668463616075467, guid: f868e573834cf53458aeb3bc8ab65e08, type: 3}
+    PlayerPrefab: {fileID: 5044668463616075467, guid: e2d95ed4a4f7cbb4aa9dd82eac421c62, type: 3}
     Prefabs:
       NetworkPrefabsLists:
       - {fileID: 11400000, guid: 82f5fa3036c1e9b49b68cf693ab7bbec, type: 2}
@@ -57543,7 +57543,7 @@ GameObject:
   - component: {fileID: 1312237236}
   m_Layer: 0
   m_Name: RayTargets
-  m_TagString: Untagged
+  m_TagString: RayTargets
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -61606,9 +61606,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1402450209}
   - component: {fileID: 1402450208}
+  - component: {fileID: 1402450210}
   m_Layer: 0
   m_Name: SpaceShip
-  m_TagString: Untagged
+  m_TagString: Spaceship
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -61646,6 +61647,27 @@ Transform:
   - {fileID: 1499603632}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1402450210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1402450207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 2099148470
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1 &1403228159
 GameObject:
   m_ObjectHideFlags: 0
