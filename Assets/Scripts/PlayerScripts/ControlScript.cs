@@ -188,7 +188,7 @@ public class ControlScript : MonoBehaviour
         }
 
 
-
+        //Physics.SyncTransforms();
         if (!paused)
         {
             if (Physics.Raycast(new Ray(my_camera.transform.position, my_camera.transform.forward), out RaycastHit hit, RAYCAST_RANGE)) //cast ray

@@ -4,7 +4,7 @@ public class ShipController : MonoBehaviour
 {
     // Object References
     private GameObject controlHandler;
-    private GameObject rayTargets;
+    //private GameObject rayTargets;
 
 
     // Pilot Script References
@@ -37,15 +37,23 @@ public class ShipController : MonoBehaviour
     void Start()
     {
         controlHandler = GameObject.FindGameObjectWithTag("ControlHandler");
-        rayTargets = GameObject.FindGameObjectWithTag("RayTargets");
+        //rayTargets = GameObject.FindGameObjectWithTag("RayTargets");
 
-
+        /*
         if (controlHandler != null && rayTargets != null && AssignPilotControlRefs() && AssignTacticianControlRefs() &&
                 AssignEngineerControlRefs() && AssignCaptainControlRefs())
         {
             shipReady = true;
         }
+        */
+        if (controlHandler != null  && AssignPilotControlRefs() && AssignTacticianControlRefs() &&
+        AssignEngineerControlRefs() && AssignCaptainControlRefs())
+        {
+            shipReady = true;
+        }
     }
+
+
 
     private void GetPilotInput()
     {
@@ -179,4 +187,18 @@ public class ShipController : MonoBehaviour
         transform.rotation = Quaternion.RotateTowards(transform.rotation, desiredRotation, rotationSpeed * dt);
     }
 
+    /*
+    // A really bad fix to synchronize the raytargets
+    Vector3 rayTargetsOffset = new Vector3(57.62543f, -40.84872f, -18.40079f);
+    private void LateUpdate()
+    {
+        if (shipReady && NetworkManager.Singleton.IsHost)
+        {
+            rayTargets.transform.SetPositionAndRotation(
+                    transform.position + rayTargetsOffset,
+                    transform.rotation
+                );
+        }
+    }
+    */
 }
