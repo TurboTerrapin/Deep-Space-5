@@ -13,8 +13,8 @@ using System.Collections.Generic;
 public class ShipManualSelector : NetworkBehaviour, IControllable
 {
     //CLASS CONSTANTS
-    private static float PUSH_TIME = 0.25f;
-    private static float COOLDOWN_TIME = 0.1f;
+    private static float PUSH_TIME = 0.2f;
+    private static float COOLDOWN_TIME = 0.0f;
 
     private string CONTROL_NAME = "SHIP MANUAL";
     private List<string> CONTROL_DESCS = new List<string> { "SELECT", "BACK", "UP", "DOWN", "LEFT", "RIGHT" };
@@ -72,6 +72,7 @@ public class ShipManualSelector : NetworkBehaviour, IControllable
         bool[] curr_options = transform.GetComponent<ShipManual>().getInteractableOptions();
         for (int i = 0; i <= 5; i++)
         {
+            BUTTONS[i].untoggle();
             BUTTONS[i].updateInteractable(curr_options[i]);
         }
     }
@@ -141,7 +142,7 @@ public class ShipManualSelector : NetworkBehaviour, IControllable
             {
                 if (ControlScript.checkInputIndex(CONTROL_INDEXES[i], inputs) && transform.GetComponent<ShipManual>().isValidInput(i) == true)
                 {
-                    BUTTONS[i].toggle(0.1f);
+                    BUTTONS[i].toggle();
                     for (int x = 0; x <= 5; x++)
                     {
                         if (i != x)

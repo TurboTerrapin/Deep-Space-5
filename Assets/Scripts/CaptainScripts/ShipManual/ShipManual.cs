@@ -3,15 +3,12 @@
     - Handles inputs for communicator keyboard
     - Displays to code screen
     Contributor(s): Jake Schott
-    Last Updated: 5/17/2025
+    Last Updated: 5/19/2025
 */
 
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
-using Unity.Netcode;
-using UnityEngine.UI;
 
 public class ShipManual : MonoBehaviour
 {
@@ -61,6 +58,7 @@ public class ShipManual : MonoBehaviour
 
         welcome_screen.SetActive(false);
         home_screen.SetActive(true);
+        curr_screen = home_screen;
         currently_enabled = true;
         transform.GetComponent<ShipManualOnOff>().reactivate();
         curr_button = home_screen.GetComponent<PanelInfo>().default_button;
@@ -156,6 +154,7 @@ public class ShipManual : MonoBehaviour
             curr_button.GetComponent<IManualButton>().deselect();
             curr_screen.SetActive(false);
             curr_screen = curr_screen.GetComponent<PanelInfo>().back_panel;
+            curr_screen.SetActive(true);
             if (curr_screen.GetComponent<PanelInfo>().default_button != null)
             {
                 curr_button = curr_screen.GetComponent<PanelInfo>().default_button;
@@ -176,6 +175,7 @@ public class ShipManual : MonoBehaviour
             curr_button.GetComponent<IManualButton>().deselect();
             curr_screen.SetActive(false);
             curr_screen = curr_button.GetComponent<ManualButton>().select_panel;
+            curr_screen.SetActive(true);
             if (curr_screen.GetComponent<PanelInfo>().default_button != null)
             {
                 curr_button = curr_screen.GetComponent<PanelInfo>().default_button;
@@ -202,7 +202,7 @@ public class ShipManual : MonoBehaviour
         else
         {
             currently_enabled = false;
-            home_screen.SetActive(false);
+            curr_screen.SetActive(false);
             welcome_screen.SetActive(false);
             if (curr_button != null)
             {
