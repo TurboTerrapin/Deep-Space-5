@@ -219,8 +219,8 @@ public class ShipController : MonoBehaviour
         transform.rotation = Quaternion.RotateTowards(transform.rotation, desiredRotation, rotationSpeed * dt);
     }
 
-    private LineRenderer LRPhaserRenderer;
-    
+
+    private float maxBeamWidth = 1f;
 
     private void UpdateWeaponsSystems()
     {
@@ -236,13 +236,18 @@ public class ShipController : MonoBehaviour
             longRangePhaserOrigin.transform.localRotation = Quaternion.Euler(0f, longRangePhaserAngle, 0f);
 
             // Update Beam Width
+            float beamTemp = Mathf.Clamp01(phaserTemps[1]); // Ensures value is between 0–1
+            float beamWidth = Mathf.Lerp(0f, maxBeamWidth, beamTemp);
+            longRangePhaser.startWidth = beamWidth;
+            longRangePhaser.endWidth = beamWidth;
+
 
 
         }
-        else
+        else // Stop rendering
         {
-            if (LRPhaserRenderer.enabled)
-                LRPhaserRenderer.enabled = false;
+            if (longRangePhaser.enabled)
+                longRangePhaser.enabled = false;
         }
 
         // Short range left
