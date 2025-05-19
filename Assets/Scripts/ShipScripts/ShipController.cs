@@ -1,3 +1,4 @@
+using Unity.Netcode;
 using UnityEngine;
 public class ShipController : MonoBehaviour
 {
@@ -59,7 +60,7 @@ public class ShipController : MonoBehaviour
 
     void Update()
     {
-        if (shipReady)
+        if (shipReady && NetworkManager.Singleton.IsHost)
         {
             GetPilotInput();
             GetTacticianInput();
