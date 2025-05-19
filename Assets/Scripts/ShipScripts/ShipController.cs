@@ -73,7 +73,7 @@ public class ShipController : MonoBehaviour
     // Boob
     // *********** To Separate into own script in future ****************8
 
-    private readonly float maxThrusterSpeed = 2f;
+    private readonly float maxThrusterSpeed = 5f;
     private readonly float maxImpulseSpeed = 40f;
     private readonly float rotationPower = 6f; //60
 
@@ -93,7 +93,8 @@ public class ShipController : MonoBehaviour
     private void UpdateShipTransform()
     {
         float dt = Time.deltaTime;
-        Vector3 forward = transform.forward;
+        //Vector3 forward = transform.forward; // uncomment once bride orientation is fixed (I.E. +z is foward, currently -z is forward)
+        Vector3 forward = -transform.forward;  // delete this once orientation fixed
         Vector3 horizontal = transform.right;
         Vector3 vertical = transform.up;
 
