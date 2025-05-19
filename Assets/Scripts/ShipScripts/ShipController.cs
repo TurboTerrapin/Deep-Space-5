@@ -19,17 +19,21 @@ public class ShipController : MonoBehaviour
     public float verticalThrust;
 
     // Tactician Script References
+    public LineRenderer longRangePhaser;
     private LongRangeDirection longRangeDirection;
+    private PhaserPowers phaserPowers;
+    private PhaserTemperatures phaserTemperatures;
 
+    public GameObject longRangePhaserOrigin;
+    public GameObject shortRangePhaserLeftOrigin;
+    public GameObject shortRangePhaserRigtOrigin;
+
+    public bool[] activePhasers;
+    public float[] phaserTemps;
     public float longRangePhaserAngle;
+    
 
-
-
-
-
-
-
-
+    // Ship Ready
     private bool shipReady = false;
 
     private bool AssignPilotControlRefs()
@@ -45,9 +49,14 @@ public class ShipController : MonoBehaviour
     private bool AssignTacticianControlRefs()
     {
 
-        longRangeDirection = controlHandler.GetComponent<LongRangeDirection>();
 
-        return longRangeDirection != null;
+        longRangePhaser = longRangePhaserOrigin.GetComponentInChildren<LineRenderer>(true);
+
+        longRangeDirection = controlHandler.GetComponent<LongRangeDirection>();
+        phaserPowers = controlHandler.GetComponent<PhaserPowers>();
+        phaserTemperatures = controlHandler.GetComponent<PhaserTemperatures>();
+
+        return longRangeDirection && phaserPowers && phaserTemperatures && longRangePhaser != null;
     }
     private bool AssignEngineerControlRefs() { return true; }
     private bool AssignCaptainControlRefs() { return true; }
@@ -71,8 +80,6 @@ public class ShipController : MonoBehaviour
         }
     }
 
-
-
     private void GetPilotInput()
     {
         currentImpulse = impulseThrottle.getCurrentImpulse();
@@ -80,10 +87,12 @@ public class ShipController : MonoBehaviour
         horizontalThrust = horizontalThrusters.getHorizontalThrusterState();
         verticalThrust = verticalThrusters.getVerticalThrusterState();
     }
+
     private void GetTacticianInput()
     {
+        activePhasers = phaserPowers.GetActivePhasers();
         longRangePhaserAngle = longRangeDirection.GetLRPhaserAngle();
-
+        phaserTemps = phaserTemperatures.GetPhaserTemperatures();
     }
     private void GetEngineerInput() { }
     private void GetCaptainInput() { }
@@ -210,17 +219,42 @@ public class ShipController : MonoBehaviour
         transform.rotation = Quaternion.RotateTowards(transform.rotation, desiredRotation, rotationSpeed * dt);
     }
 
-    public GameObject longRangePhaserOrigin;
-    public GameObject shortRangePhaserLeftOrigin;
-    public GameObject shortRangePhaserRigtOrigin;
+    private LineRenderer LRPhaserRenderer;
+    
 
-    public bool[] powerPhasers;
     private void UpdateWeaponsSystems()
     {
-        if (longRangePhaserOrigin != null)
+        // Long range phaser on
+        if (activePhasers[0] && (phaserTemps[1] > 0)) 
         {
+            // Set Beam Active
+            if(!longRangePhaser.enabled) {
+                longRangePhaser.enabled = true;
+            }
+
+            // Update Beam Rotation
             longRangePhaserOrigin.transform.localRotation = Quaternion.Euler(0f, longRangePhaserAngle, 0f);
+
+            // Update Beam Width
+
+
+        }
+        else
+        {
+            if (LRPhaserRenderer.enabled)
+                LRPhaserRenderer.enabled = false;
         }
 
+        // Short range left
+        if (activePhasers[1] && (phaserTemps[0] != 0))
+        {
+
+        }
+
+        // Short range Right
+        if (activePhasers[2] && (phaserTemps[0] != 0))
+        {
+
+        }
     }
 }

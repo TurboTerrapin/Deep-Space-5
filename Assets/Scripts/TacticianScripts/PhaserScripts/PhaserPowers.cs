@@ -43,7 +43,7 @@ public class PhaserPowers : NetworkBehaviour, IControllable
     {
         return hud_info;
     }
-    public bool[] GetPoweredPhasers()
+    public bool[] GetActivePhasers()
     {
         return (bool[])phaser_is_enabled.Clone();
     }

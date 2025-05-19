@@ -11284,6 +11284,55 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 255789693}
   m_CullTransparentMesh: 1
+--- !u!1 &257545847
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 257545849}
+  - component: {fileID: 257545848}
+  m_Layer: 0
+  m_Name: Global Volume
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &257545848
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 257545847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IsGlobal: 1
+  priority: 0
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 11400000, guid: f31880f894a26104f9a5a035ddcb94fa, type: 2}
+--- !u!4 &257545849
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 257545847}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 250.21198, y: -213.71219, z: 307.279}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &258226414
 GameObject:
   m_ObjectHideFlags: 0
@@ -31677,7 +31726,7 @@ GameObject:
   - component: {fileID: 698533708}
   - component: {fileID: 698533709}
   m_Layer: 0
-  m_Name: LRPhaserRenderer
+  m_Name: LongRangePhaser
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31693,7 +31742,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 2500}
+  m_LocalScale: {x: 1, y: 1, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 469304134}
@@ -31722,7 +31771,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4a22edf6d9c08024a9309ea42cedaf0f, type: 2}
+  - {fileID: 2100000, guid: 3b944d6bf1ea7a94fb3a6676582a2219, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -31754,7 +31803,7 @@ LineRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.51652217
+        value: 1
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -31766,7 +31815,7 @@ LineRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 1, g: 0, b: 0, a: 1}
+      key0: {r: 0, g: 0.0627451, b: 0.8235295, a: 1}
       key1: {r: 1, g: 1, b: 1, a: 1}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
@@ -61864,11 +61913,13 @@ MonoBehaviour:
   currentHeading: 0
   horizontalThrust: 0
   verticalThrust: 0
-  longRangePhaserAngle: 0
+  longRangePhaser: {fileID: 0}
   longRangePhaserOrigin: {fileID: 469304133}
   shortRangePhaserLeftOrigin: {fileID: 697826168}
   shortRangePhaserRigtOrigin: {fileID: 115819848}
-  powerPhasers: 
+  activePhasers: 
+  phaserTemps: []
+  longRangePhaserAngle: 0
 --- !u!4 &1402450209
 Transform:
   m_ObjectHideFlags: 0
@@ -65621,7 +65672,7 @@ Light:
   serializedVersion: 11
   m_Type: 2
   m_Color: {r: 0.40914118, g: 0.824601, b: 0.9496855, a: 1}
-  m_Intensity: 2
+  m_Intensity: 1
   m_Range: 60
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -67181,7 +67232,7 @@ Light:
   serializedVersion: 11
   m_Type: 2
   m_Color: {r: 0.40914118, g: 0.824601, b: 0.9496855, a: 1}
-  m_Intensity: 10
+  m_Intensity: 8
   m_Range: 60
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -74164,7 +74215,7 @@ Light:
   serializedVersion: 11
   m_Type: 2
   m_Color: {r: 0.40914118, g: 0.824601, b: 0.9496855, a: 1}
-  m_Intensity: 10
+  m_Intensity: 8
   m_Range: 60
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -110888,3 +110939,4 @@ SceneRoots:
   - {fileID: 1593583441}
   - {fileID: 1412500031}
   - {fileID: 1402450209}
+  - {fileID: 257545849}
