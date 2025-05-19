@@ -14,19 +14,20 @@ public class ShipManualSelector : NetworkBehaviour, IControllable
 {
     //CLASS CONSTANTS
     private static float PUSH_TIME = 0.25f;
-    private static float COOLDOWN_TIME = 0.25f;
+    private static float COOLDOWN_TIME = 0.1f;
 
     private string CONTROL_NAME = "SHIP MANUAL";
     private List<string> CONTROL_DESCS = new List<string> { "SELECT", "BACK", "UP", "DOWN", "LEFT", "RIGHT" };
     private List<int> CONTROL_INDEXES = new List<int>() { 6, 12, 0, 2, 1, 3 };
     private List<Button> BUTTONS = new List<Button>();
 
-    public List<GameObject> buttons; // 0-3 is up, 4-7 is down
+    public List<GameObject> buttons;
 
-    private Vector3[] initial_pos = new Vector3[2];
+    private Vector3[] initial_pos = new Vector3[6];
     private Vector3 push_direction = new Vector3(0.0022f, -0.0052f, 0f);
 
-    private Coroutine sequence_change_coroutine = null;
+    private bool is_active = false;
+    private Coroutine manual_input_coroutine = null;
 
     private static HUDInfo hud_info = null;
     private void Start()
@@ -40,18 +41,42 @@ public class ShipManualSelector : NetworkBehaviour, IControllable
         BUTTONS.Add(new Button(CONTROL_DESCS[5], CONTROL_INDEXES[5], false, true));
         hud_info.setButtons(BUTTONS, 4);
 
-        /*//set initial positions
+        //set initial positions
         for (int i = 0; i < buttons.Count; i++)
         {
             initial_pos[i] = buttons[i].transform.localPosition;
-        }*/
+        }
     }
     public HUDInfo getHUDinfo(GameObject current_target)
     {
         return hud_info;
     }
 
-    IEnumerator sequenceAdjustment(int index)
+    public void activate()
+    {
+        is_active = true;
+        updateButtons();
+    }
+
+    public void deactivate()
+    {
+        is_active = false;
+        for (int i = 0; i <= 5; i++)
+        {
+            BUTTONS[i].updateInteractable(false);
+        }
+    }
+
+    private void updateButtons()
+    {
+        bool[] curr_options = transform.GetComponent<ShipManual>().getInteractableOptions();
+        for (int i = 0; i <= 5; i++)
+        {
+            BUTTONS[i].updateInteractable(curr_options[i]);
+        }
+    }
+
+    IEnumerator manualInput(int index)
     {
         //set buttons to initial positions
         for (int i = 0; i < buttons.Count; i++)
@@ -84,47 +109,60 @@ public class ShipManualSelector : NetworkBehaviour, IControllable
 
                 yield return null;
             }
+
+            if (i == 0){
+                if (index == 0)
+                {
+                    transform.GetComponent<ShipManual>().forward();
+                }
+                else if (index == 1)
+                {
+                    transform.GetComponent<ShipManual>().back();
+                }
+                else
+                {
+                    transform.GetComponent<ShipManual>().switchButtons(index - 2);
+                }
+            }
         }
 
         yield return new WaitForSeconds(COOLDOWN_TIME);
 
-        BUTTONS[0].updateInteractable(true);
-        BUTTONS[1].updateInteractable(true);
+        updateButtons();
 
-        sequence_change_coroutine = null;
+        manual_input_coroutine = null;
     }
 
     public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)
     {
-        /*if (sequence_change_coroutine == null)
+        if (manual_input_coroutine == null && is_active == true)
         {
-            for (int i = 0; i <= 1; i++)
+            for (int i = 0; i <= 5; i++)
             {
-                if (ControlScript.checkInputIndex(CONTROL_INDEXES[i], inputs))
+                if (ControlScript.checkInputIndex(CONTROL_INDEXES[i], inputs) && transform.GetComponent<ShipManual>().isValidInput(i) == true)
                 {
                     BUTTONS[i].toggle(0.1f);
-                    if (i == 0)
+                    for (int x = 0; x <= 5; x++)
                     {
-                        BUTTONS[1].updateInteractable(false);
+                        if (i != x)
+                        {
+                            BUTTONS[x].updateInteractable(false);
+                        }
                     }
-                    else
-                    {
-                        BUTTONS[0].updateInteractable(false);
-                    }
-                    transmitDestructSequenceChangeRPC(i);
+                    transmitManualInputRPC(i);
                     return;
                 }
             }
-        }*/
+        }
     }
 
     [Rpc(SendTo.Everyone)]
-    private void transmitDestructSequenceChangeRPC(int button_index)
+    private void transmitManualInputRPC(int button_index)
     {
-        if (sequence_change_coroutine != null)
+        if (manual_input_coroutine != null)
         {
-            StopCoroutine(sequence_change_coroutine);
+            StopCoroutine(manual_input_coroutine);
         }
-        sequence_change_coroutine = StartCoroutine(sequenceAdjustment(button_index));
+        manual_input_coroutine = StartCoroutine(manualInput(button_index));
     }
 }

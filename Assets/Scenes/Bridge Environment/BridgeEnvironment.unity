@@ -10763,6 +10763,7 @@ GameObject:
   - component: {fileID: 235179245}
   - component: {fileID: 235179247}
   - component: {fileID: 235179246}
+  - component: {fileID: 235179248}
   m_Layer: 5
   m_Name: AlienAnalysisButton
   m_TagString: Untagged
@@ -10782,8 +10783,8 @@ RectTransform:
   m_LocalScale: {x: 0.9877792, y: 0.98229414, z: 1.0190142}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1594585159}
   - {fileID: 1829640612}
+  - {fileID: 1594585159}
   m_Father: {fileID: 746844394}
   m_LocalEulerAnglesHint: {x: 180, y: 0, z: -90}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -10829,6 +10830,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 235179244}
   m_CullTransparentMesh: 1
+--- !u!114 &235179248
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 235179244}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6340fb91656ccc4f97d353be843e8a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  up: {fileID: 0}
+  down: {fileID: 0}
+  left: {fileID: 1906635562}
+  right: {fileID: 1619539734}
+  select_panel: {fileID: 0}
+  selected_indicator: {fileID: 1829640611}
+  selected: {fileID: 21300000, guid: 8ad270d6b6e32f24c872cba11609dc82, type: 3}
+  unselected: {fileID: 21300000, guid: 542106e5de76aaf47ae684a5c8223b81, type: 3}
 --- !u!1 &235439265
 GameObject:
   m_ObjectHideFlags: 0
@@ -19045,7 +19066,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b918c044d16d02f4e91fa443ba6cdbc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttons: []
+  buttons:
+  - {fileID: 237535824035186901}
+  - {fileID: 6884292042778834487}
+  - {fileID: 8199280895847907878}
+  - {fileID: 7136733334187529782}
+  - {fileID: 1342996157505219993}
+  - {fileID: 6501010332873136457}
 --- !u!114 &401286216
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19074,6 +19101,7 @@ MonoBehaviour:
   welcome_screen: {fileID: 28723069}
   home_screen: {fileID: 746844393}
   curr_screen: {fileID: 746844393}
+  curr_button: {fileID: 0}
 --- !u!1 &402325436
 GameObject:
   m_ObjectHideFlags: 0
@@ -31708,7 +31736,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 3
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -34422,13 +34450,14 @@ GameObject:
   m_Component:
   - component: {fileID: 746844394}
   - component: {fileID: 746844395}
+  - component: {fileID: 746844396}
   m_Layer: 3
   m_Name: HomeScreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &746844394
 RectTransform:
   m_ObjectHideFlags: 0
@@ -34462,6 +34491,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 746844393}
   m_CullTransparentMesh: 1
+--- !u!114 &746844396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 746844393}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b04f124d0d5f4114b840f64e11634f24, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  back_panel: {fileID: 0}
+  default_button: {fileID: 1516954513}
 --- !u!1001 &747891123
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -41939,8 +41982,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 603956881}
   - {fileID: 1040677774}
+  - {fileID: 603956881}
   m_Father: {fileID: 1906635563}
   m_LocalEulerAnglesHint: {x: 180, y: 0, z: -90}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -48429,7 +48472,7 @@ GameObject:
   - component: {fileID: 1040677776}
   - component: {fileID: 1040677775}
   m_Layer: 5
-  m_Name: Background (1)
+  m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -68595,6 +68638,7 @@ GameObject:
   - component: {fileID: 1516954514}
   - component: {fileID: 1516954516}
   - component: {fileID: 1516954515}
+  - component: {fileID: 1516954517}
   m_Layer: 5
   m_Name: OperationsGuideButton
   m_TagString: Untagged
@@ -68614,8 +68658,8 @@ RectTransform:
   m_LocalScale: {x: 0.9877792, y: 0.98229414, z: 1.0190142}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2129877345}
   - {fileID: 1937689997}
+  - {fileID: 2129877345}
   m_Father: {fileID: 746844394}
   m_LocalEulerAnglesHint: {x: 180, y: 0, z: -90}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -68661,6 +68705,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1516954513}
   m_CullTransparentMesh: 1
+--- !u!114 &1516954517
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1516954513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6340fb91656ccc4f97d353be843e8a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  up: {fileID: 0}
+  down: {fileID: 0}
+  left: {fileID: 1619539734}
+  right: {fileID: 1906635562}
+  select_panel: {fileID: 0}
+  selected_indicator: {fileID: 1937689996}
+  selected: {fileID: 21300000, guid: 8ad270d6b6e32f24c872cba11609dc82, type: 3}
+  unselected: {fileID: 21300000, guid: 542106e5de76aaf47ae684a5c8223b81, type: 3}
 --- !u!1 &1519423993
 GameObject:
   m_ObjectHideFlags: 0
@@ -73476,6 +73540,7 @@ GameObject:
   - component: {fileID: 1619539735}
   - component: {fileID: 1619539737}
   - component: {fileID: 1619539736}
+  - component: {fileID: 1619539738}
   m_Layer: 5
   m_Name: FleetDirectoryButton
   m_TagString: Untagged
@@ -73495,8 +73560,8 @@ RectTransform:
   m_LocalScale: {x: 0.9877792, y: 0.98229414, z: 1.0190142}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1864704830}
   - {fileID: 1819796923}
+  - {fileID: 1864704830}
   m_Father: {fileID: 746844394}
   m_LocalEulerAnglesHint: {x: 180, y: 0, z: -90}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -73542,6 +73607,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1619539734}
   m_CullTransparentMesh: 1
+--- !u!114 &1619539738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1619539734}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6340fb91656ccc4f97d353be843e8a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  up: {fileID: 0}
+  down: {fileID: 0}
+  left: {fileID: 235179244}
+  right: {fileID: 1516954513}
+  select_panel: {fileID: 0}
+  selected_indicator: {fileID: 1819796922}
+  selected: {fileID: 21300000, guid: 8ad270d6b6e32f24c872cba11609dc82, type: 3}
+  unselected: {fileID: 21300000, guid: 542106e5de76aaf47ae684a5c8223b81, type: 3}
 --- !u!1 &1620533924
 GameObject:
   m_ObjectHideFlags: 0
@@ -78473,7 +78558,7 @@ GameObject:
   - component: {fileID: 1746841445}
   - component: {fileID: 1746841444}
   m_Layer: 5
-  m_Name: Background (2)
+  m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -82078,8 +82163,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 206268147}
   - {fileID: 1868015582}
+  - {fileID: 206268147}
   m_Father: {fileID: 1619539735}
   m_LocalEulerAnglesHint: {x: 180, y: 0, z: -90}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -82400,8 +82485,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 983926004}
   - {fileID: 1746841443}
+  - {fileID: 983926004}
   m_Father: {fileID: 235179245}
   m_LocalEulerAnglesHint: {x: 180, y: 0, z: -90}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -83814,7 +83899,7 @@ GameObject:
   - component: {fileID: 1868015584}
   - component: {fileID: 1868015583}
   m_Layer: 5
-  m_Name: Background (3)
+  m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -85480,6 +85565,7 @@ GameObject:
   - component: {fileID: 1906635563}
   - component: {fileID: 1906635565}
   - component: {fileID: 1906635564}
+  - component: {fileID: 1906635566}
   m_Layer: 5
   m_Name: ScientificRecordsButton
   m_TagString: Untagged
@@ -85499,8 +85585,8 @@ RectTransform:
   m_LocalScale: {x: 0.9877792, y: 0.98229414, z: 1.0190142}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1989840198}
   - {fileID: 904604673}
+  - {fileID: 1989840198}
   m_Father: {fileID: 746844394}
   m_LocalEulerAnglesHint: {x: 180, y: 0, z: -90}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -85546,6 +85632,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1906635562}
   m_CullTransparentMesh: 1
+--- !u!114 &1906635566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1906635562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6340fb91656ccc4f97d353be843e8a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  up: {fileID: 0}
+  down: {fileID: 0}
+  left: {fileID: 1516954513}
+  right: {fileID: 235179244}
+  select_panel: {fileID: 0}
+  selected_indicator: {fileID: 904604672}
+  selected: {fileID: 21300000, guid: 8ad270d6b6e32f24c872cba11609dc82, type: 3}
+  unselected: {fileID: 21300000, guid: 542106e5de76aaf47ae684a5c8223b81, type: 3}
 --- !u!1 &1909295845
 GameObject:
   m_ObjectHideFlags: 0
@@ -86700,7 +86806,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 8ad270d6b6e32f24c872cba11609dc82, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 542106e5de76aaf47ae684a5c8223b81, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
