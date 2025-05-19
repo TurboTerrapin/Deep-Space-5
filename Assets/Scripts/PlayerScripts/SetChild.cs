@@ -10,10 +10,6 @@ public class SetChild : MonoBehaviour
         {
             transform.SetParent(spaceship.transform);
 
-            /*
-            transform.localPosition = Vector3.zero;
-            transform.localRotation = Quaternion.identity;
-            */
         }
 
     }

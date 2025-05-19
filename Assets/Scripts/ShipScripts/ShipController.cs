@@ -187,18 +187,4 @@ public class ShipController : MonoBehaviour
         transform.rotation = Quaternion.RotateTowards(transform.rotation, desiredRotation, rotationSpeed * dt);
     }
 
-    /*
-    // A really bad fix to synchronize the raytargets
-    Vector3 rayTargetsOffset = new Vector3(57.62543f, -40.84872f, -18.40079f);
-    private void LateUpdate()
-    {
-        if (shipReady && NetworkManager.Singleton.IsHost)
-        {
-            rayTargets.transform.SetPositionAndRotation(
-                    transform.position + rayTargetsOffset,
-                    transform.rotation
-                );
-        }
-    }
-    */
 }
