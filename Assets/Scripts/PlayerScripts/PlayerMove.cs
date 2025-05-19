@@ -19,7 +19,7 @@ public class PlayerMove : NetworkBehaviour
     private Vector2 moveDir = new Vector2();
     [SerializeField]
     private Rigidbody playerRB = null;
-    public float moveSpeed = 25f;
+    public float moveSpeed = 0.05f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
