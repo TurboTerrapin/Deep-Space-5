@@ -211,6 +211,10 @@ public class ShipController : MonoBehaviour
     }
 
     public GameObject longRangePhaserOrigin;
+    public GameObject shortRangePhaserLeftOrigin;
+    public GameObject shortRangePhaserRigtOrigin;
+
+    public bool[] powerPhasers;
     private void UpdateWeaponsSystems()
     {
         if (longRangePhaserOrigin != null)
