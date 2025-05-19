@@ -18,6 +18,18 @@ public class ShipController : MonoBehaviour
     public float horizontalThrust;
     public float verticalThrust;
 
+    // Tactician Script References
+    private LongRangeDirection longRangeDirection;
+
+    public float longRangePhaserAngle;
+
+
+
+
+
+
+
+
     private bool shipReady = false;
 
     private bool AssignPilotControlRefs()
@@ -30,7 +42,13 @@ public class ShipController : MonoBehaviour
         return impulseThrottle && courseHeading &&
                 horizontalThrusters && verticalThrusters != null;
     }
-    private bool AssignTacticianControlRefs() { return true; }
+    private bool AssignTacticianControlRefs()
+    {
+
+        longRangeDirection = controlHandler.GetComponent<LongRangeDirection>();
+
+        return longRangeDirection != null;
+    }
     private bool AssignEngineerControlRefs() { return true; }
     private bool AssignCaptainControlRefs() { return true; }
 
@@ -46,7 +64,7 @@ public class ShipController : MonoBehaviour
             shipReady = true;
         }
         */
-        if (controlHandler != null  && AssignPilotControlRefs() && AssignTacticianControlRefs() &&
+        if (controlHandler != null && AssignPilotControlRefs() && AssignTacticianControlRefs() &&
         AssignEngineerControlRefs() && AssignCaptainControlRefs())
         {
             shipReady = true;
@@ -62,7 +80,11 @@ public class ShipController : MonoBehaviour
         horizontalThrust = horizontalThrusters.getHorizontalThrusterState();
         verticalThrust = verticalThrusters.getVerticalThrusterState();
     }
-    private void GetTacticianInput() { }
+    private void GetTacticianInput()
+    {
+        longRangePhaserAngle = longRangeDirection.GetLRPhaserAngle();
+
+    }
     private void GetEngineerInput() { }
     private void GetCaptainInput() { }
 
@@ -74,6 +96,7 @@ public class ShipController : MonoBehaviour
             GetTacticianInput();
             GetEngineerInput();
             GetCaptainInput();
+            UpdateWeaponsSystems();
             UpdateShipTransform();
         }
     }
@@ -187,4 +210,13 @@ public class ShipController : MonoBehaviour
         transform.rotation = Quaternion.RotateTowards(transform.rotation, desiredRotation, rotationSpeed * dt);
     }
 
+    public GameObject longRangePhaserOrigin;
+    private void UpdateWeaponsSystems()
+    {
+        if (longRangePhaserOrigin != null)
+        {
+            longRangePhaserOrigin.transform.localRotation = Quaternion.Euler(0f, longRangePhaserAngle, 0f);
+        }
+
+    }
 }
