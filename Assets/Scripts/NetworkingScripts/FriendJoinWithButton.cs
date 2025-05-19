@@ -21,7 +21,6 @@ public class FriendJoinWithButton : MonoBehaviour
 
     public void JoinFriendLobby()
     {
-        
         if (friend.GameInfo.Value.Lobby.HasValue)
         {
             Debug.Log(friend.GameInfo.Value.Lobby.Value.Id);
@@ -36,8 +35,7 @@ public class FriendJoinWithButton : MonoBehaviour
 
     private int GetPlayers()
     {
-        //return friend.GameInfo.Value.Lobby.Value.MemberCount;
-        return (int)Random.Range(1, 4);
-        //friendGame.Join();
+        if(friend.GameInfo.Value.Lobby.HasValue) return friend.GameInfo.Value.Lobby.Value.MemberCount;
+        return -1;
     }
 }

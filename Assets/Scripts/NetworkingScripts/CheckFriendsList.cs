@@ -91,7 +91,7 @@ public class CheckFriendsList : MonoBehaviour
         }
         friendsInGame.Clear();
         friendObjects.Clear();
-        GetFriendsInGame();
+        GetFriendsOnline();
         CreateFriendInviteObjects();
     }
 

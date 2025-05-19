@@ -785,13 +785,14 @@ GameObject:
   - component: {fileID: 13763881}
   - component: {fileID: 13763880}
   - component: {fileID: 13763879}
+  - component: {fileID: 13763885}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &13763879
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -901,6 +902,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &13763885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 13763878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b7692fd2986d5d42ba7919b575c67a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneNames:
+  - BridgeEnvironment
+  easyScenarios: []
+  mediumScenarios: []
+  hardScenarios: []
 --- !u!1 &17234536
 GameObject:
   m_ObjectHideFlags: 0
@@ -24930,7 +24948,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &540520672
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -41998,6 +42016,7 @@ MonoBehaviour:
   friendUITemplate: {fileID: 3370811426069650403, guid: fb452a16e50546e4089e49b0f08b4c19, type: 3}
   friendObjects: []
   timer: 2
+  lookingForFriends: 0
   lookingForLobbies: 1
 --- !u!114 &926643450
 MonoBehaviour:
@@ -60017,7 +60036,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PauseMenu: {fileID: 1365157266}
-  SettingsMenu: {fileID: 0}
+  SettingsMenu: {fileID: 230458610}
 --- !u!114 &1365157269
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -70749,7 +70768,7 @@ MonoBehaviour:
   title: {fileID: 1829927360}
   buttons_panel: {fileID: 1814052399}
   pause_menu: {fileID: 1365157266}
-  settings_menu: {fileID: 0}
+  settings_menu: {fileID: 230458610}
   script_holder: {fileID: 401286162}
   my_camera: {fileID: 0}
   collider_names:

@@ -152,8 +152,8 @@ public class UniversalSettingsController : MonoBehaviour
 
     public void HandleCameraSensitivityDragged(float mouseSensitivity)
     {
-        // Converts slider value (0-1) to (100-400)
-        float actualSensitivity = Mathf.Lerp(100f, 400f, mouseSensitivity);
+        // Converts slider value (0-1) to (.25-3)
+        float actualSensitivity = Mathf.Lerp(0.25f, 3f, mouseSensitivity);
 
         // Converts to % and updates sensitivity text
         int percent = Mathf.RoundToInt(mouseSensitivity * 100f);

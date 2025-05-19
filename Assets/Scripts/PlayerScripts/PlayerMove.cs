@@ -39,7 +39,7 @@ public class PlayerMove : NetworkBehaviour
 
         
 
-
+        DontDestroyOnLoad(gameObject);
 
 
 

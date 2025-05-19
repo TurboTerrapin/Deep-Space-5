@@ -8,9 +8,24 @@ public class HostCampaignMenuController : MonoBehaviour
     public GameObject HostCampaignMenu;
     public GameObject CampaignMenu;
 
-    public List<TextMeshProUGUI> players = new List<TextMeshProUGUI>();
+    public List<TextMeshProUGUI> JoinedPlayersList = new List<TextMeshProUGUI>();
+    public float timer = 1.8f;
 
-    
+    void Update()
+    {
+        timer += Time.deltaTime;
+        if (timer > 2f)
+        {
+            timer = 0f;
+            int i = 0;
+            foreach (Friend player in GameNetworkManager.Instance.currentLobby.Value.Members)
+            {
+                Debug.Log(player.Name);
+                JoinedPlayersList[i].text = player.Name;
+                i++;
+            }
+        }
+    }
 
     public void HandleXButtonClick()
     {
@@ -19,7 +34,7 @@ public class HostCampaignMenuController : MonoBehaviour
 
     public void HandleEngageButtonClick()
     {
-        
+        SceneSwapper.Instance.ChangeSceneClientRPC("BridgeEnvironment");
     }
 
     private void SwitchTo(GameObject target)

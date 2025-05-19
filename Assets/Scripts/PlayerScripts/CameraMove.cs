@@ -37,8 +37,22 @@ public class CameraMove : MonoBehaviour
         {
             ControlScript.Instance.my_camera = gameObject.GetComponent<Camera>();
         }
+        /*
+        foreach (GameObject cam in GameObject.FindGameObjectsWithTag("MainCamera"))
+        {
+            cam.SetActive(false);
+        }
+        gameObject.SetActive(true);
+        */
+        if (my_camera == null)
+        {
+            my_camera = Camera.current;
+        }
 
-
+        if (my_camera == null)
+        {
+            my_camera = Camera.main;
+        }
         //ControlScript.Instance = (ControlScript)transform.parent.GetComponent("ControlScript");
     }
 
