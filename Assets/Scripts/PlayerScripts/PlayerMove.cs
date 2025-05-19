@@ -152,11 +152,34 @@ public class PlayerMove : NetworkBehaviour
 
     }
     */
+
+    /*
+    
     void Move()
     {
         //transform.localPosition += new Vector3  (moveDir.x, 0, moveDir.y) * moveSpeed * Time.deltaTime;
         transform.localPosition += transform.right * moveDir.x * moveSpeed * Time.deltaTime;
         transform.localPosition += transform.forward * moveDir.y * moveSpeed * Time.deltaTime;
+    }
+    */
+
+    void Move()
+    {
+        Vector3 movement; //= Vector3.zero;
+
+        if (transform.parent != null)
+        {
+            Quaternion combinedRotation = transform.parent.rotation * transform.localRotation;
+            Vector3 localMovement = new Vector3(moveDir.x, 0, moveDir.y) * moveSpeed * Time.deltaTime;
+            movement = combinedRotation * localMovement;
+            transform.position += movement;
+        }
+        else
+        {
+            // Otherwise world space movement
+            movement = transform.TransformDirection(new Vector3(moveDir.x, 0, moveDir.y)) * moveSpeed * Time.deltaTime;
+            transform.position += movement;
+        }
     }
 
 }
