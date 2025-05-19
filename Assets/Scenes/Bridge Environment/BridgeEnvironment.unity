@@ -22095,7 +22095,7 @@ Transform:
   m_GameObject: {fileID: 469304133}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: -7, z: -4.8}
+  m_LocalPosition: {x: 0, y: -7, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -31740,13 +31740,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 698533707}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalRotation: {x: 0, y: 0.9990483, z: 0.043619405, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 469304134}
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: -5, y: 180, z: 0}
 --- !u!120 &698533709
 LineRenderer:
   serializedVersion: 2
@@ -31803,7 +31803,7 @@ LineRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
+        value: 0.27272797
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -31815,7 +31815,7 @@ LineRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 0, g: 0.0627451, b: 0.8235295, a: 1}
+      key0: {r: 1, g: 0.1764706, b: 0.19215688, a: 1}
       key1: {r: 1, g: 1, b: 1, a: 1}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
@@ -31851,7 +31851,7 @@ LineRenderer:
     shadowBias: 0
     generateLightingData: 0
   m_MaskInteraction: 0
-  m_UseWorldSpace: 0
+  m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
 --- !u!1 &700349219
@@ -110936,7 +110936,7 @@ SceneRoots:
   - {fileID: 13763884}
   - {fileID: 877927442}
   - {fileID: 17234538}
+  - {fileID: 257545849}
   - {fileID: 1593583441}
   - {fileID: 1412500031}
   - {fileID: 1402450209}
-  - {fileID: 257545849}
