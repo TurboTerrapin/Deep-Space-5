@@ -221,7 +221,6 @@ public class ShipController : MonoBehaviour
 
 
     private float maxBeamWidth = 1f;
-    private float rotationSmoothingFactor = 5f; 
 
     private void UpdateWeaponsSystems()
     {
@@ -246,8 +245,6 @@ public class ShipController : MonoBehaviour
             // Update Beam length
 
             // Update 
-
-
         }
         else
         {
