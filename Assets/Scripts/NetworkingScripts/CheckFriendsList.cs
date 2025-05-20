@@ -116,9 +116,8 @@ public class CheckFriendsList : MonoBehaviour
         //Check all your friends in your list
         foreach (Friend friend in SteamFriends.GetFriends())
         {
-            //Friend.FriendGameInfo info = friend.GameInfo.Value;
 
-            //If they're playing the game
+            //If they're online
             if (friend.IsOnline)
             {
                 //Add to the list
