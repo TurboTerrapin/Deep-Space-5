@@ -236,15 +236,19 @@ public class ShipController : MonoBehaviour
             longRangePhaserOrigin.transform.localRotation = Quaternion.Euler(0f, longRangePhaserAngle, 0f);
 
             // Update Beam Width
+
             float beamTemp = Mathf.Clamp01(phaserTemps[1]); // Ensures value is between 0–1
             float beamWidth = Mathf.Lerp(0f, maxBeamWidth, beamTemp);
             longRangePhaser.startWidth = beamWidth;
             longRangePhaser.endWidth = beamWidth;
 
+            // Update Beam length
+
+            // Update 
 
 
         }
-        else // Stop rendering
+        else
         {
             if (longRangePhaser.enabled)
                 longRangePhaser.enabled = false;
