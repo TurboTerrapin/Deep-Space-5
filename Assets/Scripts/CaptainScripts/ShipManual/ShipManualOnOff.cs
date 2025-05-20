@@ -9,7 +9,7 @@ using Unity.Netcode;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Build;
+//using UnityEditor.Build;
 
 
 public class ShipManualOnOff : NetworkBehaviour, IControllable
