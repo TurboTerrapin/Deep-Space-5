@@ -172,22 +172,8 @@ public class ControlScript : MonoBehaviour
     }
     void Update()
     {
-        if(my_camera == null)
+        if (my_camera != null)
         {
-            /*
-            foreach (GameObject cam in GameObject.FindGameObjectsWithTag("MainCamera"))
-            {
-                Debug.Log(cam.name);
-                if (transform.parent.gameObject.GetComponent<PlayerMove>().IsOwner)
-                {
-                    my_camera = cam.GetComponent<Camera>();
-                }
-            }
-            */
-            return;
-        }
-
-
         Physics.SyncTransforms(); // bandaid for raytargets synchronization. timestep out of sync somewhere. 
         if (!paused)
         {
@@ -197,7 +183,7 @@ public class ControlScript : MonoBehaviour
                 {
                     IControllable target_control =
                         (IControllable)script_holder.GetComponent(corresponding_scripts[collider_names.IndexOf(hit.collider.gameObject.name)]); //get corresponding class
-                    
+
                     HUDInfo temp_info = target_control.getHUDinfo(hit.collider.gameObject);
 
                     if (title.GetComponent<TMP_Text>().text.CompareTo(temp_info.getName()) != 0 || current_info.numOptions() != temp_info.numOptions())
@@ -293,4 +279,16 @@ public class ControlScript : MonoBehaviour
         control_info.SetActive(false); //hide UI indicator if not looking at a control
         title.GetComponent<TMP_Text>().SetText(""); //forces an update if not looking at a control
     }
+        if (my_camera == null)
+        {
+            my_camera = Camera.current;
+        }
+        
+
+        if (my_camera == null)
+        {
+            my_camera = Camera.main;
+        }
+    }
+
 }
