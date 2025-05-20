@@ -97,11 +97,11 @@ public class PlayerMove : NetworkBehaviour
             }
             else
             {
-                if (Input.GetKeyDown(KeyCode.LeftShift))
+               /* if (Input.GetKeyDown(KeyCode.LeftShift))
                 {
                     is_shifting = true;
                     shift_direction *= -1.0f;
-                }
+                }*/
             }
         }
         else

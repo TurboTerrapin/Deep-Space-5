@@ -48,6 +48,10 @@ public class ColorSelector : NetworkBehaviour, IControllable
     {
         return hud_info;
     }
+    public int getCurrColor()
+    {
+        return curr_color;
+    }
 
     private void displayAdjustment()
     {
