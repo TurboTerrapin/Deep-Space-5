@@ -55,6 +55,12 @@ public class PhaserTemperatures : NetworkBehaviour, IControllable
 
         return hud_info;
     }
+
+    public float[] GetPhaserTemperatures()
+    {
+        return (float[])phaser_powers.Clone();
+    }
+
     private void displayAdjustment(int index)
     {
         //move physical slider

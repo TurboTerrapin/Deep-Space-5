@@ -36,6 +36,10 @@ public class LongRangeDirection : NetworkBehaviour, IControllable
     {
         return hud_info;
     }
+    public float GetLRPhaserAngle()
+    {
+        return long_range_angle;
+    }
 
     private void displayAdjustment()
     {

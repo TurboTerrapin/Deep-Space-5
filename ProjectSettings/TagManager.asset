@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 3
   tags:
   - ControlHandler
+  - Spaceship
+  - RayTargets
   layers:
   - Default
   - TransparentFX

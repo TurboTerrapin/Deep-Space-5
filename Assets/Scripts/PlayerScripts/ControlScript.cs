@@ -49,8 +49,7 @@ public class ControlScript : MonoBehaviour
         new KeyCode[] {KeyCode.Alpha2, KeyCode.Keypad2},
         new KeyCode[] {KeyCode.Alpha3, KeyCode.Keypad3},
         new KeyCode[] {KeyCode.Alpha4, KeyCode.Keypad4},
-        new KeyCode[] {KeyCode.F},
-        new KeyCode[] {KeyCode.Z}
+        new KeyCode[] {KeyCode.F}
     };
 
     public static bool checkInputIndex(int input_index, List<KeyCode> inputs_to_check)
@@ -173,120 +172,125 @@ public class ControlScript : MonoBehaviour
     }
     void Update()
     {
-        if (my_camera != null)
+        if(my_camera == null)
         {
-            if (!paused)
+            /*
+            foreach (GameObject cam in GameObject.FindGameObjectsWithTag("MainCamera"))
             {
-                if (Physics.Raycast(new Ray(my_camera.transform.position, my_camera.transform.forward), out RaycastHit hit, RAYCAST_RANGE)) //cast ray
+                Debug.Log(cam.name);
+                if (transform.parent.gameObject.GetComponent<PlayerMove>().IsOwner)
                 {
-                    if (hit.collider.gameObject.layer == 6) //the ray hit a control (Layer 6 = Control)
-                    {
-                        IControllable target_control =
-                            (IControllable)script_holder.GetComponent(corresponding_scripts[collider_names.IndexOf(hit.collider.gameObject.name)]); //get corresponding class
-
-                        HUDInfo temp_info = target_control.getHUDinfo(hit.collider.gameObject);
-
-                        if (title.GetComponent<TMP_Text>().text.CompareTo(temp_info.getName()) != 0 || current_info.numOptions() != temp_info.numOptions())
-                        {
-                            title.GetComponent<TMP_Text>().SetText(temp_info.getName()); //set title of that control
-                            current_info = temp_info;
-                            if (HUD_setting < 2)
-                            {
-                                createButtons();
-                            }
-                        }
-                        else
-                        {
-                            if (HUD_setting < 2)
-                            {
-                                updateButtons(temp_info);
-                            }
-                        }
-
-                        List<KeyCode> current_inputs = new List<KeyCode>(); //gets all inputted keys
-                        for (int b = 0; b < current_info.numOptions(); b++)
-                        {
-                            Button curr_button = current_info.getButtons()[b];
-                            bool pressed = false;
-                            for (int i = 0; i < input_options[curr_button.getControlIndex()].Length; i++)
-                            {
-                                if (curr_button.getTogglable() == false)
-                                {
-                                    if (UnityEngine.Input.GetKey(input_options[curr_button.getControlIndex()][i]))
-                                    {
-                                        pressed = true;
-                                    }
-                                }
-                                else
-                                {
-                                    if (UnityEngine.Input.GetKeyDown(input_options[curr_button.getControlIndex()][i]))
-                                    {
-                                        pressed = true;
-                                    }
-                                }
-                                if (pressed == true)
-                                {
-                                    current_inputs.Add(input_options[curr_button.getControlIndex()][i]);
-                                    curr_button.highlight(Time.deltaTime);
-                                    break;
-                                }
-                            }
-                            if (pressed == false)
-                            {
-                                curr_button.darken(Time.deltaTime);
-                            }
-                        }
-                        control_info.SetActive(true); //show UI indicator
-                        float dt = Mathf.Min(Time.deltaTime, 1.0f / 30.0f);
-                        target_control.handleInputs(current_inputs, hit.collider.gameObject, dt, 1); //call when all inputs have been checked
-                        return;
-                    }
-                    /*
-                    else if(hit.collider.gameObject.layer == 7) //Seat Layer
-                    {
-
-                        IControllable target_control =
-                            (IControllable)script_holder.GetComponent(corresponding_scripts[collider_names.IndexOf(hit.collider.gameObject.name)]); //get corresponding class
-
-                        HUDInfo temp_info = target_control.getHUDinfo(hit.collider.gameObject);
-
-                        if (title.GetComponent<TMP_Text>().text.CompareTo(temp_info.getName()) != 0 || current_info.numOptions() != temp_info.numOptions())
-                        {
-                            title.GetComponent<TMP_Text>().SetText(temp_info.getName()); //set title of that control
-                            current_info = temp_info;
-                            if (HUD_setting < 2)
-                            {
-                                createButtons();
-                            }
-                        }
-                        else
-                        {
-                            if (HUD_setting < 2)
-                            {
-                                updateButtons(temp_info);
-                            }
-                        }
-                        if (UnityEngine.Input.GetMouseButtonDown(0))
-                        {
-
-                        }
-
-                    }
-                    */
-
+                    my_camera = cam.GetComponent<Camera>();
                 }
             }
-            control_info.SetActive(false); //hide UI indicator if not looking at a control
-            title.GetComponent<TMP_Text>().SetText(""); //forces an update if not looking at a control
-        }
-        if (my_camera == null)
-        {
-            my_camera = Camera.current;
+            */
+            return;
         }
 
-        if (my_camera == null)
+
+        Physics.SyncTransforms(); // bandaid for raytargets synchronization. timestep out of sync somewhere. 
+        if (!paused)
         {
-            my_camera = Camera.main;
+            if (Physics.Raycast(new Ray(my_camera.transform.position, my_camera.transform.forward), out RaycastHit hit, RAYCAST_RANGE)) //cast ray
+            {
+                if (hit.collider.gameObject.layer == 6) //the ray hit a control (Layer 6 = Control)
+                {
+                    IControllable target_control =
+                        (IControllable)script_holder.GetComponent(corresponding_scripts[collider_names.IndexOf(hit.collider.gameObject.name)]); //get corresponding class
+                    
+                    HUDInfo temp_info = target_control.getHUDinfo(hit.collider.gameObject);
+
+                    if (title.GetComponent<TMP_Text>().text.CompareTo(temp_info.getName()) != 0 || current_info.numOptions() != temp_info.numOptions())
+                    {
+                        title.GetComponent<TMP_Text>().SetText(temp_info.getName()); //set title of that control
+                        current_info = temp_info;
+                        if (HUD_setting < 2)
+                        {
+                            createButtons();
+                        }
+                    }
+                    else
+                    {
+                        if (HUD_setting < 2)
+                        {
+                            updateButtons(temp_info);
+                        }
+                    }
+
+                    List<KeyCode> current_inputs = new List<KeyCode>(); //gets all inputted keys
+                    for (int b = 0; b < current_info.numOptions(); b++)
+                    {
+                        Button curr_button = current_info.getButtons()[b];
+                        bool pressed = false;
+                        for (int i = 0; i < input_options[curr_button.getControlIndex()].Length; i++)
+                        {
+                            if (curr_button.getTogglable() == false)
+                            {
+                                if (UnityEngine.Input.GetKey(input_options[curr_button.getControlIndex()][i]))
+                                {
+                                    pressed = true;
+                                }
+                            }
+                            else
+                            {
+                                if (UnityEngine.Input.GetKeyDown(input_options[curr_button.getControlIndex()][i]))
+                                {
+                                    pressed = true;
+                                }
+                            }
+                            if (pressed == true)
+                            {
+                                current_inputs.Add(input_options[curr_button.getControlIndex()][i]);
+                                curr_button.highlight(Time.deltaTime);
+                                break;
+                            }
+                        }
+                        if (pressed == false)
+                        {
+                            curr_button.darken(Time.deltaTime);
+                        }
+                    }
+                    control_info.SetActive(true); //show UI indicator
+                    float dt = Mathf.Min(Time.deltaTime, 1.0f / 30.0f);
+                    target_control.handleInputs(current_inputs, hit.collider.gameObject, dt, 1); //call when all inputs have been checked
+                    return;
+                }
+                /*
+                else if(hit.collider.gameObject.layer == 7) //Seat Layer
+                {
+                    
+                    IControllable target_control =
+                        (IControllable)script_holder.GetComponent(corresponding_scripts[collider_names.IndexOf(hit.collider.gameObject.name)]); //get corresponding class
+
+                    HUDInfo temp_info = target_control.getHUDinfo(hit.collider.gameObject);
+
+                    if (title.GetComponent<TMP_Text>().text.CompareTo(temp_info.getName()) != 0 || current_info.numOptions() != temp_info.numOptions())
+                    {
+                        title.GetComponent<TMP_Text>().SetText(temp_info.getName()); //set title of that control
+                        current_info = temp_info;
+                        if (HUD_setting < 2)
+                        {
+                            createButtons();
+                        }
+                    }
+                    else
+                    {
+                        if (HUD_setting < 2)
+                        {
+                            updateButtons(temp_info);
+                        }
+                    }
+                    if (UnityEngine.Input.GetMouseButtonDown(0))
+                    {
+                        
+                    }
+                    
+                }
+                */
+
+            }
         }
+        control_info.SetActive(false); //hide UI indicator if not looking at a control
+        title.GetComponent<TMP_Text>().SetText(""); //forces an update if not looking at a control
     }
 }
