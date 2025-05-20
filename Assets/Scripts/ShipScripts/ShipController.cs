@@ -221,6 +221,7 @@ public class ShipController : MonoBehaviour
 
 
     private float maxBeamWidth = 1f;
+    private float rotationSmoothingFactor = 5f; 
 
     private void UpdateWeaponsSystems()
     {
@@ -232,19 +233,23 @@ public class ShipController : MonoBehaviour
                 longRangePhaser.enabled = true;
             }
 
-            // Update Beam Rotation
+            
+            // Rotate Beam
             longRangePhaserOrigin.transform.localRotation = Quaternion.Euler(0f, longRangePhaserAngle, 0f);
 
-            // Update Beam Width
+            // Beam diameter
             float beamTemp = Mathf.Clamp01(phaserTemps[1]); // Ensures value is between 0–1
             float beamWidth = Mathf.Lerp(0f, maxBeamWidth, beamTemp);
             longRangePhaser.startWidth = beamWidth;
             longRangePhaser.endWidth = beamWidth;
 
+            // Update Beam length
+
+            // Update 
 
 
         }
-        else // Stop rendering
+        else
         {
             if (longRangePhaser.enabled)
                 longRangePhaser.enabled = false;
