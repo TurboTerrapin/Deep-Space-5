@@ -17,13 +17,13 @@ public class WeaponsSystem : MonoBehaviour
     private BoxCollider longRangePhaserCollider;
 
     [Header("Beam Settings")]
-    [SerializeField] private float maxBeamWidth = 2.5f;
+    [SerializeField] private float maxBeamWidth = 1.5f;
     [SerializeField] private float basePulseSpeed = 6f;
-    [SerializeField] private float maxPulseSpeed = 16f;
+    [SerializeField] private float maxPulseSpeed = 12f;
     [SerializeField] private float pulseSmoothing = 0.1f;
-    [SerializeField, Range(0.10f, 0.5f)] private float minPulsePercentage = 0.10f;
+    [SerializeField, Range(0.10f, 0.5f)] private float minPulsePercentage = 0.075f;
     [SerializeField, Range(0.10f, 0.5f)] private float maxPulsePercentage = 0.5f;
-    [SerializeField] private float maxIntensity = 5f;
+    [SerializeField] private float maxIntensity = 6.5f;
     [SerializeField] private float intensityPulseMultiplier = 2f;
 
     [Header("References")]
@@ -38,14 +38,15 @@ public class WeaponsSystem : MonoBehaviour
     private float[] phaserTemps;
     private float longRangePhaserAngle;
     private float pulseTimer;
-    private float smoothPulseValue;
+    private float smoothedPulse;
     private float velocity;
-
 
     private void Start() => InitializeLongRangePhaser();
 
     private void InitializeLongRangePhaser()
     {
+        longRangePhaser = longRangePhaserOrigin.GetComponentInChildren<LineRenderer>(true);
+
         if (longRangePhaser != null)
         {
             longRangePhaserCollider = longRangePhaser.GetComponent<BoxCollider>();
@@ -54,8 +55,6 @@ public class WeaponsSystem : MonoBehaviour
             longRangePhaserMaterial = new Material(longRangePhaser.material);
             longRangePhaser.material = longRangePhaserMaterial;
             emissionColor = longRangePhaserMaterial.GetColor("_EmissionColor");
-
-
         }
     }
 
@@ -65,10 +64,7 @@ public class WeaponsSystem : MonoBehaviour
         phaserPowers = controlHandler.GetComponent<PhaserPowers>();
         phaserTemperatures = controlHandler.GetComponent<PhaserTemperatures>();
 
-        if (longRangePhaserOrigin)
-            longRangePhaser = longRangePhaserOrigin.GetComponentInChildren<LineRenderer>(true);
-
-        return longRangeDirection && phaserPowers && phaserTemperatures && longRangePhaser;
+        return longRangeDirection && phaserPowers && phaserTemperatures;
     }
 
     public void UpdateInput()
@@ -96,18 +92,18 @@ public class WeaponsSystem : MonoBehaviour
         float temperatureScaledSpeed = Mathf.Lerp(basePulseSpeed, maxPulseSpeed, beamTemp);
 
         pulseTimer += Time.deltaTime * temperatureScaledSpeed;
-        float currentPulseValue = (Mathf.Sin(pulseTimer) + 1f) * 0.5f;
-        smoothPulseValue = Mathf.SmoothDamp(smoothPulseValue, currentPulseValue, ref velocity, pulseSmoothing);
+        float currentPulse = (Mathf.Sin(pulseTimer) + 1f) * 0.5f;
+        smoothedPulse = Mathf.SmoothDamp(smoothedPulse, currentPulse, ref velocity, pulseSmoothing);
 
         float currentBaseWidth = maxBeamWidth * beamTemp;
-        float pulseWidth = currentBaseWidth * CalculatePulseWidth(beamTemp) * smoothPulseValue;
+        float pulseWidth = currentBaseWidth * CalculatePulseWidth(beamTemp) * (smoothedPulse * 0.75f);
         float finalWidth = currentBaseWidth + pulseWidth;
 
         longRangePhaser.startWidth = finalWidth;
         longRangePhaser.endWidth = finalWidth * 0.2f;
 
         longRangePhaserOrigin.transform.localRotation = Quaternion.Euler(0, longRangePhaserAngle, 0);
-        UpdateBeamIntensity(beamTemp, smoothPulseValue);
+        UpdateBeamIntensity(beamTemp, -smoothedPulse);
         UpdateCollider(currentBaseWidth);
     }
 
@@ -119,7 +115,7 @@ public class WeaponsSystem : MonoBehaviour
         if (!longRangePhaserMaterial) return;
 
         float intensity = Mathf.Lerp(emissionColor.maxColorComponent, maxIntensity, temperature)
-                       + pulseIntensity;
+                        + pulseIntensity;
 
         longRangePhaserMaterial.EnableKeyword("_EMISSION");
         longRangePhaserMaterial.SetColor("_EmissionColor", emissionColor * intensity);
@@ -134,7 +130,6 @@ public class WeaponsSystem : MonoBehaviour
             beamWidth, 
             beamLength 
         );
-        
         // Center Collider
         longRangePhaserCollider.center = new Vector3(0, 0, beamLength * 0.5f);
     }
