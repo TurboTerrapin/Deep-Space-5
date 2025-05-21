@@ -1,3 +1,7 @@
+/*
+    Handles ship movement - Vertical & Horizontal Thrusters, Impulse Throttle, and Course Heading
+*/
+
 using UnityEngine;
 
 public class PilotingSystem : MonoBehaviour
@@ -41,15 +45,13 @@ public class PilotingSystem : MonoBehaviour
 
     public bool AssignControlReferences(GameObject controlHandler)
     {
-        if (controlHandler == null) return false;
-
         impulseThrottle = controlHandler.GetComponent<ImpulseThrottle>();
         courseHeading = controlHandler.GetComponent<CourseHeading>();
         horizontalThrusters = controlHandler.GetComponent<HorizontalThrusters>();
         verticalThrusters = controlHandler.GetComponent<VerticalThrusters>();
 
-        return impulseThrottle != null && courseHeading != null &&
-               horizontalThrusters != null && verticalThrusters != null;
+        return impulseThrottle  && courseHeading &&
+               horizontalThrusters  && verticalThrusters;
     }
 
     public void UpdateInput()

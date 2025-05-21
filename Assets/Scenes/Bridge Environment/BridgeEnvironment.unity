@@ -70478,6 +70478,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1512212215}
   - component: {fileID: 1512212217}
+  - component: {fileID: 1512212218}
   m_Layer: 0
   m_Name: LongRangePhaser
   m_TagString: Untagged
@@ -70556,7 +70557,7 @@ LineRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0
+        value: 0.14530092
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -70607,6 +70608,27 @@ LineRenderer:
   m_UseWorldSpace: 0
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!65 &1512212218
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1512212214}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0.5}
 --- !u!1 &1512303819
 GameObject:
   m_ObjectHideFlags: 0
