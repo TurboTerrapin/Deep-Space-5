@@ -178,7 +178,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveDir: {x: 0, y: 0}
   playerRB: {fileID: 3147236109247125174}
-  moveSpeed: 20
+  moveSpeed: 2
   sitting: 1
 --- !u!114 &7759421863261743704
 MonoBehaviour:
@@ -223,6 +223,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee06df22c73ce1740a75e6bbcffce0f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parented: 0
 --- !u!1 &5259488574847259791
 GameObject:
   m_ObjectHideFlags: 0
