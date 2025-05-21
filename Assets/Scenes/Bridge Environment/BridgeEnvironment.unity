@@ -13073,9 +13073,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 271686957}
-  - component: {fileID: 271686956}
   - component: {fileID: 271686955}
   - component: {fileID: 271686954}
+  - component: {fileID: 271686960}
+  - component: {fileID: 271686959}
+  - component: {fileID: 271686958}
   m_Layer: 0
   m_Name: SpaceShip
   m_TagString: Spaceship
@@ -13135,29 +13137,6 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
---- !u!114 &271686956
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 271686953}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 780c5300605a9d04e93aaba810432f1e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  currentImpulse: 0
-  currentHeading: 0
-  horizontalThrust: 0
-  verticalThrust: 0
-  longRangePhaser: {fileID: 0}
-  longRangePhaserOrigin: {fileID: 1181127622}
-  shortRangePhaserLeftOrigin: {fileID: 1017477164}
-  shortRangePhaserRigtOrigin: {fileID: 1636926053}
-  activePhasers: 
-  phaserTemps: []
-  longRangePhaserAngle: 0
 --- !u!4 &271686957
 Transform:
   m_ObjectHideFlags: 0
@@ -13183,6 +13162,45 @@ Transform:
   - {fileID: 927835518}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &271686958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 271686953}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 780c5300605a9d04e93aaba810432f1e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &271686959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 271686953}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d002fe7d2812747977087c841fc62c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  longRangePhaserOrigin: {fileID: 1181127622}
+  shortRangePhaserLeftOrigin: {fileID: 1017477164}
+  shortRangePhaserRightOrigin: {fileID: 1636926053}
+--- !u!114 &271686960
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 271686953}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 689f5d622eef3ab4fa713d2f75534da5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &273061196
 GameObject:
   m_ObjectHideFlags: 0
@@ -70520,7 +70538,7 @@ LineRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0
+        value: 0.19148254
         inSlope: 0
         outSlope: 0
         tangentMode: 0

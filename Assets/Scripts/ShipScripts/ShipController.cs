@@ -1,264 +1,43 @@
 using Unity.Netcode;
 using UnityEngine;
-public class ShipController : MonoBehaviour
+
+[RequireComponent(typeof(PilotingSystem))]
+[RequireComponent(typeof(WeaponsSystem))]
+
+public class ShipController : NetworkBehaviour
 {
-    // Object References
+    private PilotingSystem pilotingSystem;
+    private WeaponsSystem weaponsSystem;
+
     private GameObject controlHandler;
-    //private GameObject rayTargets;
-
-
-    // Pilot Script References
-    private ImpulseThrottle impulseThrottle;
-    private CourseHeading courseHeading;
-    private HorizontalThrusters horizontalThrusters;
-    private VerticalThrusters verticalThrusters;
-
-    public float currentImpulse;
-    public float currentHeading;
-    public float horizontalThrust;
-    public float verticalThrust;
-
-    // Tactician Script References
-    public LineRenderer longRangePhaser;
-    private LongRangeDirection longRangeDirection;
-    private PhaserPowers phaserPowers;
-    private PhaserTemperatures phaserTemperatures;
-
-    public GameObject longRangePhaserOrigin;
-    public GameObject shortRangePhaserLeftOrigin;
-    public GameObject shortRangePhaserRigtOrigin;
-
-    public bool[] activePhasers;
-    public float[] phaserTemps;
-    public float longRangePhaserAngle;
-    
-
-    // Ship Ready
     private bool shipReady = false;
 
-    private bool AssignPilotControlRefs()
+    private void Awake()
     {
-        impulseThrottle = controlHandler.GetComponent<ImpulseThrottle>();
-        courseHeading = controlHandler.GetComponent<CourseHeading>();
-        horizontalThrusters = controlHandler.GetComponent<HorizontalThrusters>();
-        verticalThrusters = controlHandler.GetComponent<VerticalThrusters>();
-
-        return impulseThrottle && courseHeading &&
-                horizontalThrusters && verticalThrusters != null;
+        pilotingSystem = GetComponent<PilotingSystem>();
+        weaponsSystem = GetComponent<WeaponsSystem>();
     }
-    private bool AssignTacticianControlRefs()
-    {
-
-
-        longRangePhaser = longRangePhaserOrigin.GetComponentInChildren<LineRenderer>(true);
-
-        longRangeDirection = controlHandler.GetComponent<LongRangeDirection>();
-        phaserPowers = controlHandler.GetComponent<PhaserPowers>();
-        phaserTemperatures = controlHandler.GetComponent<PhaserTemperatures>();
-
-        return longRangeDirection && phaserPowers && phaserTemperatures && longRangePhaser != null;
-    }
-    private bool AssignEngineerControlRefs() { return true; }
-    private bool AssignCaptainControlRefs() { return true; }
 
     void Start()
     {
         controlHandler = GameObject.FindGameObjectWithTag("ControlHandler");
-        //rayTargets = GameObject.FindGameObjectWithTag("RayTargets");
 
-        /*
-        if (controlHandler != null && rayTargets != null && AssignPilotControlRefs() && AssignTacticianControlRefs() &&
-                AssignEngineerControlRefs() && AssignCaptainControlRefs())
-        {
-            shipReady = true;
-        }
-        */
-        if (controlHandler != null && AssignPilotControlRefs() && AssignTacticianControlRefs() &&
-        AssignEngineerControlRefs() && AssignCaptainControlRefs())
+        if (controlHandler != null &&
+            pilotingSystem.AssignControlReferences(controlHandler) &&
+            weaponsSystem.AssignControlReferences(controlHandler))
         {
             shipReady = true;
         }
     }
-
-    private void GetPilotInput()
-    {
-        currentImpulse = impulseThrottle.getCurrentImpulse();
-        currentHeading = courseHeading.getCurrentHeading();
-        horizontalThrust = horizontalThrusters.getHorizontalThrusterState();
-        verticalThrust = verticalThrusters.getVerticalThrusterState();
-    }
-
-    private void GetTacticianInput()
-    {
-        activePhasers = phaserPowers.GetActivePhasers();
-        longRangePhaserAngle = longRangeDirection.GetLRPhaserAngle();
-        phaserTemps = phaserTemperatures.GetPhaserTemperatures();
-    }
-    private void GetEngineerInput() { }
-    private void GetCaptainInput() { }
 
     void Update()
     {
-        if (shipReady && NetworkManager.Singleton.IsHost)
-        {
-            GetPilotInput();
-            GetTacticianInput();
-            GetEngineerInput();
-            GetCaptainInput();
-            UpdateWeaponsSystems();
-            UpdateShipTransform();
-        }
-    }
+        if (!shipReady || !IsHost) return;
 
-    // Boob
-    // *********** To Separate into own script in future ****************8
+        pilotingSystem.UpdateInput();
+        weaponsSystem.UpdateInput();
 
-    private readonly float maxThrusterSpeed = 5f;
-    private readonly float maxImpulseSpeed = 40f;
-    private readonly float rotationPower = 6f; //60
-
-    private readonly float impulseAccelerationRate = 0.4f;
-    private readonly float impulseDecelerationRate = 1.5f;
-
-    private readonly float baseThrusterAccelerationRate = 0.1f;
-    private readonly float maxThrusterAccelerationRate = 0.5f;
-    private readonly float timeToMaxThrustAccel = 2f;
-    private readonly float thrusterDecelerationRate = 0.5f;
-
-    private float horizontalThrusterActiveTime = 0f;
-    private float verticalThrusterActiveTime = 0f;
-    private Vector3 currentVelocity;
-
-
-    private void UpdateShipTransform()
-    {
-        float dt = Time.deltaTime;
-        //Vector3 forward = transform.forward; // uncomment once bride orientation is fixed (I.E. +z is foward, currently -z is forward)
-        Vector3 forward = -transform.forward;  // delete this once orientation fixed
-        Vector3 horizontal = transform.right;
-        Vector3 vertical = transform.up;
-
-        UpdateThrusterActiveTime(dt);
-
-        Vector3 impulseVelocity = CalculateAxisVelocity(forward, currentImpulse * maxImpulseSpeed,
-                impulseAccelerationRate, impulseDecelerationRate, dt);
-
-        Vector3 horizontalVelocity = CalculateAxisVelocity(horizontal, horizontalThrust * maxThrusterSpeed,
-                GetThrusterAccelerationRate(horizontalThrusterActiveTime), thrusterDecelerationRate, dt);
-
-        Vector3 verticalVelocity = CalculateAxisVelocity(vertical, verticalThrust * maxThrusterSpeed,
-                GetThrusterAccelerationRate(verticalThrusterActiveTime), thrusterDecelerationRate, dt);
-
-        currentVelocity = impulseVelocity + horizontalVelocity + verticalVelocity;
-
-        HandleRotation(forward, dt);
-        transform.position += currentVelocity * dt;
-    }
-
-    private void UpdateThrusterActiveTime(float dt)
-    {
-        if (Mathf.Abs(horizontalThrust) > 0.1f)
-        {
-            horizontalThrusterActiveTime += dt;
-        }
-        else
-        {
-            horizontalThrusterActiveTime = 0f;
-        }
-
-        if (Mathf.Abs(verticalThrust) > 0.1f)
-        {
-            verticalThrusterActiveTime += dt;
-        }
-        else
-        {
-            verticalThrusterActiveTime = 0f;
-        }
-    }
-
-    private float GetThrusterAccelerationRate(float activeTime)
-    {
-        return Mathf.Lerp(baseThrusterAccelerationRate, maxThrusterAccelerationRate,
-            Mathf.Clamp01(activeTime / timeToMaxThrustAccel));
-    }
-
-    private Vector3 CalculateAxisVelocity(Vector3 axis, float targetSpeed, float accelerationRate, float decelerationRate, float dt)
-    {
-        float currentSpeed = Vector3.Dot(currentVelocity, axis);
-        float absoluteTarget = Mathf.Abs(targetSpeed);
-
-        float rate;
-        if (Mathf.Abs(currentSpeed) < absoluteTarget)
-        {
-            rate = accelerationRate;
-        }
-        else
-        {
-            rate = decelerationRate;
-        }
-
-        currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, rate * dt);
-
-        return axis * currentSpeed;
-    }
-
-    private void HandleRotation(Vector3 forwardDirection, float dt)
-    {
-        float currentForwardSpeed = Vector3.Dot(currentVelocity, forwardDirection);
-
-        if (Mathf.Abs(currentForwardSpeed) < 0.01f)
-        {
-            return;
-        }
-
-        Quaternion desiredRotation = Quaternion.Euler(0, currentHeading, 0);
-
-        float forwardSpeedFactor = Mathf.Clamp01(currentForwardSpeed / maxImpulseSpeed);
-        float rotationSpeed = rotationPower * forwardSpeedFactor;
-
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, desiredRotation, rotationSpeed * dt);
-    }
-
-
-    private float maxBeamWidth = 1.5f;
-
-    private void UpdateWeaponsSystems()
-    {
-        // Long range phaser on
-        if (activePhasers[0] && (phaserTemps[1] > 0)) 
-        {
-            // Set Beam Active
-            if(!longRangePhaser.enabled) {
-                longRangePhaser.enabled = true;
-            }
-
-            
-            // Rotate Beam
-            longRangePhaserOrigin.transform.localRotation = Quaternion.Euler(0f, longRangePhaserAngle, 0f);
-
-            // Beam diameter
-            float beamTemp = Mathf.Clamp01(phaserTemps[1]); 
-            float beamWidth = Mathf.Lerp(0f, maxBeamWidth, beamTemp);
-            longRangePhaser.startWidth = beamWidth;
-            longRangePhaser.endWidth = beamWidth;
-
-        }
-        else
-        {
-            if (longRangePhaser.enabled)
-                longRangePhaser.enabled = false;
-        }
-
-        // Short range left
-        if (activePhasers[1] && (phaserTemps[0] != 0))
-        {
-
-        }
-
-        // Short range Right
-        if (activePhasers[2] && (phaserTemps[0] != 0))
-        {
-
-        }
+        weaponsSystem.UpdateWeapons();
+        pilotingSystem.UpdateMovement();
     }
 }
