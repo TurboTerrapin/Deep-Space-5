@@ -17,8 +17,8 @@ public class WeaponsSystem : MonoBehaviour
     [SerializeField] private float pulseSmoothing = 0.1f;
     [SerializeField] private float minPulsePercentage = 0.15f; // pulse width 15% at maxBeamWidth
     [SerializeField] private float maxPulsePercentage = 0.5f; // pulseWidth 50% at minBeamWidth 
-    [SerializeField][Range(1f, 10f)] private float minIntensity = 1f;
-    [SerializeField][Range(1f, 20f)] private float maxIntensity = 8f;
+    [SerializeField] private float maxIntensity = 6f;
+
     [SerializeField] private float intensityPulseMultiplier = 4f;
 
     [Header("Beam Color Settings")]
@@ -32,7 +32,8 @@ public class WeaponsSystem : MonoBehaviour
     private float currentPulseValue;
     private float smoothPulseValue;
     private float velocity;
-    private Color emissionColor;
+    public Color emissionColor;
+    public float intensity;
 
 
     // Weapon origins
@@ -46,16 +47,28 @@ public class WeaponsSystem : MonoBehaviour
         InitializeLongRangePhaser();
     }
 
+    /*
+        private void InitializeLongRangePhaser()
+        {
+            if (longRangePhaser != null)
+            {
+                longRangePhaserMaterial = new Material(longRangePhaser.material);
+                longRangePhaser.material = longRangePhaserMaterial;
+                emissionColor = longRangePhaserMaterial.color;
+
+            }
+        }
+        */
     private void InitializeLongRangePhaser()
-    {
+{
         if (longRangePhaser != null)
         {
             longRangePhaserMaterial = new Material(longRangePhaser.material);
             longRangePhaser.material = longRangePhaserMaterial;
-            emissionColor = longRangePhaserMaterial.color;
-
-        }
+            emissionColor = longRangePhaserMaterial.GetColor("_EmissionColor");
+            intensity = emissionColor.maxColorComponent; // Gets the highest channel value (R,G,B)
     }
+}
 
     public bool AssignControlReferences(GameObject controlHandler)
     {
@@ -131,20 +144,23 @@ public class WeaponsSystem : MonoBehaviour
         return Mathf.Lerp(minPulsePercentage, maxPulsePercentage, curve);
     }
 
-    private void UpdateBeamIntensity(float temperature, float pulseIntensity)
-    {
-        if (longRangePhaserMaterial == null) return;
+private void UpdateBeamIntensity(float temperature, float pulseIntensity)
+{
+    if (longRangePhaserMaterial == null) return;
 
-        // Base intensity scales with temperature
-        float baseIntensity = Mathf.Lerp(minIntensity, maxIntensity, temperature);
+    float baseIntensity = Mathf.Lerp(intensity, maxIntensity, temperature);
+    float pulseIntensityBoost = pulseIntensity * intensityPulseMultiplier;
+    float totalIntensity = baseIntensity + pulseIntensityBoost;
 
-        // Pulse adds intensity variation while maintaining color
-        float pulseIntensityBoost = pulseIntensity * intensityPulseMultiplier;
-        float totalIntensity = baseIntensity + pulseIntensityBoost;
-
-
-        // Apply emissive color
-        longRangePhaserMaterial.SetColor("_EmissionColor", emissionColor * totalIntensity);
-    }
+    // Convert to linear space for proper HDR handling
+    Color finalEmission = emissionColor * Mathf.LinearToGammaSpace(totalIntensity);
+    
+    // Enable keyword if using standard shader
+    longRangePhaserMaterial.EnableKeyword("_EMISSION");
+    longRangePhaserMaterial.SetColor("_EmissionColor", finalEmission);
+    
+    // Mark material as dirty to force update
+    UnityEditor.EditorUtility.SetDirty(longRangePhaserMaterial);
+}
 
 }
