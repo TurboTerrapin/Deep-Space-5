@@ -8,44 +8,37 @@ public class WeaponsSystem : MonoBehaviour
     private PhaserTemperatures phaserTemperatures;
     private LineRenderer longRangePhaser;
 
-    // Weapon parameters
-    private readonly float maxBeamWidth = 3.5f;
+    // Beam parameters
+    [Header("Beam Settings")]
+    [SerializeField] private float maxBeamWidth = 2.5f;
+    [SerializeField] private float basePulseSpeed = 6f;
+    [SerializeField] private float maxPulseSpeed = 10f; // Maximum speed at high temp
+    [SerializeField] private float maxPulseAmplitude = 0.2f;
+    [SerializeField] private float pulseSmoothing = 0.1f;
 
     // Weapon state
     private bool[] activePhasers;
     private float[] phaserTemps;
     private float longRangePhaserAngle;
+    private float pulseTimer;
+    private float currentPulseValue;
+    private float smoothPulseValue;
+    private float velocity;
 
     // Weapon origins
     public GameObject longRangePhaserOrigin;
-    public GameObject shortRangePhaserLeftOrigin;
-    public GameObject shortRangePhaserRightOrigin;
-
-    public Material longRangeMaterial;
-    public Color longRangeBaseColor;
-    public Color longRangeHDRemission;
-    public float baseEmissionIntensity;
-    public float pulseTimer;
-    public float pulseSpeed;
-    public float pulseWidthAmplitude = 1f;
 
     private void Start()
     {
-        InitializeLongRangePhasers();
+        InitializeLongRangePhaser();
     }
 
-    private void InitializeLongRangePhasers()
+    private void InitializeLongRangePhaser()
     {
-        longRangeMaterial = new Material(longRangePhaser.material);
-        longRangePhaser.material = longRangeMaterial;
-
-        
-        longRangeBaseColor = longRangeMaterial.color;
-        longRangeHDRemission = longRangeMaterial.GetColor("_EmissionColor");
-        baseEmissionIntensity = longRangeHDRemission.maxColorComponent;
-        longRangeHDRemission /= baseEmissionIntensity; // Normalize
-
-
+        if (longRangePhaser != null)
+        {
+            longRangePhaser.material = new Material(longRangePhaser.material);
+        }
     }
 
     public bool AssignControlReferences(GameObject controlHandler)
@@ -73,7 +66,6 @@ public class WeaponsSystem : MonoBehaviour
     public void UpdateWeapons()
     {
         UpdateLongRangePhaser();
-        // UpdateShortRangePhasers(); // Implement when ready
     }
 
     private void UpdateLongRangePhaser()
@@ -83,34 +75,25 @@ public class WeaponsSystem : MonoBehaviour
         if (longRangePhaser.enabled != active)
         {
             longRangePhaser.enabled = active;
-
+            if (!active) pulseTimer = 0f;
         }
 
-        if (!active)
-        {
-            // Reset timer when beam becomes inactive
-            pulseTimer = 0f;
-            return;
-        }
+        if (!longRangePhaser.enabled) return;
 
-        // Update Pulse Timer
-        pulseTimer += Time.deltaTime * pulseSpeed;
+        float beamTemp = Mathf.Clamp01(phaserTemps[1]);
+        float temperatureScaledAmplitude = maxPulseAmplitude * beamTemp;
+        float temperatureScaledSpeed = Mathf.Lerp(basePulseSpeed, maxPulseSpeed, beamTemp);
 
-        // Calculate Pulse factotr
-        float pulseFactor = (Mathf.Sin(pulseTimer) + 1f) * 0.5f; // Sin Wave -> (-1, 1) to (0, 1)
+        pulseTimer += Time.deltaTime * temperatureScaledSpeed;
+        currentPulseValue = (Mathf.Sin(pulseTimer) + 1f) * 0.5f;
+        smoothPulseValue = Mathf.SmoothDamp(smoothPulseValue, currentPulseValue, ref velocity, pulseSmoothing);
 
-        // Rotate Beam
         longRangePhaserOrigin.transform.localRotation = Quaternion.Euler(0f, longRangePhaserAngle, 0f);
 
-        // Adjust beam width based on temperature
-        float beamTemp = Mathf.Clamp01(phaserTemps[1]);
-        float pulseWidth = Mathf.Lerp(0f, maxBeamWidth, beamTemp * pulseFactor);
-        //float pulseWidth = baseBeamWidth * pulseWidthAmplitude;
+        float baseWidth = Mathf.Lerp(0f, maxBeamWidth, beamTemp);
+        float pulseWidth = baseWidth * (1f + smoothPulseValue * temperatureScaledAmplitude);
 
         longRangePhaser.startWidth = pulseWidth;
         longRangePhaser.endWidth = pulseWidth;
-
-    
     }
-
 }
