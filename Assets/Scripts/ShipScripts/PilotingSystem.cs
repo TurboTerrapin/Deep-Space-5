@@ -2,7 +2,27 @@ using UnityEngine;
 
 public class PilotingSystem : MonoBehaviour
 {
-    // References
+    [Header("Control References")]
+    [SerializeField] private GameObject controlHandler;
+
+    [Header("Speed Settings")]
+    [SerializeField] private float maxThrusterSpeed = 5f;
+    [SerializeField] private float maxImpulseSpeed = 40f;
+
+    [Header("Rotation Settings")]
+    [SerializeField] private float rotationPower = 6f;
+
+    [Header("Impulse Settings")]
+    [SerializeField] private float impulseAccelerationRate = 0.4f;
+    [SerializeField] private float impulseDecelerationRate = 1.5f;
+
+    [Header("Thruster Settings")]
+    [SerializeField] private float baseThrusterAccelerationRate = 0.1f;
+    [SerializeField] private float maxThrusterAccelerationRate = 0.5f;
+    [SerializeField] private float timeToMaxThrustAccel = 2f;
+    [SerializeField] private float thrusterDecelerationRate = 0.5f;
+
+    // Component references
     private ImpulseThrottle impulseThrottle;
     private CourseHeading courseHeading;
     private HorizontalThrusters horizontalThrusters;
@@ -14,17 +34,6 @@ public class PilotingSystem : MonoBehaviour
     private float horizontalThrust;
     private float verticalThrust;
 
-    // Movement parameters
-    private readonly float maxThrusterSpeed = 5f;
-    private readonly float maxImpulseSpeed = 40f;
-    private readonly float rotationPower = 6f;
-    private readonly float impulseAccelerationRate = 0.4f;
-    private readonly float impulseDecelerationRate = 1.5f;
-    private readonly float baseThrusterAccelerationRate = 0.1f;
-    private readonly float maxThrusterAccelerationRate = 0.5f;
-    private readonly float timeToMaxThrustAccel = 2f;
-    private readonly float thrusterDecelerationRate = 0.5f;
-
     // Movement state
     private float horizontalThrusterActiveTime;
     private float verticalThrusterActiveTime;
@@ -32,13 +41,15 @@ public class PilotingSystem : MonoBehaviour
 
     public bool AssignControlReferences(GameObject controlHandler)
     {
+        if (controlHandler == null) return false;
+
         impulseThrottle = controlHandler.GetComponent<ImpulseThrottle>();
         courseHeading = controlHandler.GetComponent<CourseHeading>();
         horizontalThrusters = controlHandler.GetComponent<HorizontalThrusters>();
         verticalThrusters = controlHandler.GetComponent<VerticalThrusters>();
 
-        return impulseThrottle && courseHeading &&
-               horizontalThrusters && verticalThrusters != null;
+        return impulseThrottle != null && courseHeading != null &&
+               horizontalThrusters != null && verticalThrusters != null;
     }
 
     public void UpdateInput()
@@ -52,7 +63,7 @@ public class PilotingSystem : MonoBehaviour
     public void UpdateMovement()
     {
         float dt = Time.deltaTime;
-        Vector3 forward = -transform.forward;  // TODO: Fix once bridge faces +z direction (transform.forward) replace
+        Vector3 forward = -transform.forward;
         Vector3 horizontal = transform.right;
         Vector3 vertical = transform.up;
 
@@ -68,7 +79,6 @@ public class PilotingSystem : MonoBehaviour
                 GetThrusterAccelerationRate(verticalThrusterActiveTime), thrusterDecelerationRate, dt);
 
         currentVelocity = impulseVelocity + horizontalVelocity + verticalVelocity;
-
         HandleRotation(forward, dt);
         transform.position += currentVelocity * dt;
     }

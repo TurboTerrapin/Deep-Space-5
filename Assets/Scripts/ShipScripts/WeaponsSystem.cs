@@ -1,3 +1,4 @@
+
 using UnityEngine;
 
 public class WeaponsSystem : MonoBehaviour
@@ -9,12 +10,19 @@ public class WeaponsSystem : MonoBehaviour
     private LineRenderer longRangePhaser;
 
     // Beam parameters
-    [Header("Beam Settings")]
-    [SerializeField] private float maxBeamWidth = 2.5f;
-    [SerializeField] private float basePulseSpeed = 6f;
-    [SerializeField] private float maxPulseSpeed = 10f; // Maximum speed at high temp
-    [SerializeField] private float maxPulseAmplitude = 0.2f;
+    [Header("Long Range Beam Settings")]
+    [SerializeField] private float maxBeamWidth = 2.5f; // maximum base diameter 
+    [SerializeField] private float basePulseSpeed = 6f; // min cycle speed of pulsing effect
+    [SerializeField] private float maxPulseSpeed = 10f;
     [SerializeField] private float pulseSmoothing = 0.1f;
+    [SerializeField] private float minPulsePercentage = 0.15f; // pulse width 15% at maxBeamWidth
+    [SerializeField] private float maxPulsePercentage = 0.5f; // pulseWidth 50% at minBeamWidth 
+    [SerializeField][Range(1f, 10f)] private float minIntensity = 1f;
+    [SerializeField][Range(1f, 20f)] private float maxIntensity = 8f;
+    [SerializeField] private float intensityPulseMultiplier = 4f;
+
+    [Header("Beam Color Settings")]
+    [SerializeField] private float colorPulseMultiplier = 1.5f;
 
     // Weapon state
     private bool[] activePhasers;
@@ -24,9 +32,14 @@ public class WeaponsSystem : MonoBehaviour
     private float currentPulseValue;
     private float smoothPulseValue;
     private float velocity;
+    private Color emissionColor;
+
 
     // Weapon origins
     public GameObject longRangePhaserOrigin;
+    public GameObject shortRangePhaserOriginLeft;
+    public GameObject shortRangePhaserOriginRight;
+    public Material longRangePhaserMaterial;
 
     private void Start()
     {
@@ -37,7 +50,10 @@ public class WeaponsSystem : MonoBehaviour
     {
         if (longRangePhaser != null)
         {
-            longRangePhaser.material = new Material(longRangePhaser.material);
+            longRangePhaserMaterial = new Material(longRangePhaser.material);
+            longRangePhaser.material = longRangePhaserMaterial;
+            emissionColor = longRangePhaserMaterial.color;
+
         }
     }
 
@@ -81,7 +97,6 @@ public class WeaponsSystem : MonoBehaviour
         if (!longRangePhaser.enabled) return;
 
         float beamTemp = Mathf.Clamp01(phaserTemps[1]);
-        float temperatureScaledAmplitude = maxPulseAmplitude * beamTemp;
         float temperatureScaledSpeed = Mathf.Lerp(basePulseSpeed, maxPulseSpeed, beamTemp);
 
         pulseTimer += Time.deltaTime * temperatureScaledSpeed;
@@ -90,10 +105,46 @@ public class WeaponsSystem : MonoBehaviour
 
         longRangePhaserOrigin.transform.localRotation = Quaternion.Euler(0f, longRangePhaserAngle, 0f);
 
-        float baseWidth = Mathf.Lerp(0f, maxBeamWidth, beamTemp);
-        float pulseWidth = baseWidth * (1f + smoothPulseValue * temperatureScaledAmplitude);
+        // The currentBaseWidth scales linearly based on beamTemp, (0 -> 1), Where:
+        // a beam temperature of 0:0, and a beam temperature of 1:maxBeamSize
+        float currentBaseWidth = maxBeamWidth * beamTemp;
 
-        longRangePhaser.startWidth = pulseWidth;
-        longRangePhaser.endWidth = pulseWidth;
+        // The pulseWidth scales inversely with the beamTemp
+        float pulseWidthPercentage = CalculatePulseWidthPercentage(beamTemp);
+        float pulseWidthVariation = currentBaseWidth * pulseWidthPercentage * smoothPulseValue;
+
+        // The finalWidth is the base + the pulse
+        float finalWidth = currentBaseWidth + pulseWidthVariation;
+
+        longRangePhaser.startWidth = finalWidth;
+        longRangePhaser.endWidth = finalWidth / 10f; // Endpoint of line renderer is 1/10 of the origin diameter (To create perspective)
+
+        // Pulse the Intensity of the HDRI
+        UpdateBeamIntensity(beamTemp, smoothPulseValue);
     }
+
+    private float CalculatePulseWidthPercentage(float temperature)
+    {
+        temperature = Mathf.Max(temperature, 0.001f);
+        float inverseTemp = 1f - temperature;
+        float curve = inverseTemp * inverseTemp;
+        return Mathf.Lerp(minPulsePercentage, maxPulsePercentage, curve);
+    }
+
+    private void UpdateBeamIntensity(float temperature, float pulseIntensity)
+    {
+        if (longRangePhaserMaterial == null) return;
+
+        // Base intensity scales with temperature
+        float baseIntensity = Mathf.Lerp(minIntensity, maxIntensity, temperature);
+
+        // Pulse adds intensity variation while maintaining color
+        float pulseIntensityBoost = pulseIntensity * intensityPulseMultiplier;
+        float totalIntensity = baseIntensity + pulseIntensityBoost;
+
+
+        // Apply emissive color
+        longRangePhaserMaterial.SetColor("_EmissionColor", emissionColor * totalIntensity);
+    }
+
 }
