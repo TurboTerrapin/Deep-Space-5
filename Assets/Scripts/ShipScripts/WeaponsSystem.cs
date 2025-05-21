@@ -9,7 +9,7 @@ public class WeaponsSystem : MonoBehaviour
     private LineRenderer longRangePhaser;
 
     // Weapon parameters
-    private readonly float maxBeamWidth = 1.5f;
+    private readonly float maxBeamWidth = 3.5f;
 
     // Weapon state
     private bool[] activePhasers;
@@ -20,6 +20,33 @@ public class WeaponsSystem : MonoBehaviour
     public GameObject longRangePhaserOrigin;
     public GameObject shortRangePhaserLeftOrigin;
     public GameObject shortRangePhaserRightOrigin;
+
+    public Material longRangeMaterial;
+    public Color longRangeBaseColor;
+    public Color longRangeHDRemission;
+    public float baseEmissionIntensity;
+    public float pulseTimer;
+    public float pulseSpeed;
+    public float pulseWidthAmplitude = 1f;
+
+    private void Start()
+    {
+        InitializeLongRangePhasers();
+    }
+
+    private void InitializeLongRangePhasers()
+    {
+        longRangeMaterial = new Material(longRangePhaser.material);
+        longRangePhaser.material = longRangeMaterial;
+
+        
+        longRangeBaseColor = longRangeMaterial.color;
+        longRangeHDRemission = longRangeMaterial.GetColor("_EmissionColor");
+        baseEmissionIntensity = longRangeHDRemission.maxColorComponent;
+        longRangeHDRemission /= baseEmissionIntensity; // Normalize
+
+
+    }
 
     public bool AssignControlReferences(GameObject controlHandler)
     {
@@ -51,24 +78,39 @@ public class WeaponsSystem : MonoBehaviour
 
     private void UpdateLongRangePhaser()
     {
-        bool shouldBeActive = activePhasers[0] && (phaserTemps[1] > 0);
+        bool active = activePhasers[0] && (phaserTemps[1] > 0);
 
-        if (longRangePhaser.enabled != shouldBeActive)
+        if (longRangePhaser.enabled != active)
         {
-            longRangePhaser.enabled = shouldBeActive;
+            longRangePhaser.enabled = active;
+
         }
 
-        if (!shouldBeActive) return;
+        if (!active)
+        {
+            // Reset timer when beam becomes inactive
+            pulseTimer = 0f;
+            return;
+        }
+
+        // Update Pulse Timer
+        pulseTimer += Time.deltaTime * pulseSpeed;
+
+        // Calculate Pulse factotr
+        float pulseFactor = (Mathf.Sin(pulseTimer) + 1f) * 0.5f; // Sin Wave -> (-1, 1) to (0, 1)
 
         // Rotate Beam
-        longRangePhaserOrigin.transform.localRotation =
-            Quaternion.Euler(0f, longRangePhaserAngle, 0f);
+        longRangePhaserOrigin.transform.localRotation = Quaternion.Euler(0f, longRangePhaserAngle, 0f);
 
         // Adjust beam width based on temperature
         float beamTemp = Mathf.Clamp01(phaserTemps[1]);
-        float beamWidth = Mathf.Lerp(0f, maxBeamWidth, beamTemp);
-        longRangePhaser.startWidth = beamWidth;
-        longRangePhaser.endWidth = beamWidth;
+        float pulseWidth = Mathf.Lerp(0f, maxBeamWidth, beamTemp * pulseFactor);
+        //float pulseWidth = baseBeamWidth * pulseWidthAmplitude;
+
+        longRangePhaser.startWidth = pulseWidth;
+        longRangePhaser.endWidth = pulseWidth;
+
+    
     }
 
 }

@@ -22,9 +22,7 @@ public class ShipController : NetworkBehaviour
     {
         controlHandler = GameObject.FindGameObjectWithTag("ControlHandler");
 
-        if (controlHandler != null &&
-            pilotingSystem.AssignControlReferences(controlHandler) &&
-            weaponsSystem.AssignControlReferences(controlHandler))
+        if (controlHandler != null && pilotingSystem.AssignControlReferences(controlHandler) && weaponsSystem.AssignControlReferences(controlHandler))
         {
             shipReady = true;
         }
