@@ -13186,9 +13186,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7d002fe7d2812747977087c841fc62c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxBeamWidth: 2.5
+  basePulseSpeed: 6
+  maxPulseSpeed: 10
+  pulseSmoothing: 0.1
+  minPulsePercentage: 0.15
+  maxPulsePercentage: 0.5
+  maxIntensity: 6
+  intensityPulseMultiplier: 4
   longRangePhaserOrigin: {fileID: 1181127622}
-  shortRangePhaserLeftOrigin: {fileID: 1017477164}
-  shortRangePhaserRightOrigin: {fileID: 1636926053}
+  longRangePhaserMaterial: {fileID: 0}
+  emissionColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &271686960
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13201,6 +13209,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 689f5d622eef3ab4fa713d2f75534da5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controlHandler: {fileID: 0}
+  maxThrusterSpeed: 5
+  maxImpulseSpeed: 40
+  rotationPower: 6
+  impulseAccelerationRate: 0.4
+  impulseDecelerationRate: 1.5
+  baseThrusterAccelerationRate: 0.1
+  maxThrusterAccelerationRate: 0.5
+  timeToMaxThrustAccel: 2
+  thrusterDecelerationRate: 0.5
 --- !u!1 &273061196
 GameObject:
   m_ObjectHideFlags: 0
@@ -70491,7 +70509,7 @@ LineRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1512212214}
   m_Enabled: 1
-  m_CastShadows: 2
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
