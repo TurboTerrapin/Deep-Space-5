@@ -10181,6 +10181,9 @@ Transform:
   - {fileID: 106258135}
   - {fileID: 436382597}
   - {fileID: 783843589}
+  - {fileID: 951119586}
+  - {fileID: 1047801250}
+  - {fileID: 552907123}
   m_Father: {fileID: 271686957}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &190293071
@@ -21134,9 +21137,10 @@ GameObject:
   - component: {fileID: 401286212}
   - component: {fileID: 401286213}
   - component: {fileID: 401286214}
-  - component: {fileID: 401286216}
-  - component: {fileID: 401286215}
+  - component: {fileID: 401286221}
+  - component: {fileID: 401286220}
   - component: {fileID: 401286217}
+  - component: {fileID: 401286222}
   - component: {fileID: 401286218}
   - component: {fileID: 401286219}
   m_Layer: 0
@@ -21787,38 +21791,6 @@ MonoBehaviour:
   buttons:
   - {fileID: 2320559213674068101}
   - {fileID: 1163124140741966098}
---- !u!114 &401286215
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 401286162}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b918c044d16d02f4e91fa443ba6cdbc9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  buttons:
-  - {fileID: 237535824035186901}
-  - {fileID: 6884292042778834487}
-  - {fileID: 8199280895847907878}
-  - {fileID: 7136733334187529782}
-  - {fileID: 1342996157505219993}
-  - {fileID: 6501010332873136457}
---- !u!114 &401286216
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 401286162}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f72ac29e29137964196dfd81442ec189, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  power_switch: {fileID: 302404982}
 --- !u!114 &401286217
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21867,6 +21839,68 @@ MonoBehaviour:
   - {fileID: 1013133068}
   - {fileID: 1448052070}
   - {fileID: 1516354409}
+--- !u!114 &401286220
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 401286162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5aafd073cf35a54b99c0cb8a674d62b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buttons:
+  - {fileID: 237535824035186901}
+  - {fileID: 6884292042778834487}
+  - {fileID: 8199280895847907878}
+  - {fileID: 7136733334187529782}
+  - {fileID: 1342996157505219993}
+  - {fileID: 6501010332873136457}
+  - {fileID: 4409470725354151557}
+  - {fileID: 7058153208565899367}
+  - {fileID: 5743146540500948086}
+  - {fileID: 6733082611365970022}
+  - {fileID: 7224417728784224025}
+  - {fileID: 3231671597570718665}
+  manuals:
+  - {fileID: 0}
+  - {fileID: 0}
+--- !u!114 &401286221
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 401286162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6785db1a6d5ca14987fa25849ec02b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  power_switches:
+  - {fileID: 302404982}
+  - {fileID: 477078520}
+  manuals:
+  - {fileID: 0}
+  - {fileID: 0}
+--- !u!114 &401286222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 401286162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 232be6a3e4f5190479fafea9e65051f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  welcome_screen: {fileID: 1735544082}
+  home_screen: {fileID: 1790989235}
+  curr_screen: {fileID: 1790989235}
+  curr_button: {fileID: 0}
 --- !u!1 &402325436
 GameObject:
   m_ObjectHideFlags: 0
@@ -27165,7 +27199,7 @@ GameObject:
   - component: {fileID: 488842106}
   - component: {fileID: 488842107}
   m_Layer: 6
-  m_Name: manual_options
+  m_Name: ship_manual_options
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29724,6 +29758,59 @@ Transform:
   - {fileID: 1983397106}
   m_Father: {fileID: 819358323}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &552907122
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 552907123}
+  - component: {fileID: 552907124}
+  m_Layer: 6
+  m_Name: communications_manual_options
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &552907123
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 552907122}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: -0.20227456, w: 0.9793289}
+  m_LocalPosition: {x: -58.3638, y: 41.582, z: 18.7567}
+  m_LocalScale: {x: 1.6753469, y: 0.21619916, z: 1.5836276}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 190050723}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -23.34}
+--- !u!65 &552907124
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 552907122}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 8
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.15, y: 0.1, z: 0.3}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &554696669
 GameObject:
   m_ObjectHideFlags: 0
@@ -49406,6 +49493,59 @@ RectTransform:
   m_AnchoredPosition: {x: 0.045, y: 0}
   m_SizeDelta: {x: 0.06, y: 0.02}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &951119585
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 951119586}
+  - component: {fileID: 951119587}
+  m_Layer: 6
+  m_Name: communications_manual_on_off
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &951119586
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 951119585}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: -0.20227456, w: 0.9793289}
+  m_LocalPosition: {x: -58.2793, y: 41.5455, z: 18.4875}
+  m_LocalScale: {x: 0.44592118, y: 0.21619916, z: 0.21238038}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 190050723}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -23.34}
+--- !u!65 &951119587
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 951119585}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 8
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.15, y: 0.1, z: 0.3}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &951228486
 GameObject:
   m_ObjectHideFlags: 0
@@ -54122,7 +54262,7 @@ GameObject:
   - component: {fileID: 1027527026}
   - component: {fileID: 1027527027}
   m_Layer: 6
-  m_Name: manual_options
+  m_Name: ship_manual_options
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -55355,6 +55495,59 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1046716884}
   m_CullTransparentMesh: 1
+--- !u!1 &1047801249
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1047801250}
+  - component: {fileID: 1047801251}
+  m_Layer: 6
+  m_Name: communications_manual_options
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1047801250
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1047801249}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: -0.20227456, w: 0.9793289}
+  m_LocalPosition: {x: -58.3953, y: 41.5956, z: 18.4875}
+  m_LocalScale: {x: 1.2095692, y: 0.21619916, z: 0.21238038}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 190050723}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -23.34}
+--- !u!65 &1047801251
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1047801249}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 8
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.15, y: 0.1, z: 0.3}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1048630716
 GameObject:
   m_ObjectHideFlags: 0
@@ -58368,7 +58561,7 @@ GameObject:
   - component: {fileID: 1116343977}
   - component: {fileID: 1116343978}
   m_Layer: 6
-  m_Name: manual_on_off
+  m_Name: ship_manual_on_off
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -82767,14 +82960,16 @@ MonoBehaviour:
   - destruct_digit_c
   - destruct_digit_d
   - destruct_or_abort
-  - manual_options
-  - manual_options
-  - manual_on_off
+  - ship_manual_options
+  - ship_manual_options
+  - ship_manual_on_off
   - emergency_lights
   - cargo_jettison_a
   - cargo_jettison_b
   - cargo_jettison_c
   - cargo_jettison_d
+  - communications_manual_on_off
+  - communications_manual_options
   corresponding_scripts:
   - ImpulseThrottle
   - HorizontalThrusters
@@ -82829,14 +83024,17 @@ MonoBehaviour:
   - DestructCode
   - DestructCode
   - DestructSequence
-  - ShipManualSelector
-  - ShipManualSelector
-  - ShipManualOnOff
+  - ManualSelector
+  - ManualSelector
+  - ManualOnOff
   - EmergencyLights
   - CargoJettisons
   - CargoJettisons
   - CargoJettisons
   - CargoJettisons
+  - ManualOnOff
+  - ManualSelector
+  - ManualSelector
 --- !u!114 &1593583443
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -105413,7 +105611,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: SHIP OPERATIONS MANUAL
+  m_text: COMMUNICATIONS MANUAL
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d24b90a6427c83b4096d2d5ed236fac7, type: 2}
   m_sharedMaterial: {fileID: -8488295769908592752, guid: d24b90a6427c83b4096d2d5ed236fac7, type: 2}
@@ -109331,7 +109529,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: v8.0.1
+  m_text: v2.3.0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d24b90a6427c83b4096d2d5ed236fac7, type: 2}
   m_sharedMaterial: {fileID: -8488295769908592752, guid: d24b90a6427c83b4096d2d5ed236fac7, type: 2}
@@ -117414,7 +117612,7 @@ GameObject:
   - component: {fileID: 5998684222144184678}
   - component: {fileID: 7607494036887340476}
   m_Layer: 0
-  m_Name: LeftButton
+  m_Name: RightButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -125626,7 +125824,7 @@ GameObject:
   - component: {fileID: 8232358898267740726}
   - component: {fileID: 7952360860635701318}
   m_Layer: 0
-  m_Name: RightButton
+  m_Name: LeftButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
