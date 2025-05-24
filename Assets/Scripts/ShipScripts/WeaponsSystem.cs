@@ -210,8 +210,8 @@ public class WeaponsSystem : MonoBehaviour
             // Optional: Add slight emission intensity variation
             if (phaser.material.HasProperty("_EmissionColor"))
             {
-                Color emissionColor = phaser.material.GetColor("_EmissionColor");
-                phaser.material.SetColor("_EmissionColor", emissionColor * (0.8f + 0.4f * pulseValue));
+                //Color emissionColor = phaser.material.GetColor("_EmissionColor");
+                //phaser.material.SetColor("_EmissionColor", emissionColor * (0.8f + 0.4f * pulseValue));
             }
         }
     }
