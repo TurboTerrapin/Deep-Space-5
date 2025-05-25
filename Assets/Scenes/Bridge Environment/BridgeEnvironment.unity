@@ -26980,7 +26980,6 @@ GameObject:
   m_Component:
   - component: {fileID: 570174446}
   - component: {fileID: 570174448}
-  - component: {fileID: 570174447}
   m_Layer: 0
   m_Name: ShortRangePhaser
   m_TagString: Untagged
@@ -27003,27 +27002,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1636926054}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
---- !u!65 &570174447
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 570174445}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0, y: 0, z: 0}
-  m_Center: {x: 0, y: 0, z: 0.5}
 --- !u!120 &570174448
 LineRenderer:
   serializedVersion: 2
@@ -40430,7 +40408,6 @@ GameObject:
   m_Component:
   - component: {fileID: 866030213}
   - component: {fileID: 866030215}
-  - component: {fileID: 866030214}
   m_Layer: 0
   m_Name: ShortRangePhaser
   m_TagString: Untagged
@@ -40453,27 +40430,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1017477165}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
---- !u!65 &866030214
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 866030212}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0, y: 0, z: 0}
-  m_Center: {x: 0, y: 0, z: 0.5}
 --- !u!120 &866030215
 LineRenderer:
   serializedVersion: 2

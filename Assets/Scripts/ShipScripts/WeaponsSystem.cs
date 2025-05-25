@@ -29,8 +29,8 @@ public class WeaponsSystem : MonoBehaviour
     private BoxCollider shortRangePhaserRightCollider;
 
     [Header("LongRange Phaser Settings")]
-    [SerializeField] private float minLRBeamWidth = 0.4f;
-    [SerializeField] private float maxLRBeamWidth = 1.5f;
+    [SerializeField] private float minLRBeamWidth = 0.6f;
+    [SerializeField] private float maxLRBeamWidth = 3.5f;
     [SerializeField] private float LRBeamEndDiameterRatio = 0.2f;
 
     [SerializeField] private float baseLRPulseSpeed = 6f;
@@ -38,12 +38,12 @@ public class WeaponsSystem : MonoBehaviour
     [SerializeField] private float LRpulseSmoothing = 0.01f;
     [SerializeField, Range(0.10f, 0.5f)] private float minLRPulsePercentage = 0.1f;
     [SerializeField, Range(0.10f, 0.5f)] private float maxLRPulsePercentage = 0.5f;
-    [SerializeField] private float maxLRIntensity = 6.5f;
+    [SerializeField] private float maxLRIntensity = 8.5f;
     [SerializeField] private float LRintensityPulseMultiplier = 2f;
 
     [Header("ShortRange Phaser Settings")]
     [SerializeField] private float minSRBeamDiameter = 0.1f; // Minimum Short Range Beam Diameter
-    [SerializeField] private float maxSRBeamDiameter = 0.5f; // Maximum Short Range Beam Diameter
+    [SerializeField] private float maxSRBeamDiameter = 0.3f; // Maximum Short Range Beam Diameter
     [SerializeField] private float SRBeamEndDiameterRatio = 0.4f;
                                                           
     [SerializeField, Range(0.40f, 1f)] private float minSRPulseInterval = 1f; // One Pulse per Unit Time
@@ -255,7 +255,7 @@ public class WeaponsSystem : MonoBehaviour
         float intensity = Mathf.Lerp(longRangeEmissionColor.maxColorComponent, maxLRIntensity, temperature)
                         + pulseIntensity;
 
-        longRangePhaserMaterial.EnableKeyword("_EMISSION");
+        longRangePhaserMaterial.EnableKeyword(EMISSION_);
         longRangePhaserMaterial.SetColor(EMISSION_COLOR, longRangeEmissionColor * intensity);
     }
 
