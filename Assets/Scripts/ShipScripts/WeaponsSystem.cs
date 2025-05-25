@@ -242,15 +242,15 @@ public class WeaponsSystem : MonoBehaviour
     private void ResizeCollider(float beamWidth)
     {
         if (longRangePhaserCollider == null) return;
-        
+
         // Resize collider
         longRangePhaserCollider.size = new Vector3(
-            beamWidth, 
-            beamWidth, 
-            LONG_RANGE_BEAM_LENGTH
+            beamWidth,
+            beamWidth,
+            1f
         );
         // Center The collider 
-        longRangePhaserCollider.center = new Vector3(0, 0, LONG_RANGE_BEAM_LENGTH * 0.5f);
+        longRangePhaserCollider.center = new Vector3(0, 0, 0.5f);
     }
 
 }
