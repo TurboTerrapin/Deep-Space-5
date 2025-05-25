@@ -7,6 +7,8 @@ TagManager:
   - ControlHandler
   - Spaceship
   - RayTargets
+  - LongRangePhaser
+  - ShortRangePhaser
   layers:
   - Default
   - TransparentFX

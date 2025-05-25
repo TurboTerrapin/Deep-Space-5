@@ -165,7 +165,7 @@ public class WeaponsSystem : MonoBehaviour
 
         longRangePhaserOrigin.transform.localRotation = Quaternion.Euler(0, longRangePhaserAngle, 0);
         UpdateBeamIntensity(beamTemp, smoothedPulse);
-        ResizeCollider(currentBaseWidth, maxLRBeamWidth);
+        ResizeCollider(currentBaseWidth);
     }
 
 
@@ -215,32 +215,12 @@ public class WeaponsSystem : MonoBehaviour
         UpdateShortRangePhaser(shortRangePhaserRight, active, phaserTemps[0], dt); // Handle Right SR Phaser
     }
 
-
-
-
-
-
-
     public void UpdateWeapons()
     {
         float dt = Time.deltaTime;
         UpdateLongRangePhaser(dt);
         UpdateShortRangePhasers(dt);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     private float CalculatePulseWidth(float temp)
     {
@@ -259,7 +239,7 @@ public class WeaponsSystem : MonoBehaviour
         longRangePhaserMaterial.SetColor(EMISSION_COLOR, longRangeEmissionColor * intensity);
     }
 
-    private void ResizeCollider(float beamWidth, float beamLength)
+    private void ResizeCollider(float beamWidth)
     {
         if (longRangePhaserCollider == null) return;
         
@@ -267,10 +247,10 @@ public class WeaponsSystem : MonoBehaviour
         longRangePhaserCollider.size = new Vector3(
             beamWidth, 
             beamWidth, 
-            beamLength 
+            LONG_RANGE_BEAM_LENGTH
         );
         // Center The collider 
-        longRangePhaserCollider.center = new Vector3(0, 0, beamLength * 0.5f);
+        longRangePhaserCollider.center = new Vector3(0, 0, LONG_RANGE_BEAM_LENGTH * 0.5f);
     }
 
 }
