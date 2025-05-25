@@ -147,40 +147,7 @@ public class WeaponsSystem : MonoBehaviour
         phaserTemps = phaserTemperatures.GetPhaserTemperatures();
     }
 
-    /*
-    private void UpdateLongRangePhaser(float dt)
-    {
-        bool active = activePhasers[0] && phaserTemps[1] > 0;
-
-        if (longRangePhaser.enabled != active)
-        {
-            longRangePhaser.enabled = active;
-            if (longRangePhaserCollider != null) longRangePhaserCollider.enabled = active;
-            if (!active) pulseTimer = 0f;
-            return;
-        }
-
-        float beamTemp = Mathf.Clamp01(phaserTemps[1]);
-        float temperatureScaledSpeed = Mathf.Lerp(baseLRPulseSpeed, maxLRPulseSpeed, beamTemp);
-
-        pulseTimer += dt * temperatureScaledSpeed;
-        float currentPulse = (Mathf.Sin(pulseTimer) + 1f) * 0.5f;
-        smoothedPulse = Mathf.SmoothDamp(smoothedPulse, currentPulse, ref velocity, LRpulseSmoothing);
-
-        float currentBaseWidth = maxLRBeamWidth * beamTemp;
-        float pulseWidth = currentBaseWidth * CalculatePulseWidth(beamTemp) * (smoothedPulse * 0.75f);
-        float finalWidth = currentBaseWidth + pulseWidth;
-
-        longRangePhaser.startWidth = finalWidth;
-        longRangePhaser.endWidth = finalWidth * LRBeamEndDiameterRatio;
-
-        longRangePhaserOrigin.transform.localRotation = Quaternion.Euler(0, longRangePhaserAngle, 0);
-        UpdateBeamIntensity(beamTemp, smoothedPulse);
-        ResizeCollider(currentBaseWidth);
-    }
-    */
-
-
+   
     private void UpdateLongRangePhaser(float dt)
     {
         bool active = activePhasers[0] && phaserTemps[1] > 0;
