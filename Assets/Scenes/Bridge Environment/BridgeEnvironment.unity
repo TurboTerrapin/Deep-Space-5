@@ -13078,7 +13078,6 @@ GameObject:
   - component: {fileID: 271686960}
   - component: {fileID: 271686959}
   - component: {fileID: 271686958}
-  - component: {fileID: 271686961}
   m_Layer: 0
   m_Name: SpaceShip
   m_TagString: Spaceship
@@ -13227,33 +13226,6 @@ MonoBehaviour:
   maxThrusterAccelerationRate: 0.5
   timeToMaxThrustAccel: 2
   thrusterDecelerationRate: 0.5
---- !u!54 &271686961
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 271686953}
-  serializedVersion: 4
-  m_Mass: 3000000
-  m_Drag: 0
-  m_AngularDrag: 0
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 0
-  m_ImplicitTensor: 0
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 1
 --- !u!1 &273061196
 GameObject:
   m_ObjectHideFlags: 0

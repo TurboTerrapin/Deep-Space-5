@@ -36,7 +36,18 @@ public class HorizontalThrusters : ThrusterControl, IControllable
 
     public int getHorizontalThrusterState()
     {
-        return (thruster_percentage[0] > 0f || thruster_percentage[1] > 0f) ? 1 : 0;
+        if (thruster_percentage[0] > 0f && thruster_percentage[1] <= 0f)
+        {
+            return 1; // Moving right
+        }
+        else if (thruster_percentage[1] > 0f && thruster_percentage[0] <= 0f)
+        {
+            return -1; // Moving left
+        }
+        else
+        {
+            return 0; // Neutral (both inactive or conflicting inputs)
+        }
     }
 
     IEnumerator adjustingThrust()
@@ -77,10 +88,13 @@ public class HorizontalThrusters : ThrusterControl, IControllable
         GameObject diamond = display_canvas.transform.GetChild(1).gameObject;
         float diamond_location = (thrust_direction + 1.0f) / 2.0f;
 
+        
         diamond.transform.localPosition =
             new Vector3(Mathf.Lerp(0.055f, -0.055f, diamond_location),
                         diamond.transform.localPosition.y,
                         diamond.transform.localPosition.z);
+
+
     }
 
     [Rpc(SendTo.Everyone)]

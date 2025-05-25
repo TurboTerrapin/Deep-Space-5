@@ -9,7 +9,7 @@ public class TestTarget : MonoBehaviour
     {
         if (other.CompareTag("LongRangePhaser"))
         {
-            health -= 10f * Time.deltaTime; /
+            health -= 10f * Time.deltaTime; 
             Debug.Log($"Target Health: {health}"); 
         }
     }
