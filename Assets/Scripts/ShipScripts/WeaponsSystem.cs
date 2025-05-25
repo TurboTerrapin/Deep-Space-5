@@ -4,6 +4,7 @@
 Handles Long-Range & Short-Range Phasers
 */
 
+
 using UnityEngine;
 
 public class WeaponsSystem : MonoBehaviour
@@ -77,6 +78,8 @@ public class WeaponsSystem : MonoBehaviour
     private void InitializeLongRangePhaser()
     {
         longRangePhaser = longRangePhaserOrigin.GetComponentInChildren<LineRenderer>(true);
+        longRangePhaser.useWorldSpace = true;
+
 
         if (longRangePhaser != null)
         {
@@ -85,6 +88,13 @@ public class WeaponsSystem : MonoBehaviour
 
             longRangePhaserMaterial = new Material(longRangePhaser.material);
             longRangeEmissionColor = longRangePhaserMaterial.GetColor(EMISSION_COLOR);
+
+            Vector3 startPos = longRangePhaserOrigin.transform.position;
+            Vector3 endPos = startPos + longRangePhaserOrigin.transform.forward * LONG_RANGE_BEAM_LENGTH;
+            
+            // Set Position in worldspace
+            longRangePhaser.SetPosition(0, startPos);
+                longRangePhaser.SetPosition(1, endPos);
         }
     }
     private void InitializeShortRangePhasers()
@@ -137,6 +147,7 @@ public class WeaponsSystem : MonoBehaviour
         phaserTemps = phaserTemperatures.GetPhaserTemperatures();
     }
 
+    /*
     private void UpdateLongRangePhaser(float dt)
     {
         bool active = activePhasers[0] && phaserTemps[1] > 0;
@@ -167,7 +178,45 @@ public class WeaponsSystem : MonoBehaviour
         UpdateBeamIntensity(beamTemp, smoothedPulse);
         ResizeCollider(currentBaseWidth);
     }
+    */
 
+
+    private void UpdateLongRangePhaser(float dt)
+    {
+        bool active = activePhasers[0] && phaserTemps[1] > 0;
+
+        if (longRangePhaser.enabled != active)
+        {
+            longRangePhaser.enabled = active;
+            if (longRangePhaserCollider != null) longRangePhaserCollider.enabled = active;
+            if (!active) pulseTimer = 0f;
+            return;
+        }
+
+        float beamTemp = Mathf.Clamp01(phaserTemps[1]);
+        float temperatureScaledSpeed = Mathf.Lerp(baseLRPulseSpeed, maxLRPulseSpeed, beamTemp);
+
+        pulseTimer += dt * temperatureScaledSpeed;
+        float currentPulse = (Mathf.Sin(pulseTimer) + 1f) * 0.5f;
+        smoothedPulse = Mathf.SmoothDamp(smoothedPulse, currentPulse, ref velocity, LRpulseSmoothing);
+
+        float currentBaseWidth = maxLRBeamWidth * beamTemp;
+        float pulseWidth = currentBaseWidth * CalculatePulseWidth(beamTemp) * (smoothedPulse * 0.75f);
+        float finalWidth = currentBaseWidth + pulseWidth;
+
+        longRangePhaser.startWidth = finalWidth;
+        longRangePhaser.endWidth = finalWidth * LRBeamEndDiameterRatio;
+
+        // Update beam positions in world space
+        longRangePhaserOrigin.transform.localRotation = Quaternion.Euler(0, longRangePhaserAngle, 0);
+        Vector3 startPos = longRangePhaserOrigin.transform.position;
+        Vector3 endPos = startPos + longRangePhaserOrigin.transform.forward * LONG_RANGE_BEAM_LENGTH;
+        longRangePhaser.SetPosition(0, startPos);
+        longRangePhaser.SetPosition(1, endPos);
+
+        UpdateBeamIntensity(beamTemp, smoothedPulse);
+        ResizeCollider(currentBaseWidth);
+    }
 
     private void UpdateShortRangePhaser(LineRenderer phaser, bool active, float temperature, float dt)
     {
@@ -242,15 +291,15 @@ public class WeaponsSystem : MonoBehaviour
     private void ResizeCollider(float beamWidth)
     {
         if (longRangePhaserCollider == null) return;
-
+        
         // Resize collider
         longRangePhaserCollider.size = new Vector3(
-            beamWidth,
-            beamWidth,
-            1f
+            beamWidth, 
+            beamWidth, 
+            LONG_RANGE_BEAM_LENGTH
         );
         // Center The collider 
-        longRangePhaserCollider.center = new Vector3(0, 0, 0.5f);
+        longRangePhaserCollider.center = new Vector3 (0f, 0f, LONG_RANGE_BEAM_LENGTH * 0.5f);
     }
 
 }
