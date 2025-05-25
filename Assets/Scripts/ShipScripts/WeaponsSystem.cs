@@ -29,7 +29,10 @@ public class WeaponsSystem : MonoBehaviour
     private BoxCollider shortRangePhaserRightCollider;
 
     [Header("LongRange Phaser Settings")]
+    [SerializeField] private float minLRBeamWidth = 0.4f;
     [SerializeField] private float maxLRBeamWidth = 1.5f;
+    [SerializeField] private float LRBeamEndDiameterRatio = 0.2f;
+
     [SerializeField] private float baseLRPulseSpeed = 6f;
     [SerializeField] private float maxLRPulseSpeed = 12f;
     [SerializeField] private float LRpulseSmoothing = 0.01f;
@@ -39,21 +42,28 @@ public class WeaponsSystem : MonoBehaviour
     [SerializeField] private float LRintensityPulseMultiplier = 2f;
 
     [Header("ShortRange Phaser Settings")]
-    [SerializeField] private float maxSRBeamWidth = 0.75f;
+    [SerializeField] private float minSRBeamDiameter = 0.1f; // Minimum Short Range Beam Diameter
+    [SerializeField] private float maxSRBeamDiameter = 0.5f; // Maximum Short Range Beam Diameter
+    [SerializeField] private float SRBeamEndDiameterRatio = 0.4f;
+                                                          
+    [SerializeField, Range(0.40f, 1f)] private float minSRPulseInterval = 1f; // One Pulse per Unit Time
+    [SerializeField, Range(0.40f, 1f)] private float maxSRPulseInterval = 0.4f; // Unit Time / 0.4 = 2.5 Pulse per Unit Time
 
     // Phaser Materials
     private Material longRangePhaserMaterial;
-    private Material shortRangePhaserMaterial;
+    private Material shortRangePhaserMaterialLeft;
+    private Material shortRangePhaserMaterialRight;
     private Color longRangeEmissionColor;
-    private Color shortRangeEmissionColor;
+    private Color shortRangeEmissionColorLeft;
+    private Color shortRangeEmissionColorRight;
 
-
+    private const float LONG_RANGE_BEAM_LENGTH = 500f;
+    private const float SHORT_RANGE_BEAM_LENGTH = 150f;
+    private const string EMISSION_COLOR = "_EmissionColor";
+    private const string EMISSION_ = "_EMISION";
 
     // Runtime variables
-
-    private float longRangeBeamLength = 500f;
-
-
+    private float SRPulsePhase;
     private float pulseTimer;
     private float smoothedPulse;
     private float velocity;
@@ -63,12 +73,6 @@ public class WeaponsSystem : MonoBehaviour
     private float[] phaserTemps; // From ActivePhasers
     private float longRangePhaserAngle; // From LongRangeDirection
 
-    private void Start()
-    {
-        InitializeLongRangePhaser();
-        InitializeShortRangePhasers();
-
-    }
 
     private void InitializeLongRangePhaser()
     {
@@ -80,8 +84,7 @@ public class WeaponsSystem : MonoBehaviour
             longRangePhaserCollider.isTrigger = true;
 
             longRangePhaserMaterial = new Material(longRangePhaser.material);
-            longRangePhaser.material = longRangePhaserMaterial;
-            longRangeEmissionColor = longRangePhaserMaterial.GetColor("_EmissionColor");
+            longRangeEmissionColor = longRangePhaserMaterial.GetColor(EMISSION_COLOR);
         }
     }
     private void InitializeShortRangePhasers()
@@ -89,17 +92,34 @@ public class WeaponsSystem : MonoBehaviour
         shortRangePhaserLeft = shortRangePhaserLeftOrigin.GetComponentInChildren<LineRenderer>(true);
         if (shortRangePhaserLeft != null)
         {
-            shortRangePhaserLeft.material = new Material(shortRangePhaserLeft.material);
+            shortRangePhaserMaterialLeft = new Material(shortRangePhaserLeft.material);
         }
 
         shortRangePhaserRight = shortRangePhaserRightOrigin.GetComponentInChildren<LineRenderer>(true);
         if (shortRangePhaserRight != null)
         {
-            shortRangePhaserRight.material = new Material(shortRangePhaserRight.material);
+            shortRangePhaserMaterialRight = new Material(shortRangePhaserRight.material);
         }
+
+        shortRangeEmissionColorLeft = shortRangePhaserMaterialLeft.GetColor(EMISSION_COLOR);
+        shortRangeEmissionColorRight = shortRangePhaserMaterialRight.GetColor(EMISSION_COLOR);
+
     }
 
-    public bool AssignControlReferences(GameObject controlHandler)
+    private void InitializeTorpedos() { }
+
+    private void Start()
+    { 
+
+        InitializeLongRangePhaser();
+        InitializeShortRangePhasers();
+        InitializeTorpedos();
+
+    }
+
+
+
+    public bool AssignControlReferences(GameObject controlHandler) // Called by ShipController.cs
     {
         longRangeDirection = controlHandler.GetComponent<LongRangeDirection>();
         phaserPowers = controlHandler.GetComponent<PhaserPowers>();
@@ -108,6 +128,8 @@ public class WeaponsSystem : MonoBehaviour
         return longRangeDirection && phaserPowers && phaserTemperatures;
     }
 
+    // **********************************************************************************************
+
     public void UpdateInput()
     {
         activePhasers = phaserPowers.GetActivePhasers();
@@ -115,108 +137,7 @@ public class WeaponsSystem : MonoBehaviour
         phaserTemps = phaserTemperatures.GetPhaserTemperatures();
     }
 
-    public void UpdateWeapons()
-    {
-        UpdateLongRangePhaser();
-        UpdateShortRangePhasers();
-    }
-
-    private void UpdateShortRangePhasers()
-    {
-        bool active = activePhasers[1] && phaserTemps[0] > 0;
-
-        UpdateSingleShortRangePhaser(shortRangePhaserLeft, active, phaserTemps[0]);
-        UpdateSingleShortRangePhaser(shortRangePhaserRight, active, phaserTemps[0]);
-    }
-
-    /*
-
-    private void UpdateSingleShortRangePhaser(LineRenderer phaser, bool active, float temperature)
-    {
-        if (phaser == null) return;
-
-        if (phaser.enabled != active)
-        {
-            phaser.enabled = active;
-            if (!active) return;
-        }
-
-        if (!active)
-        {
-            phaser.enabled = false;
-            return;
-        }
-
-        float minPulseInterval = 0.05f; 
-        float maxPulseInterval = 0.5f; 
-        float pulseInterval = Mathf.Lerp(minPulseInterval, maxPulseInterval, 1 - temperature);
-
-        float pulseValue = Mathf.PingPong(Time.time / pulseInterval, 1);
-
-        bool beamVisible = pulseValue > 0.5f;
-        phaser.enabled = beamVisible;
-
-        if (beamVisible)
-        {
-            float beamWidth = Mathf.Lerp(0.5f, maxLRBeamWidth * 0.75f, temperature);
-            phaser.startWidth = beamWidth;
-            phaser.endWidth = beamWidth * 0.2f;
-
-        }
-    }
-    */
-
-
-    private void UpdateSingleShortRangePhaser(LineRenderer phaser, bool active, float temperature)
-    {
-        if (phaser == null) return;
-
-        if (phaser.enabled != active)
-        {
-            phaser.enabled = active;
-            if (!active) return;
-        }
-
-        if (!active)
-        {
-            phaser.enabled = false;
-            return;
-        }
-
-
-
-        // Define base pulse parameters
-        float minPulseInterval = 0.15f;  // Slower minimum pulse
-        float maxPulseInterval = 0.5f;   // Same maximum pulse
-
-        // Calculate pulse interval - higher temp = longer interval (slower pulse)
-        float pulseInterval = Mathf.Lerp(minPulseInterval, maxPulseInterval, 1f);
-
-        // Calculate pulse value using smooth ping-pong
-        float pulseValue = Mathf.SmoothStep(0, 1, Mathf.PingPong(Time.time / pulseInterval, 1));
-
-        // Make beam visible for a longer portion of the pulse cycle
-        bool beamVisible = pulseValue > 0.3f;  // More visible time
-        phaser.enabled = beamVisible;
-
-        if (beamVisible)
-        {
-            // Smoother width transition
-            float beamWidth = Mathf.Lerp(0.5f, maxSRBeamWidth, temperature) * pulseValue;
-            phaser.startWidth = beamWidth;
-            phaser.endWidth = beamWidth * 0.2f;
-
-
-            // Optional: Add slight emission intensity variation
-            if (phaser.material.HasProperty("_EmissionColor"))
-            {
-                //Color emissionColor = phaser.material.GetColor("_EmissionColor");
-                //phaser.material.SetColor("_EmissionColor", emissionColor * (0.8f + 0.4f * pulseValue));
-            }
-        }
-    }
-
-    private void UpdateLongRangePhaser()
+    private void UpdateLongRangePhaser(float dt)
     {
         bool active = activePhasers[0] && phaserTemps[1] > 0;
 
@@ -231,7 +152,7 @@ public class WeaponsSystem : MonoBehaviour
         float beamTemp = Mathf.Clamp01(phaserTemps[1]);
         float temperatureScaledSpeed = Mathf.Lerp(baseLRPulseSpeed, maxLRPulseSpeed, beamTemp);
 
-        pulseTimer += Time.deltaTime * temperatureScaledSpeed;
+        pulseTimer += dt * temperatureScaledSpeed;
         float currentPulse = (Mathf.Sin(pulseTimer) + 1f) * 0.5f;
         smoothedPulse = Mathf.SmoothDamp(smoothedPulse, currentPulse, ref velocity, LRpulseSmoothing);
 
@@ -240,15 +161,92 @@ public class WeaponsSystem : MonoBehaviour
         float finalWidth = currentBaseWidth + pulseWidth;
 
         longRangePhaser.startWidth = finalWidth;
-        longRangePhaser.endWidth = finalWidth * 0.2f;
+        longRangePhaser.endWidth = finalWidth * LRBeamEndDiameterRatio;
 
         longRangePhaserOrigin.transform.localRotation = Quaternion.Euler(0, longRangePhaserAngle, 0);
         UpdateBeamIntensity(beamTemp, smoothedPulse);
-        UpdateCollider(currentBaseWidth, maxLRBeamWidth);
+        ResizeCollider(currentBaseWidth, maxLRBeamWidth);
     }
 
-    private float CalculatePulseWidth(float temp) =>
-        Mathf.Lerp(minLRPulsePercentage, maxLRPulsePercentage, (1f - Mathf.Max(temp, 0.001f)));
+
+    private void UpdateShortRangePhaser(LineRenderer phaser, bool active, float temperature, float dt)
+    {
+        if (phaser == null) return;
+
+        // Handle activation/deactivation
+        if (phaser.enabled != active)
+        {
+            phaser.enabled = active;
+            if (!active)
+            {
+                SRPulsePhase = 0f; // Reset phase when deactivated
+                return;
+            }
+        }
+
+        if (!active)
+        {
+            phaser.enabled = false;
+            SRPulsePhase = 0f;
+            return;
+        }
+
+        float currentPulseInterval = Mathf.Lerp(maxSRPulseInterval, minSRPulseInterval, 1 - temperature);
+
+        SRPulsePhase += dt / currentPulseInterval;
+        SRPulsePhase %= 2f;
+
+        float pulseValue = Mathf.SmoothStep(0, 1, Mathf.PingPong(SRPulsePhase, 1));
+
+        bool beamVisible = pulseValue > 0.3f;
+        phaser.enabled = beamVisible;
+
+        float beamWidth = Mathf.Lerp(minSRBeamDiameter, maxSRBeamDiameter, temperature) * pulseValue;
+        phaser.startWidth = beamWidth;
+        phaser.endWidth = beamWidth * SRBeamEndDiameterRatio;
+
+    }
+
+    private void UpdateShortRangePhasers(float dt)
+    {
+        bool active = activePhasers[1] && phaserTemps[0] > 0;
+
+        UpdateShortRangePhaser(shortRangePhaserLeft, active, phaserTemps[0], dt); // Handle Left SR Phaser
+        UpdateShortRangePhaser(shortRangePhaserRight, active, phaserTemps[0], dt); // Handle Right SR Phaser
+    }
+
+
+
+
+
+
+
+    public void UpdateWeapons()
+    {
+        float dt = Time.deltaTime;
+        UpdateLongRangePhaser(dt);
+        UpdateShortRangePhasers(dt);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    private float CalculatePulseWidth(float temp)
+    {
+        return Mathf.Lerp(minLRPulsePercentage, maxLRPulsePercentage, (1f - Mathf.Max(temp, 0.001f)));
+    }
+
 
     private void UpdateBeamIntensity(float temperature, float pulseIntensity)
     {
@@ -258,9 +256,10 @@ public class WeaponsSystem : MonoBehaviour
                         + pulseIntensity;
 
         longRangePhaserMaterial.EnableKeyword("_EMISSION");
-        longRangePhaserMaterial.SetColor("_EmissionColor", longRangeEmissionColor * intensity);
+        longRangePhaserMaterial.SetColor(EMISSION_COLOR, longRangeEmissionColor * intensity);
     }
-    private void UpdateCollider(float beamWidth, float beamLength)
+
+    private void ResizeCollider(float beamWidth, float beamLength)
     {
         if (longRangePhaserCollider == null) return;
         
@@ -270,12 +269,9 @@ public class WeaponsSystem : MonoBehaviour
             beamWidth, 
             beamLength 
         );
-        // Center Collider
+        // Center The collider 
         longRangePhaserCollider.center = new Vector3(0, 0, beamLength * 0.5f);
     }
-
-    // Include on Collision detection .
-    // draw distance (coord2) to impact point on box collider (Redraw line renderer between origin and impact)
 
 }
 

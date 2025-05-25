@@ -13189,7 +13189,9 @@ MonoBehaviour:
   longRangePhaserOrigin: {fileID: 1181127622}
   shortRangePhaserLeftOrigin: {fileID: 1017477164}
   shortRangePhaserRightOrigin: {fileID: 1636926053}
+  minLRBeamWidth: 0.4
   maxLRBeamWidth: 1.5
+  LRBeamEndDiameterRatio: 0.2
   baseLRPulseSpeed: 6
   maxLRPulseSpeed: 12
   LRpulseSmoothing: 0.01
@@ -13197,7 +13199,11 @@ MonoBehaviour:
   maxLRPulsePercentage: 0.5
   maxLRIntensity: 6.5
   LRintensityPulseMultiplier: 2
-  maxSRBeamWidth: 0.75
+  minSRBeamDiameter: 0.1
+  maxSRBeamDiameter: 0.5
+  SRBeamEndDiameterRatio: 0.4
+  minSRPulseInterval: 1
+  maxSRPulseInterval: 0.4
 --- !u!114 &271686960
 MonoBehaviour:
   m_ObjectHideFlags: 0
