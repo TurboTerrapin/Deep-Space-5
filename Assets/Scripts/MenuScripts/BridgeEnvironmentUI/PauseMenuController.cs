@@ -1,9 +1,15 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public static class SceneData
+{
+    public static string targetUI = null;
+}
 
 public class PauseMenuController : MonoBehaviour
 {
     public GameObject PauseMenu;
-    //public GameObject ControlsMenu;
+    public GameObject ControlsMenu;
     public GameObject SettingsMenu;
 
     public void HandleResumeButtonClick()
@@ -13,7 +19,7 @@ public class PauseMenuController : MonoBehaviour
 
     public void HandleControlsButtonClick()
     {
-        //SwitchTo(ControlsMenu);
+        SwitchTo(ControlsMenu);
     }
 
     public void HandleSettingsButtonClick()
@@ -23,13 +29,14 @@ public class PauseMenuController : MonoBehaviour
 
     public void HandleQuitButtonClick()
     {
-        Application.Quit();
+        SceneData.targetUI = "MainMenu";
+        SceneManager.LoadScene("TitleScreen");
     }
 
     private void SwitchTo(GameObject target)
     {
         PauseMenu.SetActive(false);
-        //ControlsMenu.SetActive(false);
+        ControlsMenu.SetActive(false);
         SettingsMenu.SetActive(false);
 
         target.SetActive(true);
