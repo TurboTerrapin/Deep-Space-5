@@ -70,19 +70,19 @@ public class PhaserPowers : NetworkBehaviour, IControllable
             charge_time = Mathf.Max(0.0f, charge_time - dt);
             switch_time = Mathf.Max(0.0f, switch_time - dt);
 
-            float lever_angle = Mathf.Lerp(22f, -22f, switch_time / SWITCH_TIME);
+            float lever_angle = Mathf.Lerp(-112f, -68f, switch_time / SWITCH_TIME);
             float charge_fill = charge_time / ENABLE_TIME;
             if (increasing == true)
             {
-                lever_angle = Mathf.Lerp(22f, -22f, 1.0f - (switch_time / SWITCH_TIME));
+                lever_angle = Mathf.Lerp(-112f, -68f, 1.0f - (switch_time / SWITCH_TIME));
                 charge_fill = 1.0f - (charge_time / ENABLE_TIME);
             }
 
             phaser_switch_canvas.transform.GetChild(2 + (2 * index)).gameObject.GetComponent<UnityEngine.UI.Image>().fillAmount = charge_fill;
             phaser_switches[index].transform.localRotation =
-                Quaternion.Euler(phaser_switches[index].transform.localRotation.eulerAngles.x,
-                                 lever_angle,
-                                 phaser_switches[index].transform.localRotation.eulerAngles.z);
+                Quaternion.Euler(lever_angle, 
+                                 0.0f,
+                                 90.0f);
 
             yield return null;
         }

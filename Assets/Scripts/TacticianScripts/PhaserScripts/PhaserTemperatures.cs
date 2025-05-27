@@ -25,7 +25,7 @@ public class PhaserTemperatures : NetworkBehaviour, IControllable
     private float[] phaser_powers = new float[2] { 0.0f, 0.0f };
     private Vector3[] phaser_slider_initial_positions = new Vector3[2];
     private Vector3[] phaser_slider_final_positions = new Vector3[2];
-    private Vector3 phaser_slide_direction = new Vector3(0f, 0.09666f, -0.2351f);
+    private Vector3 phaser_slide_direction = new Vector3(0.0f, 0.1078f, 0.2626f);
 
     private List<string> ray_targets = new List<string> {"short_range_phasers", "long_range_phasers"};
 

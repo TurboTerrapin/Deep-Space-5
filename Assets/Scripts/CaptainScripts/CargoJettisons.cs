@@ -28,7 +28,7 @@ public class CargoJettisons : NetworkBehaviour, IControllable
     private Coroutine[] cargo_eject_coroutines = { null, null, null, null };
     private float[] dial_turn_percentages = { 0.0f, 0.0f, 0.0f, 0.0f };
     private Vector3[] initial_pos = new Vector3[4];
-    private Vector3 push_direction = new Vector3(-0.0037f, -0.0086f, 0.0f);
+    private Vector3 push_direction = new Vector3(0.006f, -0.0151f, 0.0f);
 
     private List<KeyCode> keys_down = new List<KeyCode>();
     private List<string> ray_targets = new List<string> { "cargo_jettison_a", "cargo_jettison_b", "cargo_jettison_c", "cargo_jettison_d" };
@@ -143,7 +143,7 @@ public class CargoJettisons : NetworkBehaviour, IControllable
         keys_down = inputs;
 
         int index = ray_targets.IndexOf(current_target.name);
-        if (dial_turn_percentages[index] >= 1.0f)
+        if (dial_turn_percentages[index] >= 1.0f && cargo_eject_coroutines[index] == null)
         {
             if (ControlScript.checkInputIndex(CONTROL_INDEXES[0], inputs))
             {

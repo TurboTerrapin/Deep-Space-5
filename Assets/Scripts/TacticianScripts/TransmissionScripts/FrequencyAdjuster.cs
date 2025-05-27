@@ -25,9 +25,9 @@ public class FrequencyAdjuster : NetworkBehaviour, IControllable
     public GameObject slow_button;
 
     private Vector3[] freq_initial_pos = new Vector3[2];
-    private Vector3 freq_push_direction = new Vector3(-0.0013f, -0.0036f, 0f);
+    private Vector3 freq_push_direction = new Vector3(0.0013f, -0.0036f, 0f);
     private Vector3 sb_initial_pos = new Vector3();
-    private Vector3 sb_final_pos = new Vector3(-0.00187f, -0.01845f, -17.8889f);
+    private Vector3 sb_final_pos = new Vector3(-3.18562f, 8.7358f, 3.7713f);
     private float slow_button_percentage = 0.0f;
     private bool slow_button_active = false;
 

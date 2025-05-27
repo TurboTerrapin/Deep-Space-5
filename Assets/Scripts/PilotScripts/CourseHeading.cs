@@ -81,7 +81,7 @@ public class CourseHeading : NetworkBehaviour, IControllable
         fill_circle.GetComponent<UnityEngine.UI.Image>().fillAmount = Mathf.Abs(wheel_angle / 2.0f);
 
         //move physical wheel
-        wheel.transform.localRotation = Quaternion.Euler(-112.79f, 180f, 450f * wheel_angle);
+        wheel.transform.localRotation = Quaternion.Euler(-113.0f, 0.0f, 450f * wheel_angle);
     }
 
     IEnumerator wheelSpinning()

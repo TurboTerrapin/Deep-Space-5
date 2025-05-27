@@ -24,7 +24,7 @@ public class DestructSequence : NetworkBehaviour, IControllable
     public List<GameObject> buttons; // 0-3 is up, 4-7 is down
 
     private Vector3[] initial_pos = new Vector3[2];
-    private Vector3 push_direction = new Vector3(0.0022f, -0.0052f, 0f);
+    private Vector3 push_direction = new Vector3(-0.002f, -0.0056f, 0f);
 
     private Coroutine sequence_change_coroutine = null;
 

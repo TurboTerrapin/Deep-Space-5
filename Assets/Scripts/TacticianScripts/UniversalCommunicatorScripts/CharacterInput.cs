@@ -23,7 +23,7 @@ public class CharacterInput : NetworkBehaviour, IControllable
     public List<GameObject> character_buttons = null;
 
     private Vector3[] initial_pos = new Vector3[12];
-    private Vector3 push_direction = new Vector3(0, -0.0024f, -0.0009f);
+    private Vector3 push_direction = new Vector3(0, -0.0034f, 0.0014f);
     private bool is_active = true;
     private Coroutine character_input_coroutine = null;
 

@@ -97,7 +97,7 @@ public class ShipController : MonoBehaviour
     private void GetEngineerInput() { }
     private void GetCaptainInput() { }
 
-    void Update()
+    void FixedUpdate()
     {
         if (shipReady && NetworkManager.Singleton.IsHost)
         {
@@ -132,7 +132,7 @@ public class ShipController : MonoBehaviour
 
     private void UpdateShipTransform()
     {
-        float dt = Time.deltaTime;
+        float dt = Time.fixedDeltaTime;
         //Vector3 forward = transform.forward; // uncomment once bride orientation is fixed (I.E. +z is foward, currently -z is forward)
         Vector3 forward = -transform.forward;  // delete this once orientation fixed
         Vector3 horizontal = transform.right;

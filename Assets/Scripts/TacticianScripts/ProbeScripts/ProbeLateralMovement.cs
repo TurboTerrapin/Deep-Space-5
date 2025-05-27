@@ -30,7 +30,7 @@ public class ProbeLateralMovement : NetworkBehaviour, IControllable
     private Vector3[] initial_positions = new Vector3[4];
     private Vector3[] final_positions = new Vector3[4];
     private float[] lateral_movement_factors = new float[4] { 0.0f, 0.0f, 0.0f, 0.0f }; //forward, left, reverse, right
-    private Vector3 lateral_button_move_direction = new Vector3(0, -0.006f, -0.0024f);
+    private Vector3 lateral_button_move_direction = new Vector3(0, -0.006f, 0.0024f);
     private Vector3 probe_position;
     private Coroutine lateral_adjustment_coroutine = null;
 

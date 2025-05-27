@@ -15,7 +15,7 @@ public class EmergencyLights : NetworkBehaviour, IControllable
 {
     //CLASS CONSTANTS
     private static float MOVE_SPEED = 0.5f;
-    private static float EMERGENCY_LIGHT_MAX_INTENSITY = 3.0f;
+    private static float EMERGENCY_LIGHT_MAX_INTENSITY = 10.0f;
 
     private string CONTROL_NAME = "EMERGENCY LIGHTS";
     private List<string> CONTROL_DESCS = new List<string> { "DECREASE", "INCREASE" };
@@ -28,7 +28,7 @@ public class EmergencyLights : NetworkBehaviour, IControllable
 
     private float light_level = 0.0f;
     private Vector3 initial_pos; //handle starting position (0% light_level)
-    private Vector3 final_pos = new Vector3(0, -0.0129f, -18.176f); //handle final position (100% light_level)
+    private Vector3 final_pos = new Vector3(0, -0.01307f, 10.8496f); //handle final position (100% light_level)
 
     private static HUDInfo hud_info = null;
     private void Start()

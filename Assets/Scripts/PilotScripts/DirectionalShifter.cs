@@ -32,7 +32,7 @@ public class DirectionalShifter : NetworkBehaviour, IControllable
     private bool in_reverse = false; //true means in reverse, false means forward
     private float shift_percentage = 1.0f; //1 is forward, 0 is reverse
     private Vector3 forward_pos;
-    private Vector3 reverse_pos = new Vector3(0f, -0.0133f, -17.889f);
+    private Vector3 reverse_pos = new Vector3(0.2816f, -1.3416f, 19.1194f);
     private Coroutine shift_adjuster_coroutine;
 
     private static HUDInfo hud_info = null;

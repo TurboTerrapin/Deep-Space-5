@@ -13,7 +13,7 @@ using TMPro;
 public class ControlScript : MonoBehaviour
 {
     //CLASS CONSTANTS
-    private static float RAYCAST_RANGE = 1.25f;
+    private static float RAYCAST_RANGE = 2.0f;
 
     //GAME OBJECTS
     public GameObject cursor; //the diamond in the center of the screen

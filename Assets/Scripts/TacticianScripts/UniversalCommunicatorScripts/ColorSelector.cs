@@ -27,7 +27,7 @@ public class ColorSelector : NetworkBehaviour, IControllable
     public GameObject selector_lever;
     public GameObject selector_canvas;
     private Vector3 initial_pos;
-    private Vector3 final_pos = new Vector3(-0.4931f, -0.0132f, -17.8889f);
+    private Vector3 final_pos = new Vector3(-2.684f, 8.7417f, 3.7713f);
     private int curr_color = 0;
 
     private Coroutine color_shift_coroutine = null;

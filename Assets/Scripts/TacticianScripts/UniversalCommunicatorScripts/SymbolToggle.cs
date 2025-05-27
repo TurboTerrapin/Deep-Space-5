@@ -26,7 +26,7 @@ public class SymbolToggle : NetworkBehaviour, IControllable
 
     private bool symbol_mode = false;
     private Vector3 initial_pos;
-    private Vector3 final_pos = new Vector3(-0.03559f, -0.01329f, -17.8889f);
+    private Vector3 final_pos = new Vector3(-3.1493f, 8.7417f, 3.7713f);
     private Coroutine numer_selector_coroutine = null;
 
     private static HUDInfo hud_info = null;

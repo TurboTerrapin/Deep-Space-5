@@ -25,7 +25,7 @@ public class ManualSelector : NetworkBehaviour, IControllable
     public Component[] manuals = new Component[2];
 
     private Vector3[] initial_pos = new Vector3[12];
-    private Vector3[] push_direction = { new Vector3(0.0022f, -0.0052f, 0f), new Vector3(-0.0022f, -0.0052f, 0f) };
+    private Vector3[] push_direction = { new Vector3(-0.003f, -0.0074f, 0f), new Vector3(0.003f, -0.0074f, 0f) };
 
     private bool[] is_active = new bool[] { false, false };
     private Coroutine[] manual_input_coroutine = new Coroutine[] { null, null };

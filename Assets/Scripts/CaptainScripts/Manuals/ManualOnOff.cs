@@ -73,15 +73,15 @@ public class ManualOnOff : NetworkBehaviour, IControllable
             float dt = Mathf.Min(Time.deltaTime, 1.0f / 30.0f);
             switch_time = Mathf.Max(0.0f, switch_time - dt);
 
-            float lever_angle = Mathf.Lerp(-50f, -100f, switch_time / SWITCH_TIME);
+            float lever_angle = Mathf.Lerp(-65f, -115f, switch_time / SWITCH_TIME);
 
             if (to_switch_to == true)
             {
-                lever_angle = Mathf.Lerp(-50f, -100f, 1.0f - (switch_time / SWITCH_TIME));
+                lever_angle = Mathf.Lerp(-65f, -115f, 1.0f - (switch_time / SWITCH_TIME));
             }
 
             power_switches[manual_index].transform.localRotation =
-                Quaternion.Euler(lever_angle, -90f, 90f);
+                Quaternion.Euler(lever_angle, 0f, 90f);
 
             yield return null;
         }
