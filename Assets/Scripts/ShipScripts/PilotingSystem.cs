@@ -65,8 +65,8 @@ public class PilotingSystem : MonoBehaviour
     public void UpdateMovement()
     {
         float dt = Time.deltaTime;
-        Vector3 forward = -transform.forward;
-        Vector3 horizontal = transform.right;
+        Vector3 forward = transform.forward;
+        Vector3 horizontal = -transform.right;
         Vector3 vertical = transform.up;
 
         UpdateThrusterActiveTime(dt);
