@@ -17,6 +17,12 @@ public class TitleScreenController : MonoBehaviour
         TitleScreenCanvas.SetActive(true);
         StartCoroutine(FadeText());
         MainMenu.SetActive(false);
+
+        if (SceneData.targetUI == "MainMenu")
+        {
+            SwitchToMainMenu();
+            SceneData.targetUI = null; 
+        }
     }
 
     // Call SwitchCanvas() if any key is pressed
