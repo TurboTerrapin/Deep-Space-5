@@ -178,7 +178,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveDir: {x: 0, y: 0}
   playerRB: {fileID: 3147236109247125174}
-  moveSpeed: 20
+  moveSpeed: 5
   sitting: 1
 --- !u!114 &7759421863261743704
 MonoBehaviour:

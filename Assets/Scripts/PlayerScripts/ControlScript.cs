@@ -175,7 +175,7 @@ public class ControlScript : MonoBehaviour
     {
         if (my_camera != null)
         {
-        Physics.SyncTransforms(); // bandaid for raytargets synchronization. timestep out of sync somewhere. 
+        //Physics.SyncTransforms(); // bandaid for raytargets synchronization. timestep out of sync somewhere. 
         if (!paused)
         {
             if (Physics.Raycast(new Ray(my_camera.transform.position, my_camera.transform.forward), out RaycastHit hit, RAYCAST_RANGE)) //cast ray
