@@ -1,3 +1,4 @@
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -29,6 +30,8 @@ public class PauseMenuController : MonoBehaviour
 
     public void HandleQuitButtonClick()
     {
+        //added by Jake to avoid an error
+        NetworkManager.Singleton.Shutdown();
         SceneData.targetUI = "MainMenu";
         SceneManager.LoadScene("TitleScreen");
     }

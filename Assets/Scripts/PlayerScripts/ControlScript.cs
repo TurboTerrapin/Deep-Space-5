@@ -22,6 +22,7 @@ public class ControlScript : MonoBehaviour
     public GameObject buttons_panel; //contains all the buttons/dividers inside the trapezoid
     public GameObject pause_menu;
     public GameObject settings_menu;
+    public GameObject controls_menu; //in the pause menu, not the trapezoid/list
     public GameObject script_holder; //empty GameObject that contains all the control scripts as components
     public Camera my_camera; //player's camera
 
@@ -156,6 +157,7 @@ public class ControlScript : MonoBehaviour
         UnityEngine.Cursor.lockState = CursorLockMode.None;
         pause_menu.SetActive(true);
         settings_menu.SetActive(false);
+        controls_menu.SetActive(false);
         paused = true;
         cursor.SetActive(false);
     }
@@ -165,6 +167,7 @@ public class ControlScript : MonoBehaviour
         UnityEngine.Cursor.lockState = CursorLockMode.Locked;
         pause_menu.SetActive(false);
         settings_menu.SetActive(false);
+        controls_menu.SetActive(false);
         paused = false;
         if (HUD_setting != 3)
         {
