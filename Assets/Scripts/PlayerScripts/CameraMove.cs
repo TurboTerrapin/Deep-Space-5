@@ -55,6 +55,11 @@ public class CameraMove : MonoBehaviour
             my_camera = Camera.main;
         }
         //ControlScript.Instance = (ControlScript)transform.parent.GetComponent("ControlScript");
+        
+        if (my_camera != null)
+        {
+            my_camera.gameObject.AddComponent<AudioListener>();
+        }
 
         StartCoroutine(cameraUpdater());
     }
