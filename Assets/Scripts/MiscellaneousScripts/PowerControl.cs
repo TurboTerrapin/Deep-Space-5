@@ -52,10 +52,7 @@ public class PowerControl : NetworkBehaviour, IControllable
         dials[index].transform.GetChild(1).GetChild(0).GetChild(1).gameObject.SetActive(active);
         for (int i = 0; i < light_indicator_groups.Count; i++)
         {
-            if (i != 2) //haven't added engineer yet
-            {
-                light_indicator_groups[i].transform.GetChild(index).GetChild(0).GetChild(1).gameObject.SetActive(active);
-            }
+            light_indicator_groups[i].transform.GetChild(index).GetChild(0).GetChild(1).gameObject.SetActive(active);
         }
     }
 
