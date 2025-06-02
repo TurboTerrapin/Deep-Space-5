@@ -34,7 +34,7 @@ public class PilotingSystem : MonoBehaviour
 
     // Input values
     private float currentImpulse;
-    private float currentHeading;
+    private float steeringInput;
     private float horizontalThrust;
     private float verticalThrust;
 
@@ -57,7 +57,7 @@ public class PilotingSystem : MonoBehaviour
     public void UpdateInput()
     {
         currentImpulse = impulseThrottle.getCurrentImpulse();
-        currentHeading = courseHeading.getCurrentHeading();
+        steeringInput = courseHeading.getSteeringValue();
         horizontalThrust = horizontalThrusters.getHorizontalThrusterState();
         verticalThrust = verticalThrusters.getVerticalThrusterState();
     }
@@ -81,7 +81,7 @@ public class PilotingSystem : MonoBehaviour
                 GetThrusterAccelerationRate(verticalThrusterActiveTime), thrusterDecelerationRate, dt);
 
         currentVelocity = impulseVelocity + horizontalVelocity + verticalVelocity;
-        HandleRotation(forward, dt);
+        HandleRotation(dt);
         transform.position += currentVelocity * dt;
     }
 
@@ -111,6 +111,7 @@ public class PilotingSystem : MonoBehaviour
         return axis * currentSpeed;
     }
 
+    /*
     private void HandleRotation(Vector3 forwardDirection, float dt)
     {
         float currentForwardSpeed = Vector3.Dot(currentVelocity, forwardDirection);
@@ -126,4 +127,36 @@ public class PilotingSystem : MonoBehaviour
             rotationSpeed * dt
         );
     }
+    */
+
+    [SerializeField] private float maxRotationSpeed = 45f; // degrees per second at full steering
+    [SerializeField] private float rotationDamping = 2f; // how quickly rotation returns to neutral
+    private float currentRotationSpeed; // Current rotation speed in degrees/sec
+
+    private void HandleRotation(float dt)
+    {
+        // Calculate target rotation speed based on steering input
+        float targetRotationSpeed = steeringInput * maxRotationSpeed;
+
+        // Smoothly adjust current rotation speed toward target
+        currentRotationSpeed = Mathf.Lerp(
+            currentRotationSpeed,
+            targetRotationSpeed,
+            rotationPower * dt
+        );
+
+        // Apply damping when steering input is near zero
+        if (Mathf.Abs(steeringInput) < 0.1f)
+        {
+            currentRotationSpeed = Mathf.Lerp(
+                currentRotationSpeed,
+                0f,
+                rotationDamping * dt
+            );
+        }
+
+        // Apply the rotation
+        transform.Rotate(0f, currentRotationSpeed * dt, 0f);
+    }
+
 }
