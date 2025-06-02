@@ -41,7 +41,7 @@ public class PilotingSystem : MonoBehaviour
     // Movement state
     private float horizontalThrusterActiveTime;
     private float verticalThrusterActiveTime;
-    private Vector3 currentVelocity;
+    public Vector3 currentVelocity;
 
     public bool AssignControlReferences(GameObject controlHandler)
     {
@@ -61,28 +61,57 @@ public class PilotingSystem : MonoBehaviour
         horizontalThrust = horizontalThrusters.getHorizontalThrusterState();
         verticalThrust = verticalThrusters.getVerticalThrusterState();
     }
-
+    public float currentImpulseSpeed = 0f;
+    public float currentHorizontalSpeed = 0f;
+    public float currentVerticalSpeed = 0f;
     public void UpdateMovement()
     {
         float dt = Time.deltaTime;
+
         Vector3 forward = transform.forward;
         Vector3 horizontal = -transform.right;
         Vector3 vertical = transform.up;
 
-        UpdateThrusterActiveTime(dt);
+        // Update impulse speed
+        currentImpulseSpeed = Mathf.MoveTowards(
+            currentImpulseSpeed,
+            currentImpulse * maxImpulseSpeed,
+            ((Mathf.Abs(currentImpulseSpeed) < Mathf.Abs(currentImpulse * maxImpulseSpeed)) ? impulseAccelerationRate : impulseDecelerationRate) * dt
+        );
 
-        Vector3 impulseVelocity = CalculateAxisVelocity(forward, currentImpulse * maxImpulseSpeed,
-                impulseAccelerationRate, impulseDecelerationRate, dt);
+        // Update horizontal thruster speed
+        float horizontalRate = GetThrusterAccelerationRate(horizontalThrusterActiveTime);
+        currentHorizontalSpeed = Mathf.MoveTowards(
+            currentHorizontalSpeed,
+            horizontalThrust * maxThrusterSpeed,
+            ((Mathf.Abs(currentHorizontalSpeed) < Mathf.Abs(horizontalThrust * maxThrusterSpeed)) ? horizontalRate : thrusterDecelerationRate) * dt
+        );
 
-        Vector3 horizontalVelocity = CalculateAxisVelocity(horizontal, horizontalThrust * maxThrusterSpeed,
-                GetThrusterAccelerationRate(horizontalThrusterActiveTime), thrusterDecelerationRate, dt);
+        // Update vertical thruster speed
+        float verticalRate = GetThrusterAccelerationRate(verticalThrusterActiveTime);
+        currentVerticalSpeed = Mathf.MoveTowards(
+            currentVerticalSpeed,
+            verticalThrust * maxThrusterSpeed,
+            ((Mathf.Abs(currentVerticalSpeed) < Mathf.Abs(verticalThrust * maxThrusterSpeed)) ? verticalRate : thrusterDecelerationRate) * dt
+        );
 
-        Vector3 verticalVelocity = CalculateAxisVelocity(vertical, verticalThrust * maxThrusterSpeed,
-                GetThrusterAccelerationRate(verticalThrusterActiveTime), thrusterDecelerationRate, dt);
+        // Combine velocities
+        Vector3 impulseVelocity = forward * currentImpulseSpeed;
+        Vector3 horizontalVelocity = horizontal * currentHorizontalSpeed;
+        Vector3 verticalVelocity = vertical * currentVerticalSpeed;
 
         currentVelocity = impulseVelocity + horizontalVelocity + verticalVelocity;
-        HandleRotation(dt);
+
+        if (currentVelocity.magnitude > maxImpulseSpeed)
+        {
+            currentVelocity = currentVelocity.normalized * maxImpulseSpeed;
+        }
+
         transform.position += currentVelocity * dt;
+
+        // Handle rotation using the fixed forwardSpeed:
+        forwardSpeed = currentVelocity.magnitude;
+        HandleRotation(dt);
     }
 
     private void UpdateThrusterActiveTime(float dt)
@@ -129,34 +158,47 @@ public class PilotingSystem : MonoBehaviour
     }
     */
 
-    [SerializeField] private float maxRotationSpeed = 45f; // degrees per second at full steering
-    [SerializeField] private float rotationDamping = 2f; // how quickly rotation returns to neutral
-    private float currentRotationSpeed; // Current rotation speed in degrees/sec
+    private float smoothedSteeringInput = 0f; // otational inertia
+    [SerializeField] private float steeringResponsiveness = 5f; // lower is slower
 
+
+    [SerializeField] private float maxRotationSpeed = 25f; // degrees per second at full steering
+    public float currentRotationSpeed; // Current rotation speed in degrees/sec
+    public float forwardSpeed;
     private void HandleRotation(float dt)
     {
-        // Calculate target rotation speed based on steering input
-        float targetRotationSpeed = steeringInput * maxRotationSpeed;
+        forwardSpeed = currentVelocity.magnitude;
+        float speedFactor = Mathf.Clamp01(forwardSpeed / maxImpulseSpeed);
 
-        // Smoothly adjust current rotation speed toward target
+        // Smooth the steering input to simulate rotational inertia
+        smoothedSteeringInput = Mathf.Lerp(
+            smoothedSteeringInput,
+            steeringInput,
+            steeringResponsiveness * dt
+        );
+
+        float targetRotationSpeed = smoothedSteeringInput * maxRotationSpeed * speedFactor;
+
+        // If almost no forward movement, don't rotate
+        if (Mathf.Abs(forwardSpeed) < 0.01f)
+            return;
+
+        // Adjust current rotation speed toward target
         currentRotationSpeed = Mathf.Lerp(
             currentRotationSpeed,
             targetRotationSpeed,
             rotationPower * dt
         );
 
-        // Apply damping when steering input is near zero
-        if (Mathf.Abs(steeringInput) < 0.1f)
+        // Dampen rotation speed to zero when steering is near neutral
+        if (Mathf.Abs(steeringInput) < 0.1f && Mathf.Abs(smoothedSteeringInput) < 0.1f)
         {
-            currentRotationSpeed = Mathf.Lerp(
-                currentRotationSpeed,
-                0f,
-                rotationDamping * dt
-            );
+            currentRotationSpeed = Mathf.Lerp(currentRotationSpeed, 0f, rotationPower * dt);
         }
 
-        // Apply the rotation
+        // Apply rotation
         transform.Rotate(0f, currentRotationSpeed * dt, 0f);
     }
+
 
 }

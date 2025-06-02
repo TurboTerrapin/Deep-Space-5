@@ -15272,6 +15272,10 @@ MonoBehaviour:
   maxThrusterAccelerationRate: 0.5
   timeToMaxThrustAccel: 2
   thrusterDecelerationRate: 0.5
+  shipTransform: {fileID: 271686957}
+  maxRotationSpeed: 25
+  rotationDamping: 2
+  currentRotationSpeed: 0
 --- !u!1 &272576572
 GameObject:
   m_ObjectHideFlags: 0

@@ -17,7 +17,7 @@ using UnityEngine;
 public class CourseHeading : NetworkBehaviour, IControllable
 {
     //CLASS CONSTANTS
-    private static float TURN_SPEED = 60.0f;
+    private static float TURN_SPEED = 80.0f;
     private static float RETURN_SPEED = 80.0f; 
 
     private string CONTROL_NAME = "COURSE HEADING";
@@ -53,7 +53,7 @@ public class CourseHeading : NetworkBehaviour, IControllable
 
     public float getSteeringValue()
     {
-        return wheel_angle; // Directly return the wheel angle which is already between -1 and 1
+        return wheel_angle; 
     }
 
     private void displayAdjustment()
