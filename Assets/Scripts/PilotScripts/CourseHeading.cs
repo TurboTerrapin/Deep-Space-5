@@ -81,7 +81,7 @@ public class CourseHeading : NetworkBehaviour, IControllable
         float accelerationRate = 1.5f; // Angular acceleration
         float decelerationRate = 4.0f; // Angular deceleration
         float returnSpringForce = 6.0f; // Spring force (torque -k0)
-        float wheelFriction = 0.95f; // Spring daming 
+        float wheelFriction = 0.95f; // Spring damping (friction)
 
 
         filtered_wheel_angle = 0f; // The true wheel angle (Ignores spring force)
