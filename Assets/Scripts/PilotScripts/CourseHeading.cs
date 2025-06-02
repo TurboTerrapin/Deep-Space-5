@@ -76,12 +76,12 @@ public class CourseHeading : NetworkBehaviour, IControllable
         float wheelFriction = 0.95f; 
         */
 
-        float angularVelocity = 0f;
-        float maxAngularVelocity = 1.2f;
-        float accelerationRate = 1.5f; // Accel rate for player spinning wheel
-        float decelerationRate = 4.0f; // Deccel rate for wheel when opposing input
-        float returnSpringForce = 6.0f; // Spring force (Return to neutral)
-        float wheelFriction = 0.95f; // Friction
+        float angularVelocity = 0f; // Wheel angular velocity
+        float maxAngularVelocity = 1.2f; // Max angular velocity
+        float accelerationRate = 1.5f; // Angular acceleration
+        float decelerationRate = 4.0f; // Angular deceleration
+        float returnSpringForce = 6.0f; // Spring force (torque -k0)
+        float wheelFriction = 0.95f; // Spring daming 
 
 
         filtered_wheel_angle = 0f; // The true wheel angle (Ignores spring force)
@@ -103,41 +103,34 @@ public class CourseHeading : NetworkBehaviour, IControllable
                 // When input is present
                 if (inputDirection != 0)
                 {
-
                     if (Mathf.Sign(angularVelocity) != inputDirection && Mathf.Abs(angularVelocity) > 0.1f)
                     {
                         angularVelocity = Mathf.MoveTowards(angularVelocity, 0f, decelerationRate * dt);
                     }
                     else
                     {
-
                         angularVelocity += inputDirection * accelerationRate * dt;
                         angularVelocity = Mathf.Clamp(angularVelocity, -maxAngularVelocity, maxAngularVelocity);
                     }
                 }
                 else
                 {
-
                     float springAccel = -wheel_angle * returnSpringForce;
                     angularVelocity += springAccel * dt;
                 }
             }
             else
             {
-
                 angularVelocity *= wheelFriction;
             }
-
 
             angularVelocity *= Mathf.Pow(wheelFriction, dt * 60f);
 
             wheel_angle += angularVelocity * dt;
             wheel_angle = Mathf.Clamp(wheel_angle, -1f, 1f);
 
-
             if (!hasCrossedZero)
             {
-
                 if (Mathf.Abs(wheel_angle) < 0.05f && Mathf.Abs(angularVelocity) < 0.2f)
                 {
                     hasCrossedZero = true;
@@ -150,7 +143,6 @@ public class CourseHeading : NetworkBehaviour, IControllable
             }
             else
             {
-
                 if (Mathf.Abs(wheel_angle) > 0.05f)
                 {
                     hasCrossedZero = false;
@@ -170,7 +162,6 @@ public class CourseHeading : NetworkBehaviour, IControllable
         }
 
         wheel_spin_coroutine = null;
-
     }
 
         [Rpc(SendTo.Everyone)]
