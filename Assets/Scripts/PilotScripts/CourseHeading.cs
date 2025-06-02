@@ -22,8 +22,6 @@ public class CourseHeading : NetworkBehaviour, IControllable
     public GameObject degrees_symbol;
 
     private float wheel_angle = 0.0f; //0.0 is straight, -1.0 is max left, 1.0 is max right
-    private int wheel_direction = 0;
-    private float momentum = 0.1f; 
     private Coroutine wheel_spin_coroutine = null;
 
     private List<KeyCode> keys_down = new List<KeyCode>();
@@ -68,23 +66,25 @@ public class CourseHeading : NetworkBehaviour, IControllable
     {
 
         /*
+         
+        Use these values for FUN as SHIT steering
         float angularVelocity = 0f;
         float maxAngularVelocity = 1.5f;
-        float accelerationRate = 3.0f; // How fast player can spin the wheel
-        float decelerationRate = 6.0f; // How quickly the wheel slows down when opposing input
-        float returnSpringForce = 12.0f; // How strongly the wheel returns to center
-        float wheelFriction = 0.95f; // General damping for everything
+        float accelerationRate = 3.0f; 
+        float decelerationRate = 6.0f; 
+        float returnSpringForce = 12.0f; 
+        float wheelFriction = 0.95f; 
         */
 
         float angularVelocity = 0f;
         float maxAngularVelocity = 1.2f;
-        float accelerationRate = 1.5f; // How fast player can spin the wheel
-        float decelerationRate = 4.0f; // How quickly the wheel slows down when opposing input
-        float returnSpringForce = 6.0f; // How strongly the wheel returns to center
-        float wheelFriction = 0.95f; // General damping for everything
+        float accelerationRate = 1.5f; // Accel rate for player spinning wheel
+        float decelerationRate = 4.0f; // Deccel rate for wheel when opposing input
+        float returnSpringForce = 6.0f; // Spring force (Return to neutral)
+        float wheelFriction = 0.95f; // Friction
 
 
-        filtered_wheel_angle = 0f;
+        filtered_wheel_angle = 0f; // The true wheel angle (Ignores spring force)
         bool hasCrossedZero = false;
 
     
@@ -134,10 +134,10 @@ public class CourseHeading : NetworkBehaviour, IControllable
             wheel_angle += angularVelocity * dt;
             wheel_angle = Mathf.Clamp(wheel_angle, -1f, 1f);
 
-            // When returning to center, freeze input once it bounces across zero
+
             if (!hasCrossedZero)
             {
-                // While moving toward center
+
                 if (Mathf.Abs(wheel_angle) < 0.05f && Mathf.Abs(angularVelocity) < 0.2f)
                 {
                     hasCrossedZero = true;
@@ -150,7 +150,7 @@ public class CourseHeading : NetworkBehaviour, IControllable
             }
             else
             {
-                // Stay locked at zero until clear player input resumes
+
                 if (Mathf.Abs(wheel_angle) > 0.05f)
                 {
                     hasCrossedZero = false;
