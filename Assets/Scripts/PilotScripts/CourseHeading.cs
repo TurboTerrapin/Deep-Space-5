@@ -1,3 +1,11 @@
+/*
+    CourseHeading.cs
+    - Handles inputs for steering wheel
+    - Moves wheel accordingly
+    Contributor(s): Jake Schott, Henryk Musial
+    Last Updated: 6/4/2025
+*/
+
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -57,7 +65,7 @@ public class CourseHeading : NetworkBehaviour, IControllable
         int lastInputDirection = 0;
         bool hasCrossedZeroSinceLastInput = false;
 
-        while (keys_down.Count > 0 || Mathf.Abs(wheel_angle) > 0.001f || Mathf.Abs(angularVelocity) > 0.001f)
+        while (keys_down.Count > 0 || Mathf.Abs(wheel_angle) > 0f || Mathf.Abs(angularVelocity) > 0f)
         {
             float dt = Mathf.Min(Time.deltaTime, 1.0f / 30.0f);
             int inputDirection = 0;
@@ -148,7 +156,7 @@ public class CourseHeading : NetworkBehaviour, IControllable
             // Reset the wheel to the neutral position
             if (Mathf.Abs(wheel_angle) < 0.001f && Mathf.Abs(angularVelocity) < 0.01f)
             {
-                wheel_angle = 0f;
+                wheel_angle = Mathf.MoveTowards(wheel_angle, 0.0f, Time.deltaTime * 0.001f);
                 angularVelocity = 0f;
                 steering_input = 0f;
                 hasCrossedZeroSinceLastInput = false;
