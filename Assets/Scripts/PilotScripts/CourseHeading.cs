@@ -7,8 +7,11 @@ using UnityEngine;
 public class CourseHeading : NetworkBehaviour, IControllable
 {
     //CLASS CONSTANTS
-    private static float TURN_SPEED = 80.0f;
-    private static float RETURN_SPEED = 80.0f; 
+    private static float maxAngularVelocity = 1.2f; // Max angular velocity
+    private static float accelerationRate = 1.5f; // Angular acceleration
+    private static float decelerationRate = 4.0f; // Angular deceleration
+    private static float returnSpringForce = 6.0f; // Spring force (torque -k0)
+    private static float wheelFriction = 0.95f; // Damping (friction - 1 for frictionless motion)
 
     private string CONTROL_NAME = "COURSE HEADING";
     private List<string> CONTROL_DESCS = new List<string> { "DECREASE", "INCREASE" };
@@ -21,7 +24,10 @@ public class CourseHeading : NetworkBehaviour, IControllable
     public GameObject heading_text;
     public GameObject degrees_symbol;
 
-    private float wheel_angle = 0.0f; //0.0 is straight, -1.0 is max left, 1.0 is max right
+    public float wheel_angle = 0.0f; //0.0 is straight, -1.0 is max left, 1.0 is max right
+    private float angularVelocity = 0f; // Wheel angular velocity
+    public float filtered_wheel_angle;
+
     private Coroutine wheel_spin_coroutine = null;
 
     private List<KeyCode> keys_down = new List<KeyCode>();
@@ -41,7 +47,7 @@ public class CourseHeading : NetworkBehaviour, IControllable
 
     public float getSteeringValue()
     {
-        return wheel_angle; 
+        return filtered_wheel_angle; 
     }
 
     private void displayAdjustment()
@@ -61,33 +67,11 @@ public class CourseHeading : NetworkBehaviour, IControllable
         wheel.transform.localRotation = Quaternion.Euler(-113.0f, 0.0f, 450f * wheel_angle);
     }
 
-    public float filtered_wheel_angle;
     IEnumerator wheelSpinning()
     {
-
-        /*
-         
-        Use these values for FUN as SHIT steering
-        float angularVelocity = 0f;
-        float maxAngularVelocity = 1.5f;
-        float accelerationRate = 3.0f; 
-        float decelerationRate = 6.0f; 
-        float returnSpringForce = 12.0f; 
-        float wheelFriction = 0.95f; 
-        */
-
-        float angularVelocity = 0f; // Wheel angular velocity
-        float maxAngularVelocity = 1.2f; // Max angular velocity
-        float accelerationRate = 1.5f; // Angular acceleration
-        float decelerationRate = 4.0f; // Angular deceleration
-        float returnSpringForce = 6.0f; // Spring force (torque -k0)
-        float wheelFriction = 0.95f; // Spring damping (friction)
-
-
-        filtered_wheel_angle = 0f; // The true wheel angle (Ignores spring force)
+        filtered_wheel_angle = 0f; 
         bool hasCrossedZero = false;
 
-    
         while (keys_down.Count > 0 || Mathf.Abs(wheel_angle) > 0.001f || Mathf.Abs(angularVelocity) > 0.001f)
         {
             float dt = Mathf.Min(Time.deltaTime, 1.0f / 30.0f);
@@ -131,7 +115,7 @@ public class CourseHeading : NetworkBehaviour, IControllable
 
             if (!hasCrossedZero)
             {
-                if (Mathf.Abs(wheel_angle) < 0.05f && Mathf.Abs(angularVelocity) < 0.2f)
+                if (Mathf.Abs(wheel_angle) < 0.05f && Mathf.Abs(angularVelocity) < 0.3f)
                 {
                     hasCrossedZero = true;
                     filtered_wheel_angle = 0f;
