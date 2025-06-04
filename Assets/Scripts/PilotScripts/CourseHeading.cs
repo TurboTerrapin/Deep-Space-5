@@ -6,12 +6,11 @@ using UnityEngine;
 
 public class CourseHeading : NetworkBehaviour, IControllable
 {
-    //CLASS CONSTANTS
-    private static float maxAngularVelocity = 1.2f; // Max angular velocity
-    private static float accelerationRate = 1.5f; // Angular acceleration
-    private static float decelerationRate = 4.0f; // Angular deceleration
-    private static float returnSpringForce = 6.0f; // Spring force (torque -k0)
-    private static float wheelFriction = 0.95f; // Damping (friction - 1 for frictionless motion)
+    private const float maxAngularVelocity = 1.2f;
+    private const float accelerationRate = 1.5f;
+    private const float decelerationRate = 4.0f;
+    private const float returnSpringForce = 6.0f;
+    private const float wheelFriction = 0.95f;
 
     private string CONTROL_NAME = "COURSE HEADING";
     private List<string> CONTROL_DESCS = new List<string> { "DECREASE", "INCREASE" };
@@ -24,15 +23,15 @@ public class CourseHeading : NetworkBehaviour, IControllable
     public GameObject heading_text;
     public GameObject degrees_symbol;
 
-    public float wheel_angle = 0.0f; //0.0 is straight, -1.0 is max left, 1.0 is max right
-    private float angularVelocity = 0f; // Wheel angular velocity
-    public float filtered_wheel_angle;
+    // State variables
+    private float angularVelocity = 0f;
+    public float wheel_angle = 0.0f; // Normalized wheel angle (-1, 1), visual wheel position 
+    public float steering_input; // True steering input (Does not register spring oscillations beyond neutral)
 
     private Coroutine wheel_spin_coroutine = null;
-
     private List<KeyCode> keys_down = new List<KeyCode>();
-
     private static HUDInfo hud_info = null;
+
     private void Start()
     {
         hud_info = new HUDInfo(CONTROL_NAME);
@@ -40,51 +39,49 @@ public class CourseHeading : NetworkBehaviour, IControllable
         BUTTONS.Add(new Button(CONTROL_DESCS[1], CONTROL_INDEXES[1], true, false));
         hud_info.setButtons(BUTTONS);
     }
-    public HUDInfo getHUDinfo(GameObject current_target)
-    {
-        return hud_info;
-    }
 
-    public float getSteeringValue()
-    {
-        return filtered_wheel_angle; 
-    }
+    public HUDInfo getHUDinfo(GameObject current_target) => hud_info;
+
+    public float getSteeringValue() => steering_input;
 
     private void displayAdjustment()
     {
-        //adjust fill circle
-        if (wheel_angle >= 0f)
-        {
-            fill_circle.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
-        }
-        else
-        {
-            fill_circle.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-        }
+        fill_circle.transform.localRotation = Quaternion.Euler(0f, wheel_angle >= 0f ? 180f : 0f, 0f);
         fill_circle.GetComponent<UnityEngine.UI.Image>().fillAmount = Mathf.Abs(wheel_angle / 2.0f);
-
-        //move physical wheel
         wheel.transform.localRotation = Quaternion.Euler(-113.0f, 0.0f, 450f * wheel_angle);
     }
 
     IEnumerator wheelSpinning()
     {
-        filtered_wheel_angle = 0f; 
-        bool hasCrossedZero = false;
+        steering_input = 0f;
+        int lastInputDirection = 0;
+        bool hasCrossedZeroSinceLastInput = false;
 
         while (keys_down.Count > 0 || Mathf.Abs(wheel_angle) > 0.001f || Mathf.Abs(angularVelocity) > 0.001f)
         {
             float dt = Mathf.Min(Time.deltaTime, 1.0f / 30.0f);
             int inputDirection = 0;
+            bool isPlayerInputActive = false;
 
             if (!(ControlScript.checkInputIndex(CONTROL_INDEXES[0], keys_down) && ControlScript.checkInputIndex(CONTROL_INDEXES[1], keys_down)))
             {
                 if (ControlScript.checkInputIndex(CONTROL_INDEXES[1], keys_down)) // E
+                {
                     inputDirection = 1;
+                    isPlayerInputActive = true;
+                }
                 else if (ControlScript.checkInputIndex(CONTROL_INDEXES[0], keys_down)) // Q
+                {
                     inputDirection = -1;
+                    isPlayerInputActive = true;
+                }
 
-                // When input is present
+                if (isPlayerInputActive)
+                {
+                    lastInputDirection = inputDirection;
+                    hasCrossedZeroSinceLastInput = false;
+                }
+
                 if (inputDirection != 0)
                 {
                     if (Mathf.Sign(angularVelocity) != inputDirection && Mathf.Abs(angularVelocity) > 0.1f)
@@ -108,36 +105,53 @@ public class CourseHeading : NetworkBehaviour, IControllable
                 angularVelocity *= wheelFriction;
             }
 
+            float previousAngle = wheel_angle;
             angularVelocity *= Mathf.Pow(wheelFriction, dt * 60f);
-
             wheel_angle += angularVelocity * dt;
             wheel_angle = Mathf.Clamp(wheel_angle, -1f, 1f);
 
-            if (!hasCrossedZero)
+            // Detect zero crossing
+            if (Mathf.Sign(previousAngle) != Mathf.Sign(wheel_angle) && !isPlayerInputActive)
             {
-                if (Mathf.Abs(wheel_angle) < 0.05f && Mathf.Abs(angularVelocity) < 0.3f)
-                {
-                    hasCrossedZero = true;
-                    filtered_wheel_angle = 0f;
-                }
-                else
-                {
-                    filtered_wheel_angle = wheel_angle;
-                }
+                hasCrossedZeroSinceLastInput = true;
+            }
+
+            if (isPlayerInputActive)
+            {
+                steering_input = wheel_angle;
             }
             else
             {
-                if (Mathf.Abs(wheel_angle) > 0.05f)
+                if (hasCrossedZeroSinceLastInput)
                 {
-                    hasCrossedZero = false;
-                    filtered_wheel_angle = wheel_angle;
+                    // Crossed 0 - Ignore all values on the opposite side
+                    steering_input = 0f;
+                }
+                else
+                {
+                    // Clamp the steering input to avoid registering oscillations past neutral
+                    if (lastInputDirection == 1) // last input was right
+                    {
+                        steering_input = Mathf.Clamp(wheel_angle, 0f, 1f); // Clamp [0, 1]
+                    }
+                    else if (lastInputDirection == -1) // last input was left
+                    {
+                        steering_input = Mathf.Clamp(wheel_angle, -1f, 0f); // Clamp [-1, 0]
+                    }
+                    else 
+                    {
+                        steering_input = 0f;
+                    }
                 }
             }
 
+            // Reset the wheel to the neutral position
             if (Mathf.Abs(wheel_angle) < 0.001f && Mathf.Abs(angularVelocity) < 0.01f)
             {
                 wheel_angle = 0f;
                 angularVelocity = 0f;
+                steering_input = 0f;
+                hasCrossedZeroSinceLastInput = false;
             }
 
             transmitWheelAngleRPC(wheel_angle);
@@ -148,7 +162,7 @@ public class CourseHeading : NetworkBehaviour, IControllable
         wheel_spin_coroutine = null;
     }
 
-        [Rpc(SendTo.Everyone)]
+    [Rpc(SendTo.Everyone)]
     private void transmitWheelAngleRPC(float wheel_ang)
     {
         wheel_angle = wheel_ang;
@@ -158,16 +172,9 @@ public class CourseHeading : NetworkBehaviour, IControllable
     public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)
     {
         keys_down = inputs;
-        if (wheel_spin_coroutine == null)
+        if (wheel_spin_coroutine == null && inputs.Count > 0)
         {
-            for (int i = 0; i < CONTROL_INDEXES.Count; i++)
-            {
-                if (ControlScript.checkInputIndex(CONTROL_INDEXES[i], inputs))
-                {
-                    wheel_spin_coroutine = StartCoroutine(wheelSpinning());
-                    return;
-                }
-            }
+            wheel_spin_coroutine = StartCoroutine(wheelSpinning());
         }
     }
 }
