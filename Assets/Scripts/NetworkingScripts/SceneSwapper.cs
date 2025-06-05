@@ -38,7 +38,7 @@ public class SceneSwapper : MonoBehaviour
     }
 
 
-    [ClientRpc]
+    [Rpc(SendTo.Everyone)]
     public void ChangeSceneClientRPC(string sceneName)
     {
         NetworkManager.Singleton.SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
@@ -52,7 +52,8 @@ public class SceneSwapper : MonoBehaviour
         {
             scene = Random.Range(0, sceneNames.Count);
         }
-        ChangeSceneClientRPC(sceneNames[scene]);
+        Debug.Log("Trying to load " + scene);
+        //ChangeSceneClientRPC(sceneNames[scene]);
     }
 
     public void ChangeScenarioEasy()
