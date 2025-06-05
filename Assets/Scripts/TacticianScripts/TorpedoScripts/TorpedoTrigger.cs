@@ -34,7 +34,7 @@ public class TorpedoTrigger : NetworkBehaviour, IControllable
 
     private float trigger_percentage = 0.0f;
     private Vector3 trigger_base_initial_pos;
-    private Vector3 trigger_base_final_pos = new Vector3(0, -0.02875f, -17.8521f);
+    private Vector3 trigger_base_final_pos = new Vector3(-3.1877f, 8.7244f, 3.7303f);
     private Coroutine trigger_arm_coroutine = null;
     private Coroutine torpedo_fire_coroutine = null;
     private Coroutine red_button_coroutine = null;
@@ -64,7 +64,7 @@ public class TorpedoTrigger : NetworkBehaviour, IControllable
                         Mathf.Lerp(trigger_base_initial_pos.z, trigger_base_final_pos.z, trigger_base_distance_percentage));
 
         float trigger_lever_rotation = Mathf.Max(0.0f, (trigger_percentage - 0.5f) / 0.5f);
-        trigger_base.transform.GetChild(0).localRotation = Quaternion.Euler(20f + (trigger_lever_rotation * 15f), 0f, 90f);
+        trigger_base.transform.GetChild(0).localRotation = Quaternion.Euler(-200f + (trigger_lever_rotation * -15f), 180f, 90f);
 
         if (trigger_percentage >= 1.0f)
         {
@@ -97,7 +97,7 @@ public class TorpedoTrigger : NetworkBehaviour, IControllable
                 }
 
                 trigger_base.transform.GetChild(0).GetChild(0).localPosition =
-                    new Vector3(0, 0, Mathf.Lerp(0.0f, -0.00004f, push_percentage));
+                    new Vector3(0, 0, Mathf.Lerp(0.0f, -0.004f, push_percentage));
 
                 yield return null;
             }

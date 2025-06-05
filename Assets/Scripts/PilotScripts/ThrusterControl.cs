@@ -30,7 +30,7 @@ public class ThrusterControl : NetworkBehaviour
     private void Start()
     {
         button_initial_pos = thruster_buttons[0].transform.localPosition;
-        button_final_pos = new Vector3(0f, -0.01864f, -17.89135f);
+        button_final_pos = new Vector3(0.2816f, -1.3473f, 19.1217f);
     }
 
     protected void updateThrust()

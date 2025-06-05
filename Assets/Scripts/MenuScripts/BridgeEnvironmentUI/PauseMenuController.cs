@@ -1,9 +1,17 @@
+using Netcode.Transports.Facepunch;
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public static class SceneData
+{
+    public static string targetUI = null;
+}
 
 public class PauseMenuController : MonoBehaviour
 {
     public GameObject PauseMenu;
-    //public GameObject ControlsMenu;
+    public GameObject ControlsMenu;
     public GameObject SettingsMenu;
 
     public void HandleResumeButtonClick()
@@ -13,7 +21,7 @@ public class PauseMenuController : MonoBehaviour
 
     public void HandleControlsButtonClick()
     {
-        //SwitchTo(ControlsMenu);
+        SwitchTo(ControlsMenu);
     }
 
     public void HandleSettingsButtonClick()
@@ -23,13 +31,16 @@ public class PauseMenuController : MonoBehaviour
 
     public void HandleQuitButtonClick()
     {
-        Application.Quit();
+        //added by Jake to avoid an error
+        SceneSwapper.Instance.ChangeSceneClientRPC("TitleScreen");
+        GameNetworkManager.Instance.Disconnect();
+        SceneData.targetUI = "MainMenu";
     }
 
     private void SwitchTo(GameObject target)
     {
         PauseMenu.SetActive(false);
-        //ControlsMenu.SetActive(false);
+        ControlsMenu.SetActive(false);
         SettingsMenu.SetActive(false);
 
         target.SetActive(true);

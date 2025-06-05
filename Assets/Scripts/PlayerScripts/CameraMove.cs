@@ -2,18 +2,19 @@
     CameraMove.cs
     - Handles pausing
     - Handles looking around
-    - Handles camera zoom (using CTRL)
+    - Handles camera zoom (using RMB)
     Contributor(s): John Aylward, Jake Schott
-    Last Updated: 4/11/2025
+    Last Updated: 5/29/2025
 */
 
+using System.Collections;
 using UnityEngine;
 using System.Globalization;
 
 public class CameraMove : MonoBehaviour
 {
     private Vector2 mouseMove = new Vector2();
-    private Vector2 prevPos = new Vector2(180f, 0);
+    private Vector2 prevPos = new Vector2(0f, 0);
     private Rigidbody rb = null;
 
     private float mouseSensitivity = 1f;
@@ -21,7 +22,7 @@ public class CameraMove : MonoBehaviour
     private float zoom_FOV = 40f;
     //private ControlScript control_script;
 
-    void Start()
+    public void initialize()
     {
         rb = transform.parent.gameObject.GetComponent<Rigidbody>();
         Cursor.lockState = CursorLockMode.Locked;
@@ -54,12 +55,32 @@ public class CameraMove : MonoBehaviour
             my_camera = Camera.main;
         }
         //ControlScript.Instance = (ControlScript)transform.parent.GetComponent("ControlScript");
+        
+        if (my_camera != null)
+        {
+            my_camera.gameObject.AddComponent<AudioListener>();
+        }
+
+        StartCoroutine(cameraUpdater());
     }
 
-    // Update is called once per frame
-    void Update()
+    //calls updateCamera() every frame
+    IEnumerator cameraUpdater()
     {
+        while (true)
+        {
+            updateCamera();
+            yield return null;
+        }
+    }
+
+    //runs every frame after initialize() is called
+    private void updateCamera()
+    {
+        //make sure we are the owner
         if (!transform.parent.gameObject.GetComponent<PlayerMove>().IsOwner) return;
+
+        //handle pause/unpause
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (Cursor.lockState == CursorLockMode.Locked)
@@ -72,6 +93,8 @@ public class CameraMove : MonoBehaviour
                 ControlScript.Instance.unpause();
             }
         }
+
+        //if not paused
         if (Cursor.lockState == CursorLockMode.Locked)
         {
             MouseMove();

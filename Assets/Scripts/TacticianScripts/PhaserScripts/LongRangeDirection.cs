@@ -44,7 +44,7 @@ public class LongRangeDirection : NetworkBehaviour, IControllable
     private void displayAdjustment()
     {
         long_range_indicator.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, long_range_angle);
-        long_range_lever.transform.localRotation = Quaternion.Euler(-69.416f, 0.0f, -90f + long_range_angle);
+        long_range_lever.transform.localRotation = Quaternion.Euler(-69.4f, 180f, 270f + long_range_angle);
     }
     public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)
     {

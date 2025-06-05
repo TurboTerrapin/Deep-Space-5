@@ -20,13 +20,18 @@ public class TorpedoPower : NetworkBehaviour, IControllable
     private List<int> CONTROL_INDEXES = new List<int>() {4, 5};
     private List<Button>[] BUTTON_LISTS = new List<Button>[4] {new List<Button>(), new List<Button>(), new List<Button>(), new List<Button>()};
 
+    public Material lit_red;
+    public Material unlit_red;
+    public Material lit_green;
+    public Material unlit_green;
+
     public List<GameObject> power_levers = null;
     public List<GameObject> information_containers = null; //contains screens and indicators
 
     private float[] power_levels = new float[] { 0.0f, 0.0f, 0.0f, 0.0f };
     private Vector3[] initial_positions = new Vector3[4]; //handle starting position (0% power)
     private Vector3[] final_positions = new Vector3[4]; //handle starting position (0% power)
-    private Vector3 final_lever_direction = new Vector3(-0.0008f, 0, 0.0003f); //handle final position (100% power)
+    private Vector3 final_lever_direction = new Vector3(0.0842f, 0.0308f, 0f); //handle final position (100% power)
 
     private List<string> ray_targets = new List<string> {"forward_torpedo_power", "port_torpedo_power", "starboard_torpedo_power", "aft_torpedo_power"};
 
@@ -75,10 +80,16 @@ public class TorpedoPower : NetworkBehaviour, IControllable
         }
 
         //update lit indicators
-        information_containers[index].transform.GetChild(2).gameObject.SetActive(!(power_as_int == 100)); //unlit green
-        information_containers[index].transform.GetChild(3).gameObject.SetActive(power_as_int == 100); //lit green
-        information_containers[index].transform.GetChild(4).gameObject.SetActive(power_as_int == 100); //unlit red
-        information_containers[index].transform.GetChild(5).gameObject.SetActive(!(power_as_int == 100)); //lit red
+        if (power_as_int >= 100)
+        {
+            information_containers[index].transform.GetChild(2).gameObject.GetComponent<Renderer>().material = lit_green;
+            information_containers[index].transform.GetChild(3).gameObject.GetComponent<Renderer>().material = unlit_red;
+        }
+        else
+        {
+            information_containers[index].transform.GetChild(2).gameObject.GetComponent<Renderer>().material = unlit_green;
+            information_containers[index].transform.GetChild(3).gameObject.GetComponent<Renderer>().material = lit_red;
+        }
     }
     public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)
     {

@@ -3,7 +3,7 @@
     - Handles inputs for impulse throttle
     - Moves throttle lever accordingly
     Contributor(s): Jake Schott
-    Last Updated: 5/12/2025
+    Last Updated: 5/23/2025
 */
 
 using UnityEngine;
@@ -27,7 +27,7 @@ public class ImpulseThrottle : NetworkBehaviour, IControllable
 
     private float impulse = 0.0f;
     private Vector3 initial_pos; //handle starting position (0% impulse)
-    private Vector3 final_pos = new Vector3(0f, 0.0869f, -18.1262f); //handle final position (100% impulse)
+    private Vector3 final_pos = new Vector3(0.2816f, -1.2306f, 19.3834f);
 
     private static HUDInfo hud_info = null;
     private void Start()

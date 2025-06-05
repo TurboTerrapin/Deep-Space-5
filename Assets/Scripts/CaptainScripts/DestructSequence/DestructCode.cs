@@ -25,7 +25,7 @@ public class DestructCode : NetworkBehaviour, IControllable
     public List<GameObject> buttons; // 0-3 is up, 4-7 is down
 
     private Vector3[] initial_pos = new Vector3[8];
-    private Vector3 push_direction = new Vector3(0.0019f, -0.0051f, 0f);
+    private Vector3 push_direction = new Vector3(-0.002f, -0.0053f, 0f);
 
     private int[] code = new int[] { 0, 0, 0, 0 };
     private Coroutine digit_adjustment_coroutine = null;

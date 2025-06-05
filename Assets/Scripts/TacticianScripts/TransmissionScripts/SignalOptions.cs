@@ -36,7 +36,7 @@ public class SignalOptions : NetworkBehaviour, IControllable
     public Material unlit_green;
 
     private Vector3[] initial_pos = new Vector3[2];
-    private Vector3 push_direction = new Vector3(-0.0019f, -0.0053f, 0f);
+    private Vector3 push_direction = new Vector3(0.0019f, -0.0053f, 0f);
 
     private Coroutine signal_transmission_coroutine = null;
     private Coroutine button_push_coroutine = null;

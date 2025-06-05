@@ -52,7 +52,7 @@ public class TractorBeamPower : NetworkBehaviour, IControllable
         }
 
         //update lever position
-        lever.transform.localRotation = Quaternion.Euler(-30 + (-80 * power), 0f, 0f);
+        lever.transform.localRotation = Quaternion.Euler(-150 + (80 * power), 0f, 0f);
     }
     public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)
     {

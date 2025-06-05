@@ -59,10 +59,10 @@ public class ProbeOrientation : NetworkBehaviour, IControllable
         orientation_canvas.transform.GetChild(2).localPosition = new Vector3(0f, -0.012f + (display_orientation.Length - 3) * -0.004f, 0f);
 
         //update lever positions
-        orientation_lever.transform.localRotation = Quaternion.Euler(-20f, -90f, orientation_lever_angle);
+        orientation_lever.transform.localRotation = Quaternion.Euler(270f + orientation_lever_angle, 0f, 90f);
 
         //update probe
-        probe.transform.localRotation = Quaternion.Euler(0f, orientation_angle - 180f, 0f);
+        probe.transform.localRotation = Quaternion.Euler(0f, orientation_angle, 0f);
     }
 
     private bool isNeutralState()

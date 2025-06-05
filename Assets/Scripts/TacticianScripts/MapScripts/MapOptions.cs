@@ -29,12 +29,12 @@ public class MapOptions : NetworkBehaviour, IControllable
     public GameObject map_canvas;
 
     private Vector3 config_button_initial_pos;
-    private Vector3 config_button_final_pos = new Vector3(0, -0.01756f, -17.8906f);
+    private Vector3 config_button_final_pos = new Vector3(-3.1877f, 8.7354f, 3.7738f);
 
     //zoom settings
     private float zoom = 1.0f;
     private Vector3 slider_initial_pos; //slider starting position (100% zoom)
-    private Vector3 slider_final_pos = new Vector3(0, -0.04983f, -17.8025f);
+    private Vector3 slider_final_pos = new Vector3(-3.1877f, 8.7002f, 3.6736f);
 
     private int map_config = 0;
     private Coroutine map_config_coroutine = null;
@@ -103,7 +103,7 @@ public class MapOptions : NetworkBehaviour, IControllable
         }
 
         //update zoom slider position
-        slider.transform.position =
+        slider.transform.localPosition =
             new Vector3(Mathf.Lerp(slider_initial_pos.x, slider_final_pos.x, 1.0f - zoom),
                         Mathf.Lerp(slider_initial_pos.y, slider_final_pos.y, 1.0f - zoom),
                         Mathf.Lerp(slider_initial_pos.z, slider_final_pos.z, 1.0f - zoom));

@@ -23,7 +23,7 @@ public class ResetDisplay : NetworkBehaviour, IControllable
     public GameObject reset_button;
 
     private Vector3 initial_pos;
-    private Vector3 final_pos = new Vector3(0, -0.01869f, -17.8911f);
+    private Vector3 final_pos = new Vector3(-3.1877f, 8.7356f, 3.7738f);
 
     private Coroutine reset_display_coroutine = null;
 

@@ -24,7 +24,7 @@ public class TorpedoSelector : NetworkBehaviour, IControllable
     public GameObject selector_lever;
     public GameObject selector_canvas;
     private Vector3 initial_pos;
-    private Vector3 final_pos = new Vector3(-0.08192f, -0.01329f, -17.8889f);
+    private Vector3 final_pos = new Vector3(-3.0967f, 8.7417f, 3.7712f);
     private int torpedo_option = 0;
 
     private Coroutine torpedo_shift_coroutine = null;

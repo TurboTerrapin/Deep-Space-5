@@ -1,26 +1,28 @@
 /*
     CourseHeading.cs
-    - Handles inputs for course heading
-    - Moves steering wheel
-    - Updates corresponding heading screen
-    Contributor(s): Jake Schott
-    Last Updated: 5/12/2025
+    - Handles inputs for steering wheel
+    - Moves wheel accordingly
+    Contributor(s): Jake Schott, Henryk Musial
+    Last Updated: 6/4/2025
 */
 
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using UnityEngine;
 using Unity.Netcode;
+using UnityEngine;
 
 public class CourseHeading : NetworkBehaviour, IControllable
 {
-    //CLASS CONSTANTS
-    private static float TURN_SPEED = 50.0f;
+    private const float maxAngularVelocity = 1.2f;
+    private const float accelerationRate = 1.5f;
+    private const float decelerationRate = 4.0f;
+    private const float returnSpringForce = 6.0f;
+    private const float wheelFriction = 0.95f;
 
     private string CONTROL_NAME = "COURSE HEADING";
-    private List<string> CONTROL_DESCS = new List<string>{"DECREASE", "INCREASE"};
-    private List<int> CONTROL_INDEXES = new List<int>(){4, 5};
+    private List<string> CONTROL_DESCS = new List<string> { "DECREASE", "INCREASE" };
+    private List<int> CONTROL_INDEXES = new List<int>() { 4, 5 };
     private List<Button> BUTTONS = new List<Button>();
 
     public GameObject wheel;
@@ -29,16 +31,15 @@ public class CourseHeading : NetworkBehaviour, IControllable
     public GameObject heading_text;
     public GameObject degrees_symbol;
 
-    private float heading = 0.0f;
-    private float rounded_heading = 0.0f;
-    private float wheel_angle = 0.0f; //0.0 is straight, -1.0 is max left, 1.0 is max right
-    private int wheel_direction = 0;
-    private float momentum = 0.1f; //used to create some acceleration
+    // State variables
+    private float angularVelocity = 0f;
+    public float wheel_angle = 0.0f; // Normalized wheel angle (-1, 1), visual wheel position 
+    public float steering_input; // True steering input (Does not register spring oscillations beyond neutral)
+
     private Coroutine wheel_spin_coroutine = null;
-
     private List<KeyCode> keys_down = new List<KeyCode>();
-
     private static HUDInfo hud_info = null;
+
     private void Start()
     {
         hud_info = new HUDInfo(CONTROL_NAME);
@@ -46,121 +47,122 @@ public class CourseHeading : NetworkBehaviour, IControllable
         BUTTONS.Add(new Button(CONTROL_DESCS[1], CONTROL_INDEXES[1], true, false));
         hud_info.setButtons(BUTTONS);
     }
-    public HUDInfo getHUDinfo(GameObject current_target)
-    {
-        return hud_info;
-    }
 
-    public float getCurrentHeading()
-    {
-        return heading;
-    }
+    public HUDInfo getHUDinfo(GameObject current_target) => hud_info;
+
+    public float getSteeringValue() => steering_input;
+
     private void displayAdjustment()
     {
-        //rotate compass
-        compass.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, heading);
-
-        //set heading text
-        string display_heading = rounded_heading.ToString();
-        if (!display_heading.Contains("."))
-        {
-            display_heading += ".0";
-        }
-        heading_text.GetComponent<TMP_Text>().SetText(display_heading);
-        degrees_symbol.transform.localPosition = new Vector3(-0.019f + (display_heading.Length - 3) * -0.006f, -0.001f, 0f);
-
-        //adjust fill circle
-        if (wheel_angle >= 0f)
-        {
-            fill_circle.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
-        }
-        else
-        {
-            fill_circle.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-        }
+        fill_circle.transform.localRotation = Quaternion.Euler(0f, wheel_angle >= 0f ? 180f : 0f, 0f);
         fill_circle.GetComponent<UnityEngine.UI.Image>().fillAmount = Mathf.Abs(wheel_angle / 2.0f);
-
-        //move physical wheel
-        wheel.transform.localRotation = Quaternion.Euler(-112.79f, 180f, 450f * wheel_angle);
+        wheel.transform.localRotation = Quaternion.Euler(-113.0f, 0.0f, 450f * wheel_angle);
     }
 
     IEnumerator wheelSpinning()
     {
-        //only run coroutine when there are keys inputted OR the wheel needs to return to center
-        while (keys_down.Count > 0 || (Mathf.Abs(wheel_angle) > 0.0f))
+        steering_input = 0f;
+        int lastInputDirection = 0;
+        bool hasCrossedZeroSinceLastInput = false;
+
+        while (keys_down.Count > 0 || Mathf.Abs(wheel_angle) > 0f || Mathf.Abs(angularVelocity) > 0f)
         {
             float dt = Mathf.Min(Time.deltaTime, 1.0f / 30.0f);
+            int inputDirection = 0;
+            bool isPlayerInputActive = false;
 
-            if (!(ControlScript.checkInputIndex(CONTROL_INDEXES[0], keys_down) && ControlScript.checkInputIndex(CONTROL_INDEXES[1], keys_down))){
-                int temp_wheel_direction = 0;
-                //check inputs
-                if (ControlScript.checkInputIndex(CONTROL_INDEXES[1], keys_down)) //E to increase
+            if (!(ControlScript.checkInputIndex(CONTROL_INDEXES[0], keys_down) && ControlScript.checkInputIndex(CONTROL_INDEXES[1], keys_down)))
+            {
+                if (ControlScript.checkInputIndex(CONTROL_INDEXES[1], keys_down)) // E
                 {
-                    temp_wheel_direction = 1;
+                    inputDirection = 1;
+                    isPlayerInputActive = true;
                 }
-                if (ControlScript.checkInputIndex(CONTROL_INDEXES[0], keys_down))  //Q to decrease
+                else if (ControlScript.checkInputIndex(CONTROL_INDEXES[0], keys_down)) // Q
                 {
-                    temp_wheel_direction = -1;
+                    inputDirection = -1;
+                    isPlayerInputActive = true;
                 }
 
-                //check for change in wheel direction
-                if (temp_wheel_direction != wheel_direction)
+                if (isPlayerInputActive)
                 {
-                    wheel_direction = temp_wheel_direction;
-                    momentum = 0.01f;
+                    lastInputDirection = inputDirection;
+                    hasCrossedZeroSinceLastInput = false;
+                }
+
+                if (inputDirection != 0)
+                {
+                    if (Mathf.Sign(angularVelocity) != inputDirection && Mathf.Abs(angularVelocity) > 0.1f)
+                    {
+                        angularVelocity = Mathf.MoveTowards(angularVelocity, 0f, decelerationRate * dt);
+                    }
+                    else
+                    {
+                        angularVelocity += inputDirection * accelerationRate * dt;
+                        angularVelocity = Mathf.Clamp(angularVelocity, -maxAngularVelocity, maxAngularVelocity);
+                    }
                 }
                 else
                 {
-                    //if same direction, then increase momentum
-                    if (Mathf.Abs(wheel_angle) < 0.95f)
-                    {
-                        momentum = Mathf.Min(2f, momentum + (0.01f * dt * TURN_SPEED));
-                    }
-                    else
-                    {
-                        momentum = Mathf.Min(2f - (1.75f * (Mathf.Abs(wheel_angle))), momentum + (0.01f * dt * TURN_SPEED));
-                    }
-                }
-                if (wheel_direction > 0) //increasing heading
-                {
-                    wheel_angle = Mathf.Min(1f, wheel_angle + (momentum * 0.001f * dt * TURN_SPEED));
-                }
-                else if (wheel_direction < 0) //decreasing heading
-                {
-                    wheel_angle = Mathf.Max(-1f, wheel_angle - (momentum * 0.001f * dt * TURN_SPEED));
-                }
-                else //not touching wheel
-                {
-                    if (wheel_angle > 0)
-                    {
-                        wheel_angle = Mathf.Max(0f, wheel_angle - (momentum * 0.0002f * dt * TURN_SPEED));
-                    }
-                    else
-                    {
-                        wheel_angle = Mathf.Min(0f, wheel_angle + (momentum * 0.0002f * dt * TURN_SPEED));
-                    }
+                    float springAccel = -wheel_angle * returnSpringForce;
+                    angularVelocity += springAccel * dt;
                 }
             }
             else
             {
-                //if both increase and decrease are pressed then do nothing except reset momentum
-                momentum = 0.01f;
+                angularVelocity *= wheelFriction;
             }
 
-            //update heading
-            heading += (wheel_angle * 0.1f);
-            if (heading > 360.0f)
-            {
-                heading -= 360.0f;
-            }
-            else if (heading < 0.0f)
-            {
-                heading += 360.0f;
-            }
-            rounded_heading = (Mathf.Round(heading * 10) / 10.0f);
+            float previousAngle = wheel_angle;
+            angularVelocity *= Mathf.Pow(wheelFriction, dt * 60f);
+            wheel_angle += angularVelocity * dt;
+            wheel_angle = Mathf.Clamp(wheel_angle, -1f, 1f);
 
-            //display new heading
-            transmitCourseHeadingRPC(heading, rounded_heading, wheel_angle);
+            // Detect zero crossing
+            if (Mathf.Sign(previousAngle) != Mathf.Sign(wheel_angle) && !isPlayerInputActive)
+            {
+                hasCrossedZeroSinceLastInput = true;
+            }
+
+            if (isPlayerInputActive)
+            {
+                steering_input = wheel_angle;
+            }
+            else
+            {
+                if (hasCrossedZeroSinceLastInput)
+                {
+                    // Crossed 0 - Ignore all values on the opposite side
+                    steering_input = 0f;
+                }
+                else
+                {
+                    // Clamp the steering input to avoid registering oscillations past neutral
+                    if (lastInputDirection == 1) // last input was right
+                    {
+                        steering_input = Mathf.Clamp(wheel_angle, 0f, 1f); // Clamp [0, 1]
+                    }
+                    else if (lastInputDirection == -1) // last input was left
+                    {
+                        steering_input = Mathf.Clamp(wheel_angle, -1f, 0f); // Clamp [-1, 0]
+                    }
+                    else 
+                    {
+                        steering_input = 0f;
+                    }
+                }
+            }
+
+            // Reset the wheel to the neutral position
+            if (Mathf.Abs(wheel_angle) < 0.001f && Mathf.Abs(angularVelocity) < 0.01f)
+            {
+                wheel_angle = Mathf.MoveTowards(wheel_angle, 0.0f, Time.deltaTime * 0.001f);
+                angularVelocity = 0f;
+                steering_input = 0f;
+                hasCrossedZeroSinceLastInput = false;
+            }
+
+            transmitWheelAngleRPC(wheel_angle);
             keys_down.Clear();
             yield return null;
         }
@@ -169,10 +171,8 @@ public class CourseHeading : NetworkBehaviour, IControllable
     }
 
     [Rpc(SendTo.Everyone)]
-    private void transmitCourseHeadingRPC(float head, float round_head, float wheel_ang)
+    private void transmitWheelAngleRPC(float wheel_ang)
     {
-        heading = head;
-        rounded_heading = round_head;
         wheel_angle = wheel_ang;
         displayAdjustment();
     }
@@ -180,16 +180,9 @@ public class CourseHeading : NetworkBehaviour, IControllable
     public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)
     {
         keys_down = inputs;
-        if (wheel_spin_coroutine == null)
+        if (wheel_spin_coroutine == null && inputs.Count > 0)
         {
-            for (int i = 0; i < CONTROL_INDEXES.Count; i++)
-            {
-                if (ControlScript.checkInputIndex(CONTROL_INDEXES[i], inputs)) 
-                {
-                    wheel_spin_coroutine = StartCoroutine(wheelSpinning());
-                    return;
-                }
-            }
+            wheel_spin_coroutine = StartCoroutine(wheelSpinning());
         }
     }
 }

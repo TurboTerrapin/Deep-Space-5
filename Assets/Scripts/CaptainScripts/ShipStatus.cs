@@ -26,7 +26,7 @@ public class ShipStatus: NetworkBehaviour, IControllable
     public GameObject selector_lever;
     public GameObject lights;
     private Vector3 initial_pos;
-    private Vector3 final_pos = new Vector3(3.5973f, 3.06825f, -20.2479f);
+    private Vector3 final_pos = new Vector3(0.3821f, -0.5888f, 13.6847f);
     private int curr_status = 0;
 
     private Coroutine status_shift_coroutine = null;
@@ -69,11 +69,11 @@ public class ShipStatus: NetworkBehaviour, IControllable
 
         //change lights
         Color light_color = new Color(0.41f, 0.82f, 0.95f);
-        float intensity = 10.0f;
+        float intensity = 15.0f;
         if (curr_status == 2)
         {
             light_color = new Color(1.0f, 0.0f, 0.0f);
-            intensity = 5.0f;
+            intensity = 7.5f;
         }
 
         for (int i = 0; i < lights.transform.childCount; i++)

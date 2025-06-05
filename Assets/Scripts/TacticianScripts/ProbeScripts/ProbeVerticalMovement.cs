@@ -49,8 +49,8 @@ public class ProbeVerticalMovement : NetworkBehaviour, IControllable
     }
     private void displayAdjustment()
     {
-        //update lever positions
-        vertical_lever.transform.localRotation = Quaternion.Euler(0f, -90f, -20f + vertical_lever_angle);
+        //update lever position
+        vertical_lever.transform.localRotation = Quaternion.Euler(-70f - vertical_lever_angle, 180f, -90f);
 
         //update probe
         probe.transform.localPosition = probe_position;
