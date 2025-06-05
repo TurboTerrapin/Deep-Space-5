@@ -11,6 +11,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/BridgeEnvironment/BridgeEnvironment.unity
     guid: 6e99b5161f0b94b4baab70da700a4789
+  - enabled: 1
+    path: Assets/Scenes/Scenarios/RedLightGreenLight.unity
+    guid: 11d5b7cd8e7c17c4bbaedce8e3cc9540
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

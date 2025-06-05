@@ -16,7 +16,7 @@ using System.Collections;
 
 public class RedLightGreenLight : MonoBehaviour
 {
-    public Transform Camera;
+    public Transform CameraTransform;
     Vector3 OriginalCameraPosition;
     int ShipHealth = 100;
     bool FriendlyTransmissionRecieved;
@@ -25,12 +25,24 @@ public class RedLightGreenLight : MonoBehaviour
 
     void Start()
     {
-        OriginalCameraPosition = Camera.localPosition;
         StartCoroutine(RLGL());
+        if (CameraTransform == null)
+        {
+            CameraTransform = Camera.current.transform;
+        }
+        
+        OriginalCameraPosition = CameraTransform.localPosition;
+        
     }
 
     void Update()
     {
+        if (CameraTransform == null)
+        {
+            CameraTransform = Camera.current.transform;
+            OriginalCameraPosition = CameraTransform.localPosition;
+        }
+
         if (Input.GetKeyDown(KeyCode.G))
         {
             FriendlyTransmissionRecieved = true;
@@ -77,21 +89,21 @@ public class RedLightGreenLight : MonoBehaviour
             // Check for friendly transmission
         }
         isCameraShaking = false;
-        Camera.localPosition = OriginalCameraPosition;
+        CameraTransform.localPosition = OriginalCameraPosition;
         Debug.Log("GREEN LIGHT");
     }
 
     IEnumerator CameraShake(float intensity)
     {
-        Debug.Log("Shaking: " + Camera.localPosition + " + " + (Random.insideUnitSphere * intensity));
+        Debug.Log("Shaking: " + CameraTransform.localPosition + " + " + (Random.insideUnitSphere * intensity));
 
         while (isCameraShaking == true)
         {
             Vector3 Shake = Random.insideUnitSphere * intensity;
-            Camera.localPosition = OriginalCameraPosition + Shake;
+            CameraTransform.localPosition = OriginalCameraPosition + Shake;
             yield return null;
         }
 
-        Camera.localPosition = OriginalCameraPosition;
+        CameraTransform.localPosition = OriginalCameraPosition;
     }
 }
