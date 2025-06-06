@@ -31,6 +31,10 @@ public class CameraMove : MonoBehaviour
         {
             transform.parent.name = SteamClient.Name + "_" + SteamClient.SteamId.ToString();
         }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     public void initialize()
@@ -38,15 +42,8 @@ public class CameraMove : MonoBehaviour
         rb = transform.parent.gameObject.GetComponent<Rigidbody>();
         Cursor.lockState = CursorLockMode.Locked;
 
-        if (!transform.parent.gameObject.GetComponent<PlayerMove>().IsOwner)
-        {
-            Destroy(gameObject);
-        }
-        else
-        {
-            my_camera = transform.GetComponent<Camera>();
-            ControlScript.Instance.my_camera = my_camera;
-        }
+        my_camera = transform.GetComponent<Camera>();
+        ControlScript.Instance.my_camera = my_camera;
 
         if (my_camera != null)
         {
