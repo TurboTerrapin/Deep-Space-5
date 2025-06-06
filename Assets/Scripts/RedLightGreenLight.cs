@@ -6,8 +6,12 @@
     3. Once the friendly transmission is recieved, it will remain in the green light state for 15-30 seconds.
     4. Steps 2 and 3 will loop until the end point of the scenario is reached or the ship health is 0.
 
-    Red Light Phase: Camera shake with damage taken to ship.
+    Red Light Phase: Camera shake with damage taken to ship ONLY when ship is moving.
     Green Light Phase: Enemy does nothing.
+
+    Need to edit:
+    - only take damage when ship is moving
+    - adjust shake to ship damage
 
 */
 
@@ -66,10 +70,10 @@ public class RedLightGreenLight : MonoBehaviour
         while (FriendlyTransmissionRecieved == false)
         {
             isCameraShaking = true;
-            // Camera Shake(intensity)
+            // CameraShake(intensity)
             StartCoroutine(CameraShake(0.1f));
 
-            // Damage every second
+            // Damage every second (EDIT)
             yield return new WaitForSeconds(1f);
             ShipHealth -= 1;
             Debug.Log($"Ship Health: {ShipHealth}");
@@ -83,7 +87,7 @@ public class RedLightGreenLight : MonoBehaviour
 
     IEnumerator CameraShake(float intensity)
     {
-        Debug.Log("Shaking: " + Camera.localPosition + " + " + (Random.insideUnitSphere * intensity));
+        //Debug.Log("Shaking: " + Camera.localPosition + " + " + (Random.insideUnitSphere * intensity));
 
         while (isCameraShaking == true)
         {
