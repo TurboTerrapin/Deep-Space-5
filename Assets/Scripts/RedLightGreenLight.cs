@@ -67,7 +67,7 @@ public class RedLightGreenLight : MonoBehaviour
         {
             isCameraShaking = true;
             // Camera Shake(intensity)
-            StartCoroutine(CameraShake(5f));
+            StartCoroutine(CameraShake(0.1f));
 
             // Damage every second
             yield return new WaitForSeconds(1f);
