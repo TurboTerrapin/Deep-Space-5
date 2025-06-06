@@ -28,7 +28,7 @@ public class PlayerMove : NetworkBehaviour
     private bool is_pilot = true;
     private bool is_shifting = false;
     [SerializeField]
-    private bool sitting = true;
+    private bool sitting = false;
     private float shift_direction = -1.0f;
     private float lean_direction = 1.0f;
     private float shift_percentage = 0.0f; //0 is default position, 1.0 is 

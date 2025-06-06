@@ -11,6 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine.SceneManagement;
+using Steamworks;
 
 public class ControlScript : MonoBehaviour
 {
@@ -90,25 +91,21 @@ public class ControlScript : MonoBehaviour
         }
         Instance = this;
 
+        //free camera
+        string player_prefab_name = SteamClient.Name + "_" + SteamClient.SteamId.ToString();
+        GameObject.Find(player_prefab_name).transform.GetChild(0).GetComponent<CameraMove>().initialize();
+
+        //wait for camera
+        while (my_camera == null)
+        {
+            yield return null;
+        }
+
+        unpause();
         control_info.SetActive(false); //hide UI indicator to start
         script_holder = GameObject.FindWithTag("ControlHandler");
 
-        //set camera
-        if (my_camera == null)
-        {
-            my_camera = Camera.current;
-        }
-
-        if (my_camera == null)
-        {
-            my_camera = Camera.main;
-        }
-
         StartCoroutine(controlCheck());
-
-        //free camera, load in default UI
-        my_camera.GetComponent<CameraMove>().initialize();
-        unpause();
     }
 
     //used to instantiate buttons/list entries for either trapezoid or minimized list

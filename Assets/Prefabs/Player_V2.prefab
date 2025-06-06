@@ -179,7 +179,7 @@ MonoBehaviour:
   moveDir: {x: 0, y: 0}
   playerRB: {fileID: 3147236109247125174}
   moveSpeed: 5
-  sitting: 1
+  sitting: 0
 --- !u!114 &7759421863261743704
 MonoBehaviour:
   m_ObjectHideFlags: 0

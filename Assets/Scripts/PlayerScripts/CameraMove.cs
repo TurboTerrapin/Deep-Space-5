@@ -9,7 +9,11 @@
 
 using System.Collections;
 using UnityEngine;
+using Unity.Netcode;
 using System.Globalization;
+using Unity.VisualScripting;
+using Steamworks;
+using Steamworks.Data;
 
 public class CameraMove : MonoBehaviour
 {
@@ -20,42 +24,27 @@ public class CameraMove : MonoBehaviour
     private float mouseSensitivity = 1f;
     public Camera my_camera;
     private float zoom_FOV = 40f;
-    //private ControlScript control_script;
+
+    public void Start()
+    {
+        transform.parent.name = SteamClient.Name + "_" + SteamClient.SteamId.ToString();
+    }
 
     public void initialize()
     {
         rb = transform.parent.gameObject.GetComponent<Rigidbody>();
         Cursor.lockState = CursorLockMode.Locked;
-        //gameObject.SetActive(true);
-        gameObject.name += Random.Range(0, 100);
-        //gameObject.GetComponent<Camera>().enabled = false;
+
         if (!transform.parent.gameObject.GetComponent<PlayerMove>().IsOwner)
         {
             Destroy(gameObject);
-            //gameObject.GetComponent<Camera>().enabled = true;
         }
         else
         {
-            ControlScript.Instance.my_camera = gameObject.GetComponent<Camera>();
-        }
-        /*
-        foreach (GameObject cam in GameObject.FindGameObjectsWithTag("MainCamera"))
-        {
-            cam.SetActive(false);
-        }
-        gameObject.SetActive(true);
-        */
-        if (my_camera == null)
-        {
-            my_camera = Camera.current;
+            my_camera = transform.GetComponent<Camera>();
+            ControlScript.Instance.my_camera = my_camera;
         }
 
-        if (my_camera == null)
-        {
-            my_camera = Camera.main;
-        }
-        //ControlScript.Instance = (ControlScript)transform.parent.GetComponent("ControlScript");
-        
         if (my_camera != null)
         {
             my_camera.gameObject.AddComponent<AudioListener>();
@@ -131,5 +120,4 @@ public class CameraMove : MonoBehaviour
     {
         mouseSensitivity = newSensitivity;
     }
-
 }
