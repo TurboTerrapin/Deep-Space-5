@@ -27,7 +27,10 @@ public class CameraMove : MonoBehaviour
 
     public void Start()
     {
-        transform.parent.name = SteamClient.Name + "_" + SteamClient.SteamId.ToString();
+        if (transform.parent.gameObject.GetComponent<PlayerMove>().IsOwner)
+        {
+            transform.parent.name = SteamClient.Name + "_" + SteamClient.SteamId.ToString();
+        }
     }
 
     public void initialize()
