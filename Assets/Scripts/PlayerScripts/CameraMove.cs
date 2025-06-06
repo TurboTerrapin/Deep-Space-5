@@ -1,19 +1,16 @@
 /*
     CameraMove.cs
+    - Names the player prefab to USERNAME_STEAMID if client, or OTHER_CLIENT if not
     - Handles pausing
     - Handles looking around
     - Handles camera zoom (using RMB)
     Contributor(s): John Aylward, Jake Schott
-    Last Updated: 5/29/2025
+    Last Updated: 6/5/2025
 */
 
 using System.Collections;
 using UnityEngine;
-using Unity.Netcode;
-using System.Globalization;
-using Unity.VisualScripting;
 using Steamworks;
-using Steamworks.Data;
 
 public class CameraMove : MonoBehaviour
 {
@@ -27,16 +24,19 @@ public class CameraMove : MonoBehaviour
 
     public void Start()
     {
-        if (transform.parent.gameObject.GetComponent<PlayerMove>().IsOwner)
+        if (transform.parent.gameObject.GetComponent<PlayerMove>().IsOwner) //keep the camera
         {
+            //USERNAME_STEAMID
             transform.parent.name = SteamClient.Name + "_" + SteamClient.SteamId.ToString();
         }
-        else
+        else //delete the camera
         {
+            transform.parent.name = "OTHER_CLIENT";
             Destroy(gameObject);
         }
     }
 
+    //runs after scene is loaded and client matches
     public void initialize()
     {
         rb = transform.parent.gameObject.GetComponent<Rigidbody>();
@@ -116,6 +116,7 @@ public class CameraMove : MonoBehaviour
         transform.parent.localRotation = Quaternion.AngleAxis(prevPos.x, Vector3.up);
     }
 
+    //used by settings
     public void SetMouseSensitvity(float newSensitivity)
     {
         mouseSensitivity = newSensitivity;

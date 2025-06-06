@@ -1,9 +1,10 @@
 /*
     ControlScript.cs
+    - Only runs after scene is loaded in as BridgeEnvironment
     - Manages the HUD display for control interaction
     - Sends user inputs to control script if looking at said control and within RAYCAST_RANGE
     Contributor(s): Jake Schott
-    Last Updated: 5/29/2025
+    Last Updated: 6/5/2025
 */
 
 using UnityEngine;
@@ -84,7 +85,7 @@ public class ControlScript : MonoBehaviour
             yield return null;
         }
 
-        //idk what this does
+        //make an instance so can be referenced by CameraMove
         if (Instance != null)
         {
             Destroy(this);
@@ -101,6 +102,7 @@ public class ControlScript : MonoBehaviour
             yield return null;
         }
 
+        //begin control interfacing
         unpause();
         control_info.SetActive(false); //hide UI indicator to start
         script_holder = GameObject.FindWithTag("ControlHandler");
@@ -135,7 +137,7 @@ public class ControlScript : MonoBehaviour
             control_info.transform.GetChild(HUD_setting).gameObject.SetActive(true);
 
             GameObject frame = control_info.transform.GetChild(0).gameObject;
-            if (HUD_setting == 1)
+            if (HUD_setting == 1) //if minimized list
             {
                 frame = control_info.transform.GetChild(1).gameObject;
             }
