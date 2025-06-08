@@ -9,6 +9,7 @@ TagManager:
   - RayTargets
   - LongRangePhaser
   - ShortRangePhaser
+  - SeatHandler
   layers:
   - Default
   - TransparentFX

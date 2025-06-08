@@ -1,131 +1,202 @@
 /*
     PlayerMove.cs
-    - Handles player movement (disabled)
-    - Handles position swapping (enabled)
-    - Handles player shifting (enabled)
+    - Handles player movement
+    - Handles seating/unseating teleporting
+    - Handles shifting while seated
     Contributor(s): John Aylward, Jake Schott
-    Last Updated: 4/13/2025
+    Last Updated: 6/7/2025
 */
 
+using System.Collections;
 using UnityEngine;
 using Unity.Netcode;
 
 public class PlayerMove : NetworkBehaviour
 {
+    //CLASS CONSTANTS
+    private static float SHIFT_SPEED = 1.5f;
+    public float MOVE_SPEED = 5.0f;
 
     //[SerializeField]
-    //private GameObject camera = null;
     [SerializeField]
     private Vector2 moveDir = new Vector2();
     [SerializeField]
     private Rigidbody playerRB = null;
-    public float moveSpeed = 0.05f;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private Coroutine sit_coroutine = null;
+    private Coroutine shift_coroutine = null;
+    private Coroutine move_coroutine = null;
+    private bool is_left = false; //used for shifting
+    private SeatManager sm = null;
 
-    private float MOVE_FACTOR = 2.0f;
-
-    private bool is_pilot = true;
-    private bool is_shifting = false;
-    [SerializeField]
-    private bool sitting = false;
-    private float shift_direction = -1.0f;
-    private float lean_direction = 1.0f;
-    private float shift_percentage = 0.0f; //0 is default position, 1.0 is 
-    private float default_x;
     void Start()
     {
-        default_x = transform.localPosition.x;
-
-        
-
         DontDestroyOnLoad(gameObject);
-
-
-
-        //playerRB = GetComponent<Rigidbody>();
     }
 
-    // Update is called once per frame
-    private void Update()
+    public void initialize()
     {
-        if (!gameObject.GetComponent<PlayerMove>().IsOwner) return;
-        if (sitting)
+        sm = GameObject.FindGameObjectWithTag("SeatHandler").GetComponent<SeatManager>();
+
+        move_coroutine = StartCoroutine(checkForMovement());
+    }
+
+    public void sitDown(int pos)
+    {
+        if (move_coroutine != null)
         {
-            if (Input.GetKeyDown(KeyCode.Tab))
-            {
-                sitting = false;
-            }
-            /*
-            if (Input.GetKeyDown(KeyCode.Tab))
-            {
-                shift_percentage = 0.0f;
-                shift_direction = -1f;
-                lean_direction *= -1f;
-                is_shifting = false;
-                is_pilot = !is_pilot;
-                if (is_pilot == true)
-                {
-                    transform.localPosition = new Vector3(2.1f, 0.8f, -2f);
-                }
-                else
-                {
-                    transform.localPosition = new Vector3(-2.1f, 0.8f, -2f);
-                }
-                default_x = transform.localPosition.x;
-            }
-            */
-            if (is_shifting)
-            {
-                if (shift_direction > 0.0f)
-                {
-                    shift_percentage = Mathf.Min(1f, shift_percentage += Time.deltaTime * MOVE_FACTOR);
-                    if (shift_percentage >= 1f)
-                    {
-                        is_shifting = false;
-                    }
-                }
-                else
-                {
-                    shift_percentage = Mathf.Max(0f, shift_percentage -= Time.deltaTime * MOVE_FACTOR);
-                    if (shift_percentage <= 0f)
-                    {
-                        is_shifting = false;
-                    }
-                }
-                transform.localPosition = new Vector3(default_x + (shift_percentage * 0.6f * lean_direction), transform.localPosition.y, transform.localPosition.z);
-            }
-            else
-            {
-               /* if (Input.GetKeyDown(KeyCode.LeftShift))
-                {
-                    is_shifting = true;
-                    shift_direction *= -1.0f;
-                }*/
-            }
+            StopCoroutine(move_coroutine);
+        }
+
+        move_coroutine = null;
+
+        //figure out which shift point the player is closer to
+        float dist_to_left_pos = Vector3.Distance(transform.position, sm.left_shift_position_points[pos].transform.position);
+        float dist_to_right_pos = Vector3.Distance(transform.position, sm.right_shift_position_points[pos].transform.position);
+
+        is_left = (dist_to_left_pos < dist_to_right_pos);
+
+        if (is_left == true)
+        {
+            transform.position = sm.left_shift_position_points[pos].transform.position;
         }
         else
         {
-            if (Input.GetKeyDown(KeyCode.Tab))
-            {
-                sitting = true;
-            }
-            moveDir.x = Input.GetAxis("Horizontal");
-            moveDir.y = Input.GetAxis("Vertical");
-            Debug.DrawLine(transform.position, transform.position + transform.forward * 1.25f);
-            if (moveDir.magnitude > 1)
-            {
-                moveDir.Normalize();
-            }
-            Move();
+            transform.position = sm.right_shift_position_points[pos].transform.position;
+        }
 
-            if (transform.localPosition.y < -10)
+        if (sit_coroutine != null)
+        {
+            StopCoroutine(sit_coroutine);
+            sit_coroutine = null;
+        }
+
+        sit_coroutine = StartCoroutine(checkForShifting());
+    }
+
+    public void getUp(int pos)
+    {
+        if (move_coroutine != null)
+        {
+            StopCoroutine(move_coroutine);
+            move_coroutine = null;
+        }
+
+        if (shift_coroutine != null)
+        {
+            StopCoroutine(shift_coroutine);
+            shift_coroutine = null;
+        }
+
+        if (sit_coroutine != null)
+        {
+            StopCoroutine(sit_coroutine);
+            sit_coroutine = null;
+        }
+
+        if (pos == 3) //captain exception
+        {
+            transform.localPosition = sm.position_points[3].transform.localPosition;
+        }
+
+        move_coroutine = StartCoroutine(checkForMovement());
+    }
+
+    IEnumerator shift(Vector3 start_pos, Vector3 end_pos)
+    {
+        float total_shift_time = Vector3.Distance(start_pos, end_pos) / SHIFT_SPEED;
+        float shift_time = total_shift_time;
+        while (shift_time > 0.0f)
+        {
+            float dt = Mathf.Min(Time.deltaTime, 1.0f / 30.0f);
+            shift_time = Mathf.Max(0.0f, shift_time - dt);
+            transform.localPosition =
+                new Vector3(Mathf.Lerp(end_pos.x, start_pos.x, shift_time / total_shift_time),
+                            Mathf.Lerp(end_pos.y, start_pos.y, shift_time / total_shift_time),
+                            Mathf.Lerp(end_pos.z, start_pos.z, shift_time / total_shift_time));
+
+            yield return null;
+        }
+
+        is_left = !is_left;
+
+        shift_coroutine = null;
+
+        sit_coroutine = StartCoroutine(checkForShifting());
+    }
+
+    IEnumerator checkForShifting()
+    {
+        while (shift_coroutine == null)
+        {
+            if (UnityEngine.Input.GetKeyDown(KeyCode.LeftShift) || UnityEngine.Input.GetKeyDown(KeyCode.RightShift))
             {
-                transform.localPosition = Vector3.zero;
-                playerRB.linearVelocity = Vector3.zero;
+                int pos = ControlScript.Instance.currentSeat();
+                if (is_left == true) //left to right
+                {
+                    shift_coroutine = StartCoroutine(shift(sm.left_shift_position_points[pos].transform.localPosition, sm.right_shift_position_points[pos].transform.localPosition));
+                }
+                else //right to left
+                {
+                    shift_coroutine = StartCoroutine(shift(sm.right_shift_position_points[pos].transform.localPosition, sm.left_shift_position_points[pos].transform.localPosition));
+                }
             }
+            yield return null;
+        }
+
+        sit_coroutine = null;
+    }
+
+    IEnumerator checkForMovement()
+    {
+        while (true)
+        {
+            yield return null;
+            updateMovement();
         }
     }
+
+    private void updateMovement()
+    {
+        if (!gameObject.GetComponent<PlayerMove>().IsOwner) return;
+
+        moveDir.x = Input.GetAxis("Horizontal");
+        moveDir.y = Input.GetAxis("Vertical");
+        Debug.DrawLine(transform.position, transform.position + transform.forward * 1.25f);
+        if (moveDir.magnitude > 1)
+        {
+            moveDir.Normalize();
+        }
+        Move();
+
+        //teleport back if you fall
+        if (transform.localPosition.y < -10)
+        {
+            transform.localPosition = Vector3.zero;
+            playerRB.linearVelocity = Vector3.zero;
+        }
+    }
+
+    void Move()
+    {
+        Vector3 movement; //= Vector3.zero;
+
+        if (transform.parent != null) //local movement
+        {
+            Quaternion combinedRotation = transform.parent.rotation * transform.localRotation;
+            Vector3 localMovement = new Vector3(moveDir.x, 0, moveDir.y) * MOVE_SPEED * Time.deltaTime;
+            movement = combinedRotation * localMovement;
+            transform.position += movement;
+        }
+        else //world movement
+        {
+            movement = transform.TransformDirection(new Vector3(moveDir.x, 0, moveDir.y)) * MOVE_SPEED * Time.deltaTime;
+            transform.position += movement;
+        }
+    }
+
+
+    //OLD CODE
 
     /*
     void FixedUpdate()
@@ -148,9 +219,8 @@ public class PlayerMove : NetworkBehaviour
         {
             playerRB.linearVelocity = Vector3.zero;
         }
-
-
     }
+    
     */
 
     /*
@@ -162,24 +232,4 @@ public class PlayerMove : NetworkBehaviour
         transform.localPosition += transform.forward * moveDir.y * moveSpeed * Time.deltaTime;
     }
     */
-
-    void Move()
-    {
-        Vector3 movement; //= Vector3.zero;
-
-        if (transform.parent != null)
-        {
-            Quaternion combinedRotation = transform.parent.rotation * transform.localRotation;
-            Vector3 localMovement = new Vector3(moveDir.x, 0, moveDir.y) * moveSpeed * Time.deltaTime;
-            movement = combinedRotation * localMovement;
-            transform.position += movement;
-        }
-        else
-        {
-            // Otherwise world space movement
-            movement = transform.TransformDirection(new Vector3(moveDir.x, 0, moveDir.y)) * moveSpeed * Time.deltaTime;
-            transform.position += movement;
-        }
-    }
-
 }
