@@ -12,7 +12,6 @@ using UnityEngine;
 using Unity.Netcode;
 using TMPro;
 
-
 public class PrefixCodeManager : NetworkBehaviour
 {
     //CLASS CONSTANTS
