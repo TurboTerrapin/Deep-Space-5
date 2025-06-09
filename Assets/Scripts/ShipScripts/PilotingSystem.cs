@@ -4,26 +4,26 @@ using UnityEngine;
 public class PilotingSystem : MonoBehaviour
 {
     [Header("Control References")]
-    [SerializeField] private GameObject controlHandler;
+    private GameObject controlHandler;
 
     [Header("Speed Settings")]
-    [SerializeField] private float maxThrusterSpeed = 8f;
-    [SerializeField] private float maxImpulseSpeed = 30f;
+    private float maxThrusterSpeed = 8f;
+    private float maxImpulseSpeed = 30f;
 
     [Header("Rotation Settings")]
-    [SerializeField] private float rotationPower = 6f;
-    [SerializeField] private float steeringResponsiveness = 5f;
-    [SerializeField] private float maxRotationSpeed = 25f;
+     private float rotationPower = 6f;
+     private float steeringResponsiveness = 5f;
+     private float maxRotationSpeed = 25f;
 
     [Header("Impulse Settings")]
-    [SerializeField] private float impulseAccelerationRate = 0.4f;
-    [SerializeField] private float impulseDecelerationRate = 1.5f;
+    private float impulseAccelerationRate = 0.4f;
+    private float impulseDecelerationRate = 1.5f;
 
     [Header("Thruster Settings")]
-    [SerializeField] private float baseThrusterAccelerationRate = 0.1f;
-    [SerializeField] private float maxThrusterAccelerationRate = 0.5f;
-    [SerializeField] private float timeToMaxThrustAccel = 2f;
-    [SerializeField] private float thrusterDecelerationRate = 0.5f;
+    private float baseThrusterAccelerationRate = 0.5f;
+    private float maxThrusterAccelerationRate = 1.5f;
+    private float timeToMaxThrustAccel = 2f;
+    private float thrusterDecelerationRate = 0.5f;
 
     // Component references
     private ImpulseThrottle impulseThrottle;
