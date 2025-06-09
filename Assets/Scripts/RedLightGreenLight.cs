@@ -18,7 +18,7 @@ using System.Collections.Generic;
 
 public class RedLightGreenLight : MonoBehaviour
 {
-    public Transform Camera;
+    private Transform Camera;
     Vector3 OriginalCameraPosition;
     int ShipHealth = 100;
     bool FriendlyTransmissionRecieved;
@@ -26,6 +26,7 @@ public class RedLightGreenLight : MonoBehaviour
     bool ScenarioEndpointReached = false;
     private ImpulseThrottle impulse;
     private UniversalCommunicator communicator;
+    Coroutine currentShake = null;
 
     void Start()
     {
@@ -33,7 +34,10 @@ public class RedLightGreenLight : MonoBehaviour
         impulse = controlHandler.GetComponent<ImpulseThrottle>();
         communicator = controlHandler.GetComponent<UniversalCommunicator>();
 
+        
+        Camera = GameObject.Find("Main Camera").transform;
         OriginalCameraPosition = Camera.localPosition;
+
         StartCoroutine(RLGL());
     }
 
@@ -41,6 +45,7 @@ public class RedLightGreenLight : MonoBehaviour
     {
         if (isFriendlyMessage())
         {
+            Debug.Log("Friendly message received.");
             FriendlyTransmissionRecieved = true;
         }
 
@@ -74,34 +79,48 @@ public class RedLightGreenLight : MonoBehaviour
 
     IEnumerator RedLightState()
     {
+        FriendlyTransmissionRecieved = false;
         Debug.Log("RED LIGHT");
 
         while (FriendlyTransmissionRecieved == false)
         {
+            // if the ship is moving
             if (impulse.getCurrentImpulse() > 0)
             {
-                isCameraShaking = true;
-                // Camera Shake(intensity)
-                StartCoroutine(CameraShake(0.1f));
+                if (currentShake == null)
+                {
+                    isCameraShaking = true;
+                    // Camera Shake(intensity)
+                    currentShake = StartCoroutine(CameraShake(0.025f));
+                }
 
                 // Damage every second
                 yield return new WaitForSeconds(1f);
                 ShipHealth -= 1;
                 Debug.Log($"Ship Health: {ShipHealth}");
-
-                // Check for friendly transmission
+                Debug.Log($"Impulse: {impulse.getCurrentImpulse()}");
             }
+            else
+            {
+                if (currentShake != null)
+                {
+                    isCameraShaking = false;
+                    StopCoroutine(currentShake);
+                    currentShake = null;
+                    Camera.localPosition = OriginalCameraPosition;
+                }
 
-            isCameraShaking = true;
-            // Camera Shake(intensity)
-            StartCoroutine(CameraShake(0.1f));
-
-            // Damage every second
-            yield return new WaitForSeconds(1f);
-            ShipHealth -= 1;
-            Debug.Log($"Ship Health: {ShipHealth}");
+                yield return null;
+            }
         }
-        isCameraShaking = false;
+
+        if (currentShake!= null)
+        {
+            isCameraShaking = false;
+            StopCoroutine(currentShake);
+            currentShake = null;
+        }
+
         Camera.localPosition = OriginalCameraPosition;
         Debug.Log("GREEN LIGHT");
     }
