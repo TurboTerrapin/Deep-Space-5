@@ -11,21 +11,21 @@ public class ShipController : NetworkBehaviour
     private GameObject controlHandler;
     private bool shipReady = false;
 
-    public Transform world_Root; 
+    public GameObject worldRoot; 
 
     private void Awake()
     {
         pilotingSystem = GetComponent<PilotingSystem>();
         weaponsSystem = GetComponent<WeaponsSystem>();
 
- 
     }
 
     void Start()
     {
         controlHandler = GameObject.FindGameObjectWithTag("ControlHandler");
+        worldRoot = GameObject.FindGameObjectWithTag("WorldRoot");
 
-        if (controlHandler != null && pilotingSystem.AssignControlReferences(controlHandler)
+        if (controlHandler != null && worldRoot != null && pilotingSystem.AssignControlReferences(controlHandler)
             && weaponsSystem.AssignControlReferences(controlHandler))
         {
             shipReady = true;
@@ -42,6 +42,6 @@ public class ShipController : NetworkBehaviour
         //weaponsSystem.UpdateInput();
 
         //weaponsSystem.UpdateWeapons();
-        pilotingSystem.UpdateMovement(world_Root); // Pass the world root to move
+        pilotingSystem.UpdateMovement(worldRoot.transform); 
     }
 }
