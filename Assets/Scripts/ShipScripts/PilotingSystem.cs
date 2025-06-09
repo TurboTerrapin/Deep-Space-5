@@ -1,7 +1,4 @@
-/*
-    Handles ship movement - Vertical & Horizontal Thrusters, Impulse Throttle, and Course Heading
-*/
-
+using UnityEngine;
 using UnityEngine;
 
 public class PilotingSystem : MonoBehaviour
@@ -41,10 +38,10 @@ public class PilotingSystem : MonoBehaviour
     private float verticalThrust;
 
     // Movement state
-    private float smoothedSteeringInput = 0f; // rotational inertia
+    private float smoothedSteeringInput = 0f;
     private float horizontalThrusterActiveTime;
     private float verticalThrusterActiveTime;
-    public float currentRotationSpeed; // Current rotation speed in degrees/sec
+    public float currentRotationSpeed;
     public float forwardSpeed;
     public Vector3 currentVelocity;
 
@@ -59,8 +56,8 @@ public class PilotingSystem : MonoBehaviour
         horizontalThrusters = controlHandler.GetComponent<HorizontalThrusters>();
         verticalThrusters = controlHandler.GetComponent<VerticalThrusters>();
 
-        return impulseThrottle  && courseHeading &&
-               horizontalThrusters  && verticalThrusters;
+        return impulseThrottle && courseHeading &&
+               horizontalThrusters && verticalThrusters;
     }
 
     public void UpdateInput()
@@ -70,7 +67,8 @@ public class PilotingSystem : MonoBehaviour
         horizontalThrust = horizontalThrusters.getHorizontalThrusterState();
         verticalThrust = verticalThrusters.getVerticalThrusterState();
     }
-    public void UpdateMovement()
+
+    public void UpdateMovement(Transform worldRoot)
     {
         float dt = Time.deltaTime;
 
@@ -101,7 +99,6 @@ public class PilotingSystem : MonoBehaviour
             ((Mathf.Abs(currentVerticalSpeed) < Mathf.Abs(verticalThrust * maxThrusterSpeed)) ? verticalRate : thrusterDecelerationRate) * dt
         );
 
-        // Combine velocities
         Vector3 impulseVelocity = forward * currentImpulseSpeed;
         Vector3 horizontalVelocity = horizontal * currentHorizontalSpeed;
         Vector3 verticalVelocity = vertical * currentVerticalSpeed;
@@ -113,9 +110,11 @@ public class PilotingSystem : MonoBehaviour
             currentVelocity = currentVelocity.normalized * maxImpulseSpeed;
         }
 
-        transform.position += currentVelocity * dt;
+        if (worldRoot != null)
+        {
+            worldRoot.position -= currentVelocity * dt;
+        }
 
-        // Handle rotation using the fixed forwardSpeed:
         forwardSpeed = currentVelocity.magnitude;
         HandleRotation(dt);
     }
@@ -131,7 +130,6 @@ public class PilotingSystem : MonoBehaviour
         forwardSpeed = currentVelocity.magnitude;
         float speedFactor = Mathf.Clamp01(forwardSpeed / maxImpulseSpeed);
 
-        // Smooth the steering input to simulate rotational inertia
         smoothedSteeringInput = Mathf.Lerp(
             smoothedSteeringInput,
             steeringInput,
@@ -140,24 +138,20 @@ public class PilotingSystem : MonoBehaviour
 
         float targetRotationSpeed = smoothedSteeringInput * maxRotationSpeed * speedFactor;
 
-        // If almost no forward movement, don't rotate
         if (Mathf.Abs(forwardSpeed) < 0.01f)
             return;
 
-        // Adjust current rotation speed toward target
         currentRotationSpeed = Mathf.Lerp(
             currentRotationSpeed,
             targetRotationSpeed,
             rotationPower * dt
         );
 
-        // Dampen rotation speed to zero when steering is near neutral
         if (Mathf.Abs(steeringInput) < 0.1f && Mathf.Abs(smoothedSteeringInput) < 0.1f)
         {
             currentRotationSpeed = Mathf.Lerp(currentRotationSpeed, 0f, rotationPower * dt);
         }
 
-        // Apply rotation
         transform.Rotate(0f, currentRotationSpeed * dt, 0f);
     }
 }
