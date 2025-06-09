@@ -1,18 +1,20 @@
 /*
     RedLightGreenLight.cs
+    Contributor: Beata Musial
 
     1. 60 second delay before RedLightGreenLight commences.
     2. While ship health is not 0, the red light state begins until a friendly transmission is recieved.
     3. Once the friendly transmission is recieved, it will remain in the green light state for 15-30 seconds.
     4. Steps 2 and 3 will loop until the end point of the scenario is reached or the ship health is 0.
 
-    Red Light Phase: Camera shake with damage taken to ship.
+    Red Light Phase: Camera shake with damage taken to ship only while impulse > 0;
     Green Light Phase: Enemy does nothing.
 
 */
 
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class RedLightGreenLight : MonoBehaviour
 {
@@ -22,19 +24,30 @@ public class RedLightGreenLight : MonoBehaviour
     bool FriendlyTransmissionRecieved;
     bool isCameraShaking = false;
     bool ScenarioEndpointReached = false;
+    private ImpulseThrottle impulse;
+    private UniversalCommunicator communicator;
 
     void Start()
     {
+        GameObject controlHandler = GameObject.FindWithTag("ControlHandler");
+        impulse = controlHandler.GetComponent<ImpulseThrottle>();
+        communicator = controlHandler.GetComponent<UniversalCommunicator>();
+
         OriginalCameraPosition = Camera.localPosition;
         StartCoroutine(RLGL());
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.G))
+        if (isFriendlyMessage())
         {
             FriendlyTransmissionRecieved = true;
         }
+
+        //if (Input.GetKeyDown(KeyCode.G))
+        //{
+        //    FriendlyTransmissionRecieved = true;
+        //}
     }
 
     IEnumerator RLGL()
@@ -65,6 +78,20 @@ public class RedLightGreenLight : MonoBehaviour
 
         while (FriendlyTransmissionRecieved == false)
         {
+            if (impulse.getCurrentImpulse() > 0)
+            {
+                isCameraShaking = true;
+                // Camera Shake(intensity)
+                StartCoroutine(CameraShake(0.1f));
+
+                // Damage every second
+                yield return new WaitForSeconds(1f);
+                ShipHealth -= 1;
+                Debug.Log($"Ship Health: {ShipHealth}");
+
+                // Check for friendly transmission
+            }
+
             isCameraShaking = true;
             // Camera Shake(intensity)
             StartCoroutine(CameraShake(0.1f));
@@ -73,8 +100,6 @@ public class RedLightGreenLight : MonoBehaviour
             yield return new WaitForSeconds(1f);
             ShipHealth -= 1;
             Debug.Log($"Ship Health: {ShipHealth}");
-
-            // Check for friendly transmission
         }
         isCameraShaking = false;
         Camera.localPosition = OriginalCameraPosition;
@@ -94,4 +119,26 @@ public class RedLightGreenLight : MonoBehaviour
 
         Camera.localPosition = OriginalCameraPosition;
     }
+
+    private bool isFriendlyMessage()
+    {
+        List<int> codeIndex = communicator.CodeIndex;
+
+        if (codeIndex.Count != 8)
+        {
+            return false;
+        }
+
+        int[] friendlyMessage = { 1, 0, 0, 1, 1, 0, 0, 1 };
+
+        for (int i = 0; i < 8; i++)
+        {
+            if (codeIndex[i] != friendlyMessage[i])
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }
