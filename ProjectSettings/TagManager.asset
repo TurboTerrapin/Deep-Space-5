@@ -10,6 +10,7 @@ TagManager:
   - LongRangePhaser
   - ShortRangePhaser
   - SeatHandler
+  - SensorHandler
   layers:
   - Default
   - TransparentFX

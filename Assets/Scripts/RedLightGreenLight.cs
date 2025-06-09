@@ -15,18 +15,33 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 
 public class RedLightGreenLight : MonoBehaviour
 {
     private Transform Camera;
     Vector3 OriginalCameraPosition;
-    int ShipHealth = 100;
     bool FriendlyTransmissionRecieved;
     bool isCameraShaking = false;
     bool ScenarioEndpointReached = false;
     private ImpulseThrottle impulse;
     private UniversalCommunicator communicator;
+    private ScanWaveManager scanWaveManager;
+    private ShipHealth shipHealth;
     Coroutine currentShake = null;
+
+    //--SCAN WAVE INFORMATION--//
+
+    //CENTER OF WAVE
+    public Texture center_texture;
+    public Color center_color;
+    public float center_speed = 50.0f;
+
+    //WAVE RINGS
+    public List<Texture> ring_textures = null;
+    public List<Color> ring_colors = null;
+    public List<bool> ring_is_solid = null;
+    public List<float> ring_speeds = null;
 
     void Start()
     {
@@ -34,11 +49,31 @@ public class RedLightGreenLight : MonoBehaviour
         impulse = controlHandler.GetComponent<ImpulseThrottle>();
         communicator = controlHandler.GetComponent<UniversalCommunicator>();
 
-        
+        GameObject sensorHandler = GameObject.FindWithTag("SensorHandler");
+        scanWaveManager = sensorHandler.GetComponent<ScanWaveManager>();
+
+        GameObject spaceship = GameObject.FindWithTag("Spaceship");
+        shipHealth = spaceship.GetComponent<ShipHealth>();
+
+        WaveInfo rlgl_wave = new WaveInfo();
+        rlgl_wave.setCenter(center_texture, center_color, center_speed);
+        rlgl_wave.setRings(ring_textures.Count, ring_colors, ring_textures, ring_is_solid, ring_speeds);
+
+        scanWaveManager.initializeWave(0, rlgl_wave);
+
+        /*
+        if (sensorHandler.GetComponentAtIndex(0) is IControllable){
+
+        }
+        */
+
         Camera = GameObject.Find("Main Camera").transform;
         OriginalCameraPosition = Camera.localPosition;
 
-        StartCoroutine(RLGL());
+        if (NetworkManager.Singleton.IsHost)
+        {
+            StartCoroutine(RLGL());
+        }
     }
 
     void Update()
@@ -60,13 +95,13 @@ public class RedLightGreenLight : MonoBehaviour
         // 60 second delay
         //yield return new WaitForSeconds(60f);
 
-        while (ScenarioEndpointReached == false && ShipHealth != 0)
+        while (ScenarioEndpointReached == false && shipHealth.getHullIntegrity() > 0.0f)
         {
             // Red light state
             FriendlyTransmissionRecieved = false;
             yield return StartCoroutine(RedLightState());
 
-            if (ScenarioEndpointReached == true || ShipHealth == 0)
+            if (ScenarioEndpointReached == true || shipHealth.getHullIntegrity() <= 0.0f)
             {
                 break;
             }
@@ -82,7 +117,7 @@ public class RedLightGreenLight : MonoBehaviour
         FriendlyTransmissionRecieved = false;
         Debug.Log("RED LIGHT");
 
-        while (FriendlyTransmissionRecieved == false)
+        while (FriendlyTransmissionRecieved == false && shipHealth.getHullIntegrity() > 0.0f)
         {
             // if the ship is moving
             if (impulse.getCurrentImpulse() > 0)
@@ -96,8 +131,8 @@ public class RedLightGreenLight : MonoBehaviour
 
                 // Damage every second
                 yield return new WaitForSeconds(1f);
-                ShipHealth -= 1;
-                Debug.Log($"Ship Health: {ShipHealth}");
+                shipHealth.damageAllSections(2.5f);
+                Debug.Log($"Ship Health: {shipHealth.getHullIntegrity()}");
                 Debug.Log($"Impulse: {impulse.getCurrentImpulse()}");
             }
             else
@@ -114,7 +149,7 @@ public class RedLightGreenLight : MonoBehaviour
             }
         }
 
-        if (currentShake!= null)
+        if (currentShake != null)
         {
             isCameraShaking = false;
             StopCoroutine(currentShake);

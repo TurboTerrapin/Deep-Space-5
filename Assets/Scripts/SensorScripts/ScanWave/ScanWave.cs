@@ -19,10 +19,15 @@ public class ScanWave : MonoBehaviour
     public List<GameObject> rings = null; //a-d
     private Coroutine default_rotation_coroutine = null;
 
-    IEnumerator spinRings()
+    IEnumerator spinRings(float[] rotate_speeds)
     {
         while (true)
         {
+            wave_center.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, wave_center.transform.localEulerAngles.z + Time.deltaTime * rotate_speeds[0]);
+            for (int r = 1; r < rotate_speeds.Length; r++)
+            {
+                rings[r - 1].transform.localRotation = Quaternion.Euler(0.0f, 0.0f, rings[r - 1].transform.localEulerAngles.z + Time.deltaTime * rotate_speeds[r]);
+            }
             yield return null;
         }
     }
@@ -69,13 +74,22 @@ public class ScanWave : MonoBehaviour
                 for (int i = 0; i < NUM_OF_ITEMS_PER_RING; i++)
                 {
                     GameObject new_item = Object.Instantiate(rings[r].transform.GetChild(0).GetChild(0).gameObject, rings[r].transform.GetChild(0));
-                    new_item.GetComponent<UnityEngine.UI.RawImage>().texture = wave_info.getRingTextures()[r];
-                    new_item.GetComponent<UnityEngine.UI.RawImage>().color = wave_info.getRingColors()[r];
+                    new_item.transform.GetChild(0).GetComponent<UnityEngine.UI.RawImage>().texture = wave_info.getRingTextures()[r];
+                    new_item.transform.GetChild(0).GetComponent<UnityEngine.UI.RawImage>().color = wave_info.getRingColors()[r];
                     new_item.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, i * (360.0f / NUM_OF_ITEMS_PER_RING));
+                    new_item.SetActive(true);
                 }
             }
         }
-        default_rotation_coroutine = StartCoroutine(spinRings());
+
+        float[] rotate_speeds = new float[wave_info.getNumberOfRings() + 1];
+        rotate_speeds[0] = wave_info.getCenterSpeed();
+        for (int r = 0; r < wave_info.getNumberOfRings(); r++)
+        {
+            rotate_speeds[r + 1] = wave_info.getRingSpeeds()[r];
+        }
+
+        default_rotation_coroutine = StartCoroutine(spinRings(rotate_speeds));
     }
 
     public void updateWave()

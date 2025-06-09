@@ -5,6 +5,8 @@
     Last Updated: 6/8/2025
 */
 
+using System.Collections.Generic;
+using NUnit.Framework;
 using UnityEngine;
 
 public class WaveInfo
@@ -16,10 +18,10 @@ public class WaveInfo
     private float center_speed;
 
     private int number_of_rings = 0;
-    private Color[] ring_colors = null;
-    private Texture[] ring_textures = null;
-    private bool[] ring_is_solid = null;
-    private float[] ring_speeds = null;
+    private List<Color> ring_colors = null;
+    private List<Texture> ring_textures = null;
+    private List<bool> ring_is_solid = null;
+    private List<float> ring_speeds = null;
 
     public void setCenter(Texture c, Color c_color, float speed)
     {
@@ -28,7 +30,7 @@ public class WaveInfo
         center_speed = speed;
     }
 
-    public void setRings(int num, Color[] colors, Texture[] textures, bool[] is_solid, float[] speeds)
+    public void setRings(int num, List<Color> colors, List<Texture> textures, List<bool> is_solid, List<float> speeds)
     {
         number_of_rings = num;
         ring_colors = colors;
@@ -57,22 +59,22 @@ public class WaveInfo
         return number_of_rings;
     }
 
-    public Color[] getRingColors()
+    public List<Color> getRingColors()
     {
         return ring_colors;
     }
 
-    public Texture[] getRingTextures()
+    public List<Texture> getRingTextures()
     {
         return ring_textures;
     }
 
-    public bool[] getRingSolids()
+    public List<bool> getRingSolids()
     {
         return ring_is_solid;
     }
 
-    public float[] getRingSpeeds()
+    public List<float> getRingSpeeds()
     {
         return ring_speeds;
     }

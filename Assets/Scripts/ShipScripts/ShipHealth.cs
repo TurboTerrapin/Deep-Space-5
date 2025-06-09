@@ -29,7 +29,7 @@ public class ShipHealth : NetworkBehaviour
     private float hull_integrity = 100.0f;
     private Coroutine damage_animation_coroutine = null;
 
-    private void Start()
+    /*private void Start()
     {
         StartCoroutine(tester());
     }
@@ -42,6 +42,11 @@ public class ShipHealth : NetworkBehaviour
             damageAllSections(6.5f);
             yield return new WaitForSeconds(2.5f);
         }
+    }*/
+
+    public float getHullIntegrity()
+    {
+        return hull_integrity;
     }
 
     private Color getDesiredColor(float health)

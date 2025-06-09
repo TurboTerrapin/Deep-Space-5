@@ -10,7 +10,7 @@ EditorBuildSettings:
     guid: 66bbbcaf73f304396b35e78d6fc15bbf
   - enabled: 1
     path: Assets/Scenes/BridgeEnvironment/BridgeEnvironment.unity
-    guid: 6e99b5161f0b94b4baab70da700a4789
+    guid: 82e8135a5d171f84bab2a3419dc4957f
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
