@@ -39,9 +39,9 @@ public class ShipController : NetworkBehaviour
         if (!shipReady || !IsHost) return;
 
         pilotingSystem.UpdateInput();
-        //weaponsSystem.UpdateInput();
+        weaponsSystem.UpdateInput();
 
-        //weaponsSystem.UpdateWeapons();
+        weaponsSystem.UpdateWeapons();
         pilotingSystem.UpdateMovement(worldRoot.transform); 
     }
 }
