@@ -26,8 +26,8 @@ public class WeaponsSystem : MonoBehaviour
 
     // Colliders (Phasers)
     private BoxCollider longRangePhaserCollider;
-    private BoxCollider shortRangePhaserLeftCollider;
-    private BoxCollider shortRangePhaserRightCollider;
+    //private BoxCollider shortRangePhaserLeftCollider;
+    //private BoxCollider shortRangePhaserRightCollider;
 
     [Header("LongRange Phaser Settings")]
     [SerializeField] private float minLRBeamWidth = 0.6f;
