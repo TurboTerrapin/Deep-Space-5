@@ -11,6 +11,7 @@ TagManager:
   - ShortRangePhaser
   - SeatHandler
   - SensorHandler
+  - WorldRoot
   layers:
   - Default
   - TransparentFX
