@@ -5,6 +5,7 @@
     Last Updated: 6/8/2025
 */
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,6 +25,18 @@ public class ScanWaveManager : MonoBehaviour
     public void updateWave(int index)
     {
         waves[index].GetComponent<ScanWave>().updateWave();
+    }
+
+    public void resizeWave(int index, bool shrink, float time_interval)
+    {
+        if (shrink == true)
+        {
+            waves[index].GetComponent<ScanWave>().contractWave(time_interval);
+        }
+        else
+        {
+            waves[index].GetComponent<ScanWave>().expandWave(time_interval);
+        }
     }
 
     public WaveInfo getWaveInfo(int index)

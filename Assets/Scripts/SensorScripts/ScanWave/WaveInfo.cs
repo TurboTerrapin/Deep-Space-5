@@ -39,6 +39,11 @@ public class WaveInfo
         ring_is_solid = is_solid;
     }
 
+    public bool getContracted()
+    {
+        return is_contracted; 
+    }
+
     public Texture getCenterTexture()
     {
         return center;

@@ -95,6 +95,14 @@ public class RedLightGreenLight : MonoBehaviour
         // 60 second delay
         //yield return new WaitForSeconds(60f);
 
+        while (true)
+        {
+            yield return new WaitForSeconds(5.0f);
+            scanWaveManager.resizeWave(0, false, 1.0f);
+            yield return new WaitForSeconds(5.0f);
+            scanWaveManager.resizeWave(0, true, 1.0f);
+        }
+
         while (ScenarioEndpointReached == false && shipHealth.getHullIntegrity() > 0.0f)
         {
             // Red light state
