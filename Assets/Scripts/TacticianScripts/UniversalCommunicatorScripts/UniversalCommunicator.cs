@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine.UI;
+using Unity.VisualScripting;
 
 public class UniversalCommunicator : MonoBehaviour
 {
@@ -23,8 +24,8 @@ public class UniversalCommunicator : MonoBehaviour
     public GameObject code_display;
 
     private static List<char> string_code_index = new List<char>{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', ';'};
+
     private List<int> code_index = new List<int>(); //0-11, corresponds to A0-A5, B0-B5 where B5 is 11 and A0 is 0
-    public List<int> CodeIndex => code_index;
     private List<int> code_is_numeric = new List<int>(); //1 means number (ex. 5), 0 is symbol (ex. square)
     private List<int> code_color = new List<int>(); //0 is blue, 1 is green, 2 is pink, 3 is orange
 
@@ -121,6 +122,20 @@ public class UniversalCommunicator : MonoBehaviour
             transform.gameObject.GetComponent<CharacterInput>().deactivate();
             code_display.transform.GetChild(25).gameObject.SetActive(false);
         }
+    }
+
+    public List<int> getCodeIndexes()
+    {
+        return new List<int>(code_index);
+    }
+
+    public List<int> getCodeColors()
+    {
+        return new List<int>(code_color);
+    }
+    public List<int> getCodeIsNumeric()
+    {
+        return new List<int>(code_is_numeric);
     }
 
     [Rpc(SendTo.Everyone)]

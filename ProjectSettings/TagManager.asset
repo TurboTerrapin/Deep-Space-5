@@ -12,6 +12,7 @@ TagManager:
   - SeatHandler
   - SensorHandler
   - WorldRoot
+  - ScenarioHandler
   layers:
   - Default
   - TransparentFX

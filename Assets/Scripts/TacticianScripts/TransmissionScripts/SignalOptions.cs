@@ -166,6 +166,19 @@ public class SignalOptions : NetworkBehaviour, IControllable
     [Rpc(SendTo.Everyone)]
     private void transmitSignalTransmissionRPC(int index)
     {
+        UniversalCommunicator uc = gameObject.GetComponent<UniversalCommunicator>();
+        GameObject scenario_handler = GameObject.FindGameObjectWithTag("ScenarioHandler");
+        if (scenario_handler != null)
+        {
+            Component scenario_script = scenario_handler.GetComponentAtIndex(1);
+            IUniversalCommunicable transmission_receiver = scenario_script as IUniversalCommunicable;
+            if (transmission_receiver != null)
+            {
+                transmission_receiver.handleTransmission(uc.getCodeIndexes(), uc.getCodeColors(), uc.getCodeIsNumeric());
+            }
+        }
+        uc.resetDisplay();
+
         if (signal_transmission_coroutine != null)
         {
             StopCoroutine(signal_transmission_coroutine);
