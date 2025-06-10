@@ -24,7 +24,7 @@ public class ScanWaveManager : MonoBehaviour
 
     public void updateWave(int index)
     {
-        waves[index].GetComponent<ScanWave>().updateWave();
+        //waves[index].GetComponent<ScanWave>().updateWave();
     }
 
     public void resizeWave(int index, bool shrink, float time_interval)

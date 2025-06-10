@@ -24,6 +24,28 @@ public class ScanWave : MonoBehaviour
     private float ring_min_size = 0.05f;
     private float ring_separation_distance = 0.01f;
 
+    private void waveSizeHelper(float ring_size)
+    {
+        //change ring size
+        for (int r = 0; r < rings.Count; r++)
+        {
+            float ring_at_smallest = ring_min_size + (ring_separation_distance * (rings.Count - 1 - r)); //smallest size per each ring
+            float ring_diamater_increase = (ring_size * (ring_min_size + (ring_separation_distance * (rings.Count - 1 - r)))) * 0.75f;
+
+            float ring_diameter = ring_at_smallest + ring_diamater_increase;
+
+            rings[r].GetComponent<RectTransform>().sizeDelta = new Vector2(ring_diameter, ring_diameter);
+            for (int c = 0; c < rings[r].transform.GetChild(0).childCount; c++)
+            {
+                rings[r].transform.GetChild(0).GetChild(c).GetChild(0).localPosition =
+                    new Vector3((ring_diamater_increase * -0.5f) - 0.039f + (r * 0.005f),
+                                0.0f,
+                                0.0f);
+            }
+            rings[r].transform.GetChild(1).GetComponent<RectTransform>().sizeDelta = new Vector2(ring_diameter - 0.005f, ring_diameter - 0.005f);
+        }
+    }
+
     IEnumerator waveSizeChange(bool contract, float time_interval)
     {
         float ring_start_size = 1.0f;
@@ -40,24 +62,8 @@ public class ScanWave : MonoBehaviour
 
             float ring_size = Mathf.Lerp(ring_start_size, ring_end_size, 1.0f - (time_remaining / time_interval));
 
-            //change ring size
-            for (int r = 0; r < rings.Count; r++)
-            {
-                float ring_at_smallest = ring_min_size + (ring_separation_distance * (rings.Count - 1 - r)); //smallest size per each ring
-                float ring_diamater_increase = (ring_size * (ring_min_size + (ring_separation_distance * (rings.Count - 1 - r)))) * 0.75f;
+            waveSizeHelper(ring_size);
 
-                float ring_diameter = ring_at_smallest + ring_diamater_increase;
-
-                rings[r].GetComponent<RectTransform>().sizeDelta = new Vector2(ring_diameter, ring_diameter);
-                for (int c = 0; c < rings[r].transform.GetChild(0).childCount; c++)
-                {
-                    rings[r].transform.GetChild(0).GetChild(c).GetChild(0).localPosition = 
-                        new Vector3((ring_diamater_increase * -0.5f) - 0.039f + (r * 0.005f),
-                                    0.0f, 
-                                    0.0f);
-                }
-                rings[r].transform.GetChild(1).GetComponent<RectTransform>().sizeDelta = new Vector2(ring_diameter - 0.005f, ring_diameter - 0.005f);
-            }
             yield return null;
         }
     }
@@ -133,12 +139,10 @@ public class ScanWave : MonoBehaviour
 
         wave_information = wave_info;
 
+        //start at biggest
+        waveSizeHelper(1.0f);
+
         default_rotation_coroutine = StartCoroutine(spinRings(rotate_speeds));
-    }
-
-    public void updateWave()
-    {
-
     }
 
     public void contractWave(float time_interval)
@@ -157,10 +161,5 @@ public class ScanWave : MonoBehaviour
             StopCoroutine(size_change_coroutine);
         }
         size_change_coroutine = StartCoroutine(waveSizeChange(false, time_interval));
-    }
-
-    public void changeWaveSpeed()
-    {
-
     }
 }

@@ -11,8 +11,6 @@ using UnityEngine;
 
 public class WaveInfo
 {
-    private bool is_contracted = false;
-
     private Texture center;
     private Color center_color;
     private float center_speed;
@@ -37,11 +35,6 @@ public class WaveInfo
         ring_textures = textures;
         ring_speeds = speeds;
         ring_is_solid = is_solid;
-    }
-
-    public bool getContracted()
-    {
-        return is_contracted; 
     }
 
     public Texture getCenterTexture()
