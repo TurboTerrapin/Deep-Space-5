@@ -43,20 +43,20 @@ public class ScanWave : MonoBehaviour
             //change ring size
             for (int r = 0; r < rings.Count; r++)
             {
-                float ring_diameter = 
-                    ring_min_size //smallest possible size
-                    + (ring_separation_distance * (rings.Count - 1 - r)) //smallest size per each ring
-                    + (ring_size * (ring_min_size + (ring_separation_distance * (rings.Count - 1 - r)))) * 0.75f; //how much to add on to
+                float ring_at_smallest = ring_min_size + (ring_separation_distance * (rings.Count - 1 - r)); //smallest size per each ring
+                float ring_diamater_increase = (ring_size * (ring_min_size + (ring_separation_distance * (rings.Count - 1 - r)))) * 0.75f;
+
+                float ring_diameter = ring_at_smallest + ring_diamater_increase;
 
                 rings[r].GetComponent<RectTransform>().sizeDelta = new Vector2(ring_diameter, ring_diameter);
                 for (int c = 0; c < rings[r].transform.GetChild(0).childCount; c++)
                 {
                     rings[r].transform.GetChild(0).GetChild(c).GetChild(0).localPosition = 
-                        new Vector3(((ring_size * (ring_min_size + (ring_separation_distance * (rings.Count - 1 - r))) * 0.75f) * -0.5f) - 0.039f + (r * 0.005f),
+                        new Vector3((ring_diamater_increase * -0.5f) - 0.039f + (r * 0.005f),
                                     0.0f, 
                                     0.0f);
                 }
-                rings[r].transform.GetChild(1).GetComponent<RectTransform>().sizeDelta = new Vector2(ring_diameter - 0.004f, ring_diameter - 0.004f);
+                rings[r].transform.GetChild(1).GetComponent<RectTransform>().sizeDelta = new Vector2(ring_diameter - 0.005f, ring_diameter - 0.005f);
             }
             yield return null;
         }
