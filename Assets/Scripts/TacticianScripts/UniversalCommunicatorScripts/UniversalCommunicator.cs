@@ -12,9 +12,8 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine.UI;
-using Unity.VisualScripting;
 
-public class UniversalCommunicator : MonoBehaviour
+public class UniversalCommunicator : NetworkBehaviour
 {
     //CLASS CONSTANTS
     private static Color[] COLOR_OPTIONS = new Color[4] { new Color(0f, 0.84f, 1f), new Color(0.129f, 1f, 0.04f), new Color(0.69f, 0f, 0.69f), new Color(0.84f, 0.62f, 0f) };

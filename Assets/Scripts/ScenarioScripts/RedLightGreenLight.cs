@@ -79,6 +79,7 @@ public class RedLightGreenLight : NetworkBehaviour, IUniversalCommunicable
         {
             yield return null;
         }
+        yield return new WaitForSeconds(5.0f);
         enterRedLightStateRPC();
     }
 
