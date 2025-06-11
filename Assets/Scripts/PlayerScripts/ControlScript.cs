@@ -105,6 +105,11 @@ public class ControlScript : MonoBehaviour
         //find player, set player, free camera
         string player_prefab_name = SteamClient.Name + "_" + SteamClient.SteamId.ToString();
         player_prefab = GameObject.Find(player_prefab_name);
+        while (player_prefab == null)
+        {
+            player_prefab = GameObject.Find(player_prefab_name);
+            yield return null;
+        }
         player_prefab.transform.GetChild(0).GetComponent<CameraMove>().initialize();
 
         //wait for camera

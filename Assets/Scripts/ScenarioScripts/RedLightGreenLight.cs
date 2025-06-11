@@ -79,7 +79,6 @@ public class RedLightGreenLight : NetworkBehaviour, IUniversalCommunicable
         {
             yield return null;
         }
-        yield return new WaitForSeconds(5.0f);
         enterRedLightStateRPC();
     }
 
@@ -107,6 +106,7 @@ public class RedLightGreenLight : NetworkBehaviour, IUniversalCommunicable
 
     IEnumerator RedLightState()
     {
+        Debug.Log("RL BEGUN!");
         if (cameraShakeCoroutine == null)
         {
             cameraShakeCoroutine = StartCoroutine(CameraShakeState());
@@ -151,9 +151,12 @@ public class RedLightGreenLight : NetworkBehaviour, IUniversalCommunicable
         //only shakes when impulse is > 0, gets worse as impulse goes up
         while (true)
         {
-            float intensity = impulse.getCurrentImpulse() * 0.025f;
-            Vector3 Shake = Random.insideUnitSphere * intensity;
-            Camera.localPosition = OriginalCameraPosition + Shake;
+            if (Camera != null)
+            {
+                float intensity = impulse.getCurrentImpulse() * 0.025f;
+                Vector3 Shake = Random.insideUnitSphere * intensity;
+                Camera.localPosition = OriginalCameraPosition + Shake;
+            }
             yield return null;
         }
     }
