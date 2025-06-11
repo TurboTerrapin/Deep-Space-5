@@ -24,7 +24,7 @@ public class CargoJettisons : NetworkBehaviour, IControllable
 
     public List<GameObject> dials = null;
 
-    private Coroutine[] dial_turn_coroutines = { null, null, null, null};
+    private Coroutine dial_turn_coroutine = null;
     private Coroutine[] cargo_eject_coroutines = { null, null, null, null };
     private float[] dial_turn_percentages = { 0.0f, 0.0f, 0.0f, 0.0f };
     private Vector3[] initial_pos = new Vector3[4];
@@ -32,6 +32,7 @@ public class CargoJettisons : NetworkBehaviour, IControllable
 
     private List<KeyCode> keys_down = new List<KeyCode>();
     private List<string> ray_targets = new List<string> { "cargo_jettison_a", "cargo_jettison_b", "cargo_jettison_c", "cargo_jettison_d" };
+    private int ray_target_index = -1;
 
     private static HUDInfo hud_info = null;
     private void Start()
@@ -63,28 +64,53 @@ public class CargoJettisons : NetworkBehaviour, IControllable
                              Mathf.Lerp(-90.0f, -180.0f, dial_turn_percentages[index]));
     }
 
-    IEnumerator dialTurn(int index)
+    private bool checkNeutralState()
     {
-        while ((keys_down.Count > 0 || dial_turn_percentages[index] > 0.0f) && cargo_eject_coroutines[index] == null)
+        for (int i = 0; i < 4; i++)
+        {
+            if (dial_turn_percentages[i] > 0.0f && cargo_eject_coroutines[i] == null)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    IEnumerator dialTurn()
+    {
+        while (keys_down.Count > 0 || checkNeutralState() == false)
         {
             float dt = Mathf.Min(Time.deltaTime, 1.0f / 30.0f);
-            if (ControlScript.checkInputIndex(CONTROL_INDEXES[1], keys_down)){
-                dial_turn_percentages[index] = Mathf.Min(1.0f, dial_turn_percentages[index] + (dt / ARM_TIME));
-            }
-            else
+
+            if (ray_target_index >= 0)
             {
-                dial_turn_percentages[index] = Mathf.Max(0.0f, dial_turn_percentages[index] - (dt / ARM_TIME));
+                if (ControlScript.checkInputIndex(CONTROL_INDEXES[1], keys_down))
+                {
+                    dial_turn_percentages[ray_target_index] = Mathf.Min(1.0f, dial_turn_percentages[ray_target_index] + (dt / ARM_TIME));
+                }
+                else
+                {
+                    dial_turn_percentages[ray_target_index] = Mathf.Max(0.0f, dial_turn_percentages[ray_target_index] - (dt / ARM_TIME));
+                }
+                BUTTON_LISTS[ray_target_index][0].updateInteractable(dial_turn_percentages[ray_target_index] >= 1.0f);
             }
 
-            BUTTON_LISTS[index][0].updateInteractable(dial_turn_percentages[index] >= 1.0f);
+            for (int i = 0; i < 4; i++)
+            {
+                if (i != ray_target_index)
+                {
+                    dial_turn_percentages[i] = Mathf.Max(0.0f, dial_turn_percentages[i] - (dt / ARM_TIME));
+                }
+            }
 
-            transmitDialArmRPC(index, dial_turn_percentages[index]);
+            transmitDialArmRPC(dial_turn_percentages[0], dial_turn_percentages[1], dial_turn_percentages[2], dial_turn_percentages[3]);
 
             keys_down.Clear();
+            ray_target_index = -1;
             yield return null;
         }
 
-        dial_turn_coroutines[index] = null;
+        dial_turn_coroutine = null;
     }
 
     IEnumerator ejectCargo(int index)
@@ -141,44 +167,49 @@ public class CargoJettisons : NetworkBehaviour, IControllable
     public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)
     {
         keys_down = inputs;
+        ray_target_index = ray_targets.IndexOf(current_target.name);
 
-        int index = ray_targets.IndexOf(current_target.name);
-        if (dial_turn_percentages[index] >= 1.0f && cargo_eject_coroutines[index] == null)
+        if (dial_turn_percentages[ray_target_index] >= 1.0f && cargo_eject_coroutines[ray_target_index] == null)
         {
             if (ControlScript.checkInputIndex(CONTROL_INDEXES[0], inputs))
             {
-                BUTTON_LISTS[index][0].toggle(0.2f);
-                BUTTON_LISTS[index][1].updateInteractable(false);
-                transmitEjectRPC(index);
+                BUTTON_LISTS[ray_target_index][0].toggle(0.2f);
+                BUTTON_LISTS[ray_target_index][1].updateInteractable(false);
+                transmitEjectRPC(ray_target_index);
             }
         }
-        if (dial_turn_percentages[index] == 0.0f && cargo_eject_coroutines[index] == null)
+        if (dial_turn_percentages[ray_target_index] == 0.0f && cargo_eject_coroutines[ray_target_index] == null)
         {
             if (ControlScript.checkInputIndex(CONTROL_INDEXES[1], inputs))
             {
-                if (dial_turn_coroutines[index] == null)
+                if (dial_turn_coroutine == null)
                 {
-                    dial_turn_coroutines[index] = StartCoroutine(dialTurn(index));
+                    dial_turn_coroutine = StartCoroutine(dialTurn());
                 }
             }
         }
     }
 
     [Rpc(SendTo.Everyone)]
-    private void transmitDialArmRPC(int index, float dp)
+    private void transmitDialArmRPC(float dp_a, float dp_b, float dp_c, float dp_d)
     {
-        dial_turn_percentages[index] = dp;
-        displayDialTurn(index);
+        dial_turn_percentages[0] = dp_a;
+        dial_turn_percentages[1] = dp_b;
+        dial_turn_percentages[2] = dp_c;
+        dial_turn_percentages[3] = dp_d;
+
+        for (int i = 0; i < 4; i++)
+        {
+            if (cargo_eject_coroutines[i] == null)
+            {
+                displayDialTurn(i);
+            }
+        }
     }
 
     [Rpc(SendTo.Everyone)]
     private void transmitEjectRPC(int index)
     {
-        if (dial_turn_coroutines[index] != null)
-        {
-            StopCoroutine(dial_turn_coroutines[index]);
-            dial_turn_coroutines[index] = null;
-        }
         if (cargo_eject_coroutines[index] != null)
         {
             StopCoroutine(cargo_eject_coroutines[index]);

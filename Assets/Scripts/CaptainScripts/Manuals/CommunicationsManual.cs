@@ -21,10 +21,22 @@ public class CommunicationsManual : Manual
 
     IEnumerator powerOn()
     {
-        welcome_screen.transform.GetChild(0).GetComponent<TMP_Text>().SetText("");
+        welcome_screen.transform.GetChild(0).GetComponent<UnityEngine.UI.Image>().fillAmount = 0.0f;
+        welcome_screen.transform.GetChild(1).GetComponent<TMP_Text>().SetText("LOADING");
         welcome_screen.SetActive(true);
 
-        yield return new WaitForSeconds(INTRO_TIME * 0.5f);
+        float animation_time = INTRO_TIME * 0.8f;
+        while (animation_time > 0.0f)
+        {
+            float dt = Mathf.Min(Time.deltaTime, 1.0f / 30.0f);
+            animation_time -= dt;
+
+            welcome_screen.transform.GetChild(0).GetComponent<UnityEngine.UI.Image>().fillAmount = 1.0f - (animation_time / (INTRO_TIME * 0.8f));
+            yield return null;
+        }
+        welcome_screen.transform.GetChild(1).GetComponent<TMP_Text>().SetText("DONE");
+
+        yield return new WaitForSeconds(INTRO_TIME * 0.2f);
 
         welcome_screen.SetActive(false);
         home_screen.SetActive(true);

@@ -109,7 +109,10 @@ public class Manual : MonoBehaviour
     {
         if (curr_screen.GetComponent<PanelInfo>().back_panel != null)
         {
-            curr_button.GetComponent<IManualButton>().deselect();
+            if (curr_button != null)
+            {
+                curr_button.GetComponent<IManualButton>().deselect();
+            }
             curr_screen.SetActive(false);
             curr_screen = curr_screen.GetComponent<PanelInfo>().back_panel;
             curr_screen.SetActive(true);

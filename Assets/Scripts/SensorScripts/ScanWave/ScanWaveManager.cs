@@ -17,6 +17,7 @@ public class ScanWaveManager : MonoBehaviour
 
     public void initializeWave(int index, WaveInfo wi)
     {
+        waves[index].SetActive(true);
         waves[index].GetComponent<ScanWave>().resetWave();
         wave_information[index] = wi;
         waves[index].GetComponent<ScanWave>().initializeWave(wave_information[index]);

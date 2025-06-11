@@ -30,7 +30,7 @@ public class WeaponsSystem : MonoBehaviour
     //private BoxCollider shortRangePhaserRightCollider;
 
     [Header("LongRange Phaser Settings")]
-    [SerializeField] private float minLRBeamWidth = 0.6f;
+    //[SerializeField] private float minLRBeamWidth = 0.6f;
     [SerializeField] private float maxLRBeamWidth = 3.5f;
     [SerializeField] private float LRBeamEndDiameterRatio = 0.2f;
 
@@ -40,7 +40,7 @@ public class WeaponsSystem : MonoBehaviour
     [SerializeField, Range(0.10f, 0.5f)] private float minLRPulsePercentage = 0.1f;
     [SerializeField, Range(0.10f, 0.5f)] private float maxLRPulsePercentage = 0.5f;
     [SerializeField] private float maxLRIntensity = 8.5f;
-    [SerializeField] private float LRintensityPulseMultiplier = 2f;
+    //[SerializeField] private float LRintensityPulseMultiplier = 2f;
 
     [Header("ShortRange Phaser Settings")]
     [SerializeField] private float minSRBeamDiameter = 0.1f; // Minimum Short Range Beam Diameter
