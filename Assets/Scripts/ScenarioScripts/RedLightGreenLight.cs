@@ -106,7 +106,6 @@ public class RedLightGreenLight : NetworkBehaviour, IUniversalCommunicable
 
     IEnumerator RedLightState()
     {
-        Debug.Log("RL BEGUN!");
         if (cameraShakeCoroutine == null)
         {
             cameraShakeCoroutine = StartCoroutine(CameraShakeState());
