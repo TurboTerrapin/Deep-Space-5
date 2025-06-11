@@ -12,23 +12,26 @@
 
 */
 
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using UnityEngine;
 
-public class RedLightGreenLight : MonoBehaviour, IUniversalCommunicable
+public class RedLightGreenLight : NetworkBehaviour, IUniversalCommunicable
 {
+    //CLASS CONSTANTS
+    private static int MINIMUM_PLAYERS = 2;
+
     private Transform Camera;
     Vector3 OriginalCameraPosition;
-    bool FriendlyTransmissionRecieved;
-    bool isCameraShaking = false;
     bool ScenarioEndpointReached = false;
     private ImpulseThrottle impulse;
     private UniversalCommunicator communicator;
     private ScanWaveManager scanWaveManager;
     private ShipHealth shipHealth;
-    Coroutine currentShake = null;
+    private Coroutine redLightCoroutine = null;
+    private Coroutine greenLightCoroutine = null;
+    private Coroutine cameraShakeCoroutine = null;
 
     //--SCAN WAVE INFORMATION--//
     //CENTER OF WAVE
@@ -55,113 +58,118 @@ public class RedLightGreenLight : MonoBehaviour, IUniversalCommunicable
         GameObject spaceship = GameObject.FindWithTag("Spaceship");
         shipHealth = spaceship.GetComponent<ShipHealth>();
 
-        WaveInfo rlgl_wave = new WaveInfo();
-        rlgl_wave.setCenter(center_texture, center_color, center_speed);
-        rlgl_wave.setRings(ring_textures.Count, ring_colors, ring_textures, ring_is_solid, ring_speeds);
+        WaveInfo RLGLwave = new WaveInfo();
+        RLGLwave.setCenter(center_texture, center_color, center_speed);
+        RLGLwave.setRings(ring_textures.Count, ring_colors, ring_textures, ring_is_solid, ring_speeds);
 
-        scanWaveManager.initializeWave(0, rlgl_wave);
+        scanWaveManager.initializeWave(0, RLGLwave);
 
         Camera = GameObject.Find("Main Camera").transform;
         OriginalCameraPosition = Camera.localPosition;
 
         if (NetworkManager.Singleton.IsHost)
         {
-            StartCoroutine(RLGL());
+            StartCoroutine(waitForOthers());
         }
     }
 
-    IEnumerator RLGL()
+    IEnumerator waitForOthers()
     {
-        // 60 second delay
-        //yield return new WaitForSeconds(60f);
-
-        while (ScenarioEndpointReached == false && shipHealth.getHullIntegrity() > 0.0f)
+        while (NetworkManager.Singleton.ConnectedClientsIds.Count < MINIMUM_PLAYERS)
         {
-            // Red light state
-            FriendlyTransmissionRecieved = false;
-            yield return StartCoroutine(RedLightState());
+            yield return null;
+        }
+        enterRedLightStateRPC();
+    }
 
-            if (ScenarioEndpointReached == true || shipHealth.getHullIntegrity() <= 0.0f)
-            {
-                break;
-            }
+    IEnumerator GreenLightState()
+    {
+        //contract energy wave
+        scanWaveManager.resizeWave(0, true, 0.5f);
+        if (NetworkManager.Singleton.IsHost)
+        {
+            yield return new WaitForSeconds(Random.Range(15.0f, 30.0f));
+            endGreenLightStateRPC(Random.Range(3.0f, 6.0f));
+        }
+    }
 
-            // Green light state
-            float GreenLightDelay = Random.Range(15f, 30f);
-            scanWaveManager.resizeWave(0, true, 0.5f);
-            yield return new WaitForSeconds(GreenLightDelay);
-            scanWaveManager.resizeWave(0, false, 2f);
+    IEnumerator EndGreenLight(float end_time)
+    {
+        //expand energy wave
+        scanWaveManager.resizeWave(0, false, end_time);
+        yield return new WaitForSeconds(end_time);
+        if (NetworkManager.Singleton.IsHost && ScenarioEndpointReached == false)
+        {
+            enterRedLightStateRPC();
         }
     }
 
     IEnumerator RedLightState()
     {
-        FriendlyTransmissionRecieved = false;
-        Debug.Log("RED LIGHT");
-
-        while (FriendlyTransmissionRecieved == false && shipHealth.getHullIntegrity() > 0.0f)
+        if (cameraShakeCoroutine == null)
         {
-            // if the ship is moving
-            if (impulse.getCurrentImpulse() > 0)
-            {
-                if (currentShake == null)
-                {
-                    isCameraShaking = true;
-                    // Camera Shake(intensity)
-                    currentShake = StartCoroutine(CameraShake(0.025f));
-                }
-
-                // Damage every second
-                yield return new WaitForSeconds(1f);
-                shipHealth.damageAllSections(2.5f);
-                Debug.Log($"Ship Health: {shipHealth.getHullIntegrity()}");
-                Debug.Log($"Impulse: {impulse.getCurrentImpulse()}");
-            }
-            else
-            {
-                if (currentShake != null)
-                {
-                    isCameraShaking = false;
-                    StopCoroutine(currentShake);
-                    currentShake = null;
-                    Camera.localPosition = OriginalCameraPosition;
-                }
-
-                yield return null;
-            }
+            cameraShakeCoroutine = StartCoroutine(CameraShakeState());
         }
 
-        if (currentShake != null)
+        if (NetworkManager.Singleton.IsHost)
         {
-            isCameraShaking = false;
-            StopCoroutine(currentShake);
-            currentShake = null;
+            while (shipHealth.getHullIntegrity() > 0.0f && ScenarioEndpointReached == false)
+            {
+                // if the ship is moving
+                if (impulse.getCurrentImpulse() > 0.0f)
+                {
+                    float time_before_damage_is_inflicted = 1.0f;
+                    while (time_before_damage_is_inflicted > 0.0f && impulse.getCurrentImpulse() > 0.0f)
+                    {
+                        time_before_damage_is_inflicted -= Time.deltaTime;
+                        yield return null;
+                    }
+                    if (impulse.getCurrentImpulse() > 0.0f)
+                    {
+                        shipHealth.damageAllSections(10.0f * impulse.getCurrentImpulse());
+                    }
+                }
+                else
+                {
+                    yield return null;
+                }
+            }
+            if (ScenarioEndpointReached == true)
+            {
+                Debug.Log("Scenario beaten!");
+            }
+            else if (shipHealth.getHullIntegrity() <= 0.0f)
+            {
+                Debug.Log("Nooooo the ship died :(");
+            }
         }
-
-        Camera.localPosition = OriginalCameraPosition;
-        Debug.Log("GREEN LIGHT");
     }
 
-    IEnumerator CameraShake(float intensity)
+    IEnumerator CameraShakeState()
     {
-        Debug.Log("Shaking: " + Camera.localPosition + " + " + (Random.insideUnitSphere * intensity));
-
-        while (isCameraShaking == true)
+        //only shakes when impulse is > 0, gets worse as impulse goes up
+        while (true)
         {
+            float intensity = impulse.getCurrentImpulse() * 0.025f;
             Vector3 Shake = Random.insideUnitSphere * intensity;
             Camera.localPosition = OriginalCameraPosition + Shake;
             yield return null;
         }
-
-        Camera.localPosition = OriginalCameraPosition;
     }
 
     public void handleTransmission(List<int> code_indexes, List<int> code_colors, List<int> code_is_numeric)
     {
-        if (NetworkManager.Singleton.IsHost)
+        if (NetworkManager.Singleton.IsHost && greenLightCoroutine == null)
         {
             bool successful_transmission = isFriendlyMessage(code_indexes, code_colors, code_is_numeric);
-            Debug.Log(successful_transmission);
+            if (successful_transmission)
+            {
+                enterGreenLightStateRPC();
+            }
+            else
+            {
+                //possibility to damage the ship if wrong message is sent, but does nothing for now
+            }
         }
     }
     private bool isFriendlyMessage(List<int> ci, List<int> cc, List<int> cin)
@@ -181,5 +189,45 @@ public class RedLightGreenLight : MonoBehaviour, IUniversalCommunicable
             }
         }
         return true;
+    }
+
+    private void resetCoroutines()
+    {
+        if (redLightCoroutine != null)
+        {
+            StopCoroutine(redLightCoroutine);
+        }
+        if (greenLightCoroutine != null)
+        {
+            StopCoroutine(greenLightCoroutine);
+        }
+        if (cameraShakeCoroutine != null)
+        {
+            StopCoroutine(cameraShakeCoroutine);
+        }
+        redLightCoroutine = null;
+        greenLightCoroutine = null;
+        cameraShakeCoroutine = null;
+    }
+
+    [Rpc(SendTo.Everyone)]
+    private void enterRedLightStateRPC()
+    {
+        resetCoroutines();
+        redLightCoroutine = StartCoroutine(RedLightState());
+    }
+
+    [Rpc(SendTo.Everyone)]
+    private void enterGreenLightStateRPC()
+    {
+        resetCoroutines();
+        greenLightCoroutine = StartCoroutine(GreenLightState());
+    }
+
+    [Rpc(SendTo.Everyone)]
+    private void endGreenLightStateRPC(float contraction_time)
+    {
+        resetCoroutines();
+        greenLightCoroutine = StartCoroutine(EndGreenLight(contraction_time));
     }
 }

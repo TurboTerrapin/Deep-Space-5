@@ -170,7 +170,7 @@ public class SignalOptions : NetworkBehaviour, IControllable
         GameObject scenario_handler = GameObject.FindGameObjectWithTag("ScenarioHandler");
         if (scenario_handler != null)
         {
-            Component scenario_script = scenario_handler.GetComponentAtIndex(1);
+            Component scenario_script = scenario_handler.GetComponentAtIndex(2);
             IUniversalCommunicable transmission_receiver = scenario_script as IUniversalCommunicable;
             if (transmission_receiver != null)
             {
