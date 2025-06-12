@@ -13,6 +13,8 @@ TagManager:
   - SensorHandler
   - WorldRoot
   - ScenarioHandler
+  - ScenarioEndPoint
+  - PlayerHolder
   layers:
   - Default
   - TransparentFX

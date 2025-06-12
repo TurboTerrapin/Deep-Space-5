@@ -14,15 +14,19 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using Steamworks;
 
 public class RedLightGreenLight : NetworkBehaviour, IUniversalCommunicable
 {
     //CLASS CONSTANTS
-    private static int MINIMUM_PLAYERS = 2;
+    private static int MINIMUM_PLAYERS = 4;
+    private static Color[] COLOR_OPTIONS = new Color[4] { new Color(0f, 0.84f, 1f), new Color(0.129f, 1f, 0.04f), new Color(0.69f, 0f, 0.69f), new Color(0.84f, 0.62f, 0f) };
+    private static float ENDPOINT_RANGE = 25.0f;
 
-    private Transform Camera;
+    private GameObject PlayerPrefab;
     Vector3 OriginalCameraPosition;
     bool ScenarioEndpointReached = false;
     private ImpulseThrottle impulse;
@@ -33,20 +37,76 @@ public class RedLightGreenLight : NetworkBehaviour, IUniversalCommunicable
     private Coroutine greenLightCoroutine = null;
     private Coroutine cameraShakeCoroutine = null;
 
+    private GameObject spaceship;
+    private GameObject endpoint;
+
+    private int players_ready = 0;
+
     //--SCAN WAVE INFORMATION--//
     //CENTER OF WAVE
     public Texture center_texture;
-    public Color center_color;
     public float center_speed = 50.0f;
 
     //WAVE RINGS
-    public List<Texture> ring_textures = null;
-    public List<Color> ring_colors = null;
-    public List<bool> ring_is_solid = null;
+    public List<Texture> texture_options = null;
     public List<float> ring_speeds = null;
+
+    private int[] curr_colors = new int[5] { 0, 0, 0, 0, 0 }; //0 is blue, 1 is green, 2 is pink, 3 is orange
+    private int num_pink = 0;
+    private int num_green = 0;
+    private int num_dotted = 0;
     //-------------------------//
 
-    void Start()
+    public float getDistanceToEndpoint()
+    {
+        float dist = 9999.9f;
+        if (endpoint != null && spaceship != null)
+        {
+            dist = Vector3.Distance(endpoint.transform.position, spaceship.transform.position);
+        }
+        return dist;
+    }
+
+    private void randomizeColors()
+    {
+
+        for (int i = 0; i < 4; i++)
+        {
+            int new_color = Random.Range(0, 4);
+            curr_colors[i] = new_color;
+        }
+        //lastly define the center's color, which has no bearing on anything
+        curr_colors[4] = Random.Range(0, 4);
+    }
+
+    private void setColorInfo()
+    {
+        num_pink = 0;
+        num_green = 0;
+        for (int i = 0; i < 4; i++)
+        {
+            if (curr_colors[i] == 1)
+            {
+                num_green++;
+            }
+            else if (curr_colors[i] == 2)
+            {
+                num_pink++;
+            }
+        }
+    }
+
+    private List<Color> getColorsAsColor()
+    {
+        List<Color> to_return = new List<Color>();
+        for (int i = 0; i < 4; i++)
+        {
+            to_return.Add(COLOR_OPTIONS[curr_colors[i]]);
+        }
+        return to_return;
+    }
+
+    public void initializeScenario()
     {
         GameObject controlHandler = GameObject.FindWithTag("ControlHandler");
         impulse = controlHandler.GetComponent<ImpulseThrottle>();
@@ -55,17 +115,16 @@ public class RedLightGreenLight : NetworkBehaviour, IUniversalCommunicable
         GameObject sensorHandler = GameObject.FindWithTag("SensorHandler");
         scanWaveManager = sensorHandler.GetComponent<ScanWaveManager>();
 
-        GameObject spaceship = GameObject.FindWithTag("Spaceship");
+        spaceship = GameObject.FindWithTag("Spaceship");
         shipHealth = spaceship.GetComponent<ShipHealth>();
 
-        WaveInfo RLGLwave = new WaveInfo();
-        RLGLwave.setCenter(center_texture, center_color, center_speed);
-        RLGLwave.setRings(ring_textures.Count, ring_colors, ring_textures, ring_is_solid, ring_speeds);
+        endpoint = GameObject.FindWithTag("ScenarioEndPoint");
 
-        scanWaveManager.initializeWave(0, RLGLwave);
+        string playerPrefabName = SteamClient.Name + "_" + SteamClient.SteamId.ToString();
+        PlayerPrefab = GameObject.Find(playerPrefabName);
+        OriginalCameraPosition = PlayerPrefab.transform.GetChild(0).transform.localPosition;
 
-        Camera = GameObject.Find("Main Camera").transform;
-        OriginalCameraPosition = Camera.localPosition;
+        readyToPlayRPC();
 
         if (NetworkManager.Singleton.IsHost)
         {
@@ -73,12 +132,42 @@ public class RedLightGreenLight : NetworkBehaviour, IUniversalCommunicable
         }
     }
 
+    //only run by the host
     IEnumerator waitForOthers()
     {
-        while (NetworkManager.Singleton.ConnectedClientsIds.Count < MINIMUM_PLAYERS)
+        while (players_ready < MINIMUM_PLAYERS)
         {
             yield return null;
         }
+
+        //initialize wave, randomize initial colors and textures
+        randomizeColors();
+
+        int[] ring_textures = new int[4];
+        for (int i = 0; i < 4; i++)
+        {
+            int random_texture = Random.Range(1, texture_options.Count);
+            //50-50 chance it's dotted
+            if (Random.Range(0, 2) == 0)
+            {
+                random_texture = 0;
+            }
+            ring_textures[i] = random_texture;
+        }
+
+        string cc = "";
+        for (int i = 0; i < 5; i++)
+        {
+            cc += curr_colors[i].ToString();
+        }
+
+        string rt = "";
+        for (int i = 0; i < 4; i++)
+        {
+            rt += ring_textures[i].ToString();
+        }
+
+        waveInitializationRPC(cc, rt);
         enterRedLightStateRPC();
     }
 
@@ -113,7 +202,7 @@ public class RedLightGreenLight : NetworkBehaviour, IUniversalCommunicable
 
         if (NetworkManager.Singleton.IsHost)
         {
-            while (shipHealth.getHullIntegrity() > 0.0f && ScenarioEndpointReached == false)
+            while (shipHealth.getHullIntegrity() > 0.0f && getDistanceToEndpoint() > ENDPOINT_RANGE)
             {
                 // if the ship is moving
                 if (impulse.getCurrentImpulse() > 0.0f)
@@ -134,13 +223,13 @@ public class RedLightGreenLight : NetworkBehaviour, IUniversalCommunicable
                     yield return null;
                 }
             }
-            if (ScenarioEndpointReached == true)
+            if (shipHealth.getHullIntegrity() <= 0.0f)
             {
-                Debug.Log("Scenario beaten!");
+                endScenarioRPC(false);
             }
-            else if (shipHealth.getHullIntegrity() <= 0.0f)
+            else
             {
-                Debug.Log("Nooooo the ship died :(");
+                endScenarioRPC(true);
             }
         }
     }
@@ -150,11 +239,11 @@ public class RedLightGreenLight : NetworkBehaviour, IUniversalCommunicable
         //only shakes when impulse is > 0, gets worse as impulse goes up
         while (true)
         {
-            if (Camera != null)
+            if (PlayerPrefab != null)
             {
                 float intensity = impulse.getCurrentImpulse() * 0.025f;
                 Vector3 Shake = Random.insideUnitSphere * intensity;
-                Camera.localPosition = OriginalCameraPosition + Shake;
+                PlayerPrefab.transform.GetChild(0).transform.localPosition = OriginalCameraPosition + Shake;
             }
             yield return null;
         }
@@ -167,7 +256,13 @@ public class RedLightGreenLight : NetworkBehaviour, IUniversalCommunicable
             bool successful_transmission = isFriendlyMessage(code_indexes, code_colors, code_is_numeric);
             if (successful_transmission)
             {
-                enterGreenLightStateRPC();
+                randomizeColors();
+                string cc = "";
+                for (int i = 0; i < 5; i++)
+                {
+                    cc += curr_colors[i].ToString();
+                }
+                enterGreenLightStateRPC(cc);
             }
             else
             {
@@ -182,11 +277,43 @@ public class RedLightGreenLight : NetworkBehaviour, IUniversalCommunicable
             return false;
         }
 
-        int[] friendlyMessage = { 1, 0, 0, 1, 1, 0, 0, 1 };
+        int[] friendlyMessageIndexes = { 5, 7, 11, 5, 3, 8, 10, 4 };
+        
+        //if 2+ green, all triangles become circles
+        if (num_green >= 2)
+        {
+            friendlyMessageIndexes[2] = 1;
+            friendlyMessageIndexes[6] = 1;
+        }
+
+        //if 1+ pink, flip the order
+        if (num_pink >= 1)
+        {
+            int[] reversedIndexes = new int[8];
+            for (int i = 0; i < 8; i++)
+            {
+                reversedIndexes[i] = friendlyMessageIndexes[7 - i];
+            }
+            friendlyMessageIndexes = reversedIndexes;
+        }
 
         for (int i = 0; i < 8; i++)
         {
-            if (ci[i] != friendlyMessage[i])
+            //if 2+ dotted rings, make sure is orange
+            if (num_dotted >= 2)
+            {
+                if (cc[i] != 3)
+                {
+                    return false;
+                }
+            }
+            //make sure is symbol
+            if (cin[i] != 0)
+            {
+                return false;
+            }
+            //make sure is right message
+            if (ci[i] != friendlyMessageIndexes[i])
             {
                 return false;
             }
@@ -214,6 +341,38 @@ public class RedLightGreenLight : NetworkBehaviour, IUniversalCommunicable
     }
 
     [Rpc(SendTo.Everyone)]
+    private void waveInitializationRPC(string s_ring_colors, string s_ring_textures)
+    {
+        int[] temp_curr_colors = s_ring_colors.ToIntArray();
+        int[] temp_textures = s_ring_textures.ToIntArray();
+
+        for (int i = 0; i < 5; i++)
+        {
+            curr_colors[i] = temp_curr_colors[i] - 48;
+        }
+        setColorInfo();
+
+        List<bool> ring_is_solid = new List<bool>();
+        List<Texture> ring_textures = new List<Texture>();
+        for (int i = 0; i < 4; i++)
+        {
+            temp_textures[i] = temp_textures[i] - 48;
+            ring_is_solid.Add(temp_textures[i] != 0);
+            if (temp_textures[i] == 0)
+            {
+                num_dotted++;
+            }
+            ring_textures.Add(texture_options[temp_textures[i]]);
+        }
+
+        WaveInfo RLGLwave = new WaveInfo();
+        RLGLwave.setCenter(center_texture, COLOR_OPTIONS[curr_colors[4]], center_speed);
+        RLGLwave.setRings(4, getColorsAsColor(), ring_textures, ring_is_solid, ring_speeds);
+
+        scanWaveManager.initializeWave(0, RLGLwave);
+    }
+
+    [Rpc(SendTo.Everyone)]
     private void enterRedLightStateRPC()
     {
         resetCoroutines();
@@ -221,8 +380,18 @@ public class RedLightGreenLight : NetworkBehaviour, IUniversalCommunicable
     }
 
     [Rpc(SendTo.Everyone)]
-    private void enterGreenLightStateRPC()
+    private void enterGreenLightStateRPC(string s_new_colors)
     {
+        int[] temp_curr_colors = s_new_colors.ToIntArray();
+
+        for (int i = 0; i < 5; i++)
+        {
+            curr_colors[i] = temp_curr_colors[i] - 48;
+        }
+        setColorInfo();
+
+        scanWaveManager.updateColors(0, getColorsAsColor(), 1.0f);
+
         resetCoroutines();
         greenLightCoroutine = StartCoroutine(GreenLightState());
     }
@@ -232,5 +401,32 @@ public class RedLightGreenLight : NetworkBehaviour, IUniversalCommunicable
     {
         resetCoroutines();
         greenLightCoroutine = StartCoroutine(EndGreenLight(contraction_time));
+    }
+
+    [Rpc(SendTo.Everyone)]
+    private void endScenarioRPC(bool success)
+    {
+        resetCoroutines();
+        GameObject plr_canvas = GameObject.Find("Canvas");
+        if (plr_canvas != null)
+        {
+            if (success == true)
+            {
+                plr_canvas.GetComponent<EndScenario>().displayEndScenario("SCENARIO COMPLETE", new Color(0.0f, 1.0f, 0.0f, 0.0f));
+            }
+            else
+            {
+                plr_canvas.GetComponent<EndScenario>().displayEndScenario("SCENARIO FAILED", new Color(1.0f, 0.0f, 0.0f, 0.0f));
+            }
+        }
+    }
+
+    [Rpc(SendTo.Everyone)]
+    private void readyToPlayRPC()
+    {
+        if (NetworkManager.Singleton.IsHost)
+        {
+            players_ready++;
+        }
     }
 }

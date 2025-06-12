@@ -28,6 +28,11 @@ public class ScanWaveManager : MonoBehaviour
         //waves[index].GetComponent<ScanWave>().updateWave();
     }
 
+    public void updateColors(int index, List<Color> new_colors, float anim_time)
+    {
+        waves[index].GetComponent<ScanWave>().changeColors(new_colors, anim_time);
+    }
+
     public void resizeWave(int index, bool shrink, float time_interval)
     {
         if (shrink == true)

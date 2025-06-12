@@ -124,9 +124,12 @@ public class ControlScript : MonoBehaviour
         control_script_holder = GameObject.FindWithTag("ControlHandler");
         seat_script_holder = GameObject.FindWithTag("SeatHandler");
 
-        //free player movement, start checking to sit down
+        //free player movement, start checking to sit down, begin the scenario
         player_prefab.GetComponent<PlayerMove>().initialize();
         seat_check_coroutine = StartCoroutine(seatCheck());
+
+        GameObject scenario_handler = GameObject.FindWithTag("ScenarioHandler");
+        scenario_handler.GetComponent<RedLightGreenLight>().initializeScenario();
     }
 
     //used to clear buttons and minimized list entries

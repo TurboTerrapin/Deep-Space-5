@@ -37,6 +37,11 @@ public class WaveInfo
         ring_is_solid = is_solid;
     }
 
+    public void setRingColors(List<Color> colors)
+    {
+        ring_colors = colors;
+    }
+
     public Texture getCenterTexture()
     {
         return center;

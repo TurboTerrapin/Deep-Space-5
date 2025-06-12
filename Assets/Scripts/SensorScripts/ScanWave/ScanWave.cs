@@ -20,6 +20,7 @@ public class ScanWave : MonoBehaviour
     public List<GameObject> rings = null; //a-d
     private Coroutine default_rotation_coroutine = null;
     private Coroutine size_change_coroutine = null;
+    private Coroutine color_change_coroutine = null;
 
     private float ring_min_size = 0.05f;
     private float ring_separation_distance = 0.01f;
@@ -44,6 +45,48 @@ public class ScanWave : MonoBehaviour
             }
             rings[r].transform.GetChild(1).GetComponent<RectTransform>().sizeDelta = new Vector2(ring_diameter - 0.005f, ring_diameter - 0.005f);
         }
+    }
+
+    IEnumerator waveColorChange(List<Color> end_colors, float anim_time)
+    {
+        Color[] starting_colors = new Color[wave_information.getNumberOfRings()];
+        for (int i = 0; i < starting_colors.Length; i++)
+        {
+            starting_colors[i] = wave_information.getRingColors()[i];
+        }
+
+        List<bool> is_solid = wave_information.getRingSolids();
+
+        float time_remaining = anim_time;
+        while (time_remaining > 0.0f)
+        {
+            time_remaining -= Time.deltaTime;
+
+            for (int r = 0; r < starting_colors.Length; r++)
+            {
+                Color temp_color =
+                    new Color(Mathf.Lerp(starting_colors[r].r, end_colors[r].r, 1.0f - (time_remaining / anim_time)),
+                              Mathf.Lerp(starting_colors[r].g, end_colors[r].g, 1.0f - (time_remaining / anim_time)),
+                              Mathf.Lerp(starting_colors[r].b, end_colors[r].b, 1.0f - (time_remaining / anim_time)),
+                              1.0f);
+
+                if (is_solid[r] == false)
+                {
+                    for (int x = 1; x < rings[r].transform.GetChild(0).childCount; x++)
+                    {
+                        rings[r].transform.GetChild(0).GetChild(x).GetChild(0).GetComponent<UnityEngine.UI.RawImage>().color = temp_color;
+                    }
+                }
+                else
+                {
+                    rings[r].GetComponent<UnityEngine.UI.RawImage>().color = temp_color;
+                }
+            }
+
+            yield return null;
+        }
+
+        wave_information.setRingColors(end_colors);
     }
 
     IEnumerator waveSizeChange(bool contract, float time_interval)
@@ -85,7 +128,7 @@ public class ScanWave : MonoBehaviour
         //destroy all individual items
         for (int r = 0; r < rings.Count; r++)
         {
-            for (int x = 1; x < rings[r].transform.GetChild(0).childCount - 1; x++)
+            for (int x = 1; x < rings[r].transform.GetChild(0).childCount; x++)
             {
                 Destroy(rings[r].transform.GetChild(1).gameObject);
             }
@@ -143,6 +186,16 @@ public class ScanWave : MonoBehaviour
         waveSizeHelper(1.0f);
 
         default_rotation_coroutine = StartCoroutine(spinRings(rotate_speeds));
+    }
+
+    public void changeColors(List<Color> new_colors, float anim_time)
+    {
+        if (color_change_coroutine != null)
+        {
+            StopCoroutine(color_change_coroutine);
+        }
+
+        color_change_coroutine = StartCoroutine(waveColorChange(new_colors, anim_time));
     }
 
     public void contractWave(float time_interval)
