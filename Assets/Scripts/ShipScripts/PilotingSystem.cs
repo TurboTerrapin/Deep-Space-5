@@ -16,8 +16,8 @@ public class PilotingSystem : MonoBehaviour
      private float maxRotationSpeed = 25f;
 
     [Header("Impulse Settings")]
-    private float impulseAccelerationRate = 0.4f;
-    private float impulseDecelerationRate = 1.5f;
+    private float impulseAccelerationRate = 0.8f;
+    private float impulseDecelerationRate = 1.75f;
 
     [Header("Thruster Settings")]
     private float baseThrusterAccelerationRate = 0.5f;
