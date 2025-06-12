@@ -13,7 +13,7 @@ using System.Collections.Generic;
 public class ManualSelector : NetworkBehaviour, IControllable
 {
     //CLASS CONSTANTS
-    private static float PUSH_TIME = 0.2f;
+    private static float PUSH_TIME = 0.15f;
     private static float COOLDOWN_TIME = 0.0f;
 
     private string[] CONTROL_NAMES = new string[] { "SHIP MANUAL", "COMMUNICATIONS MANUAL" };
