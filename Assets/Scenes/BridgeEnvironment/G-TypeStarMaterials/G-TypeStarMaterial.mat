@@ -38,14 +38,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _G_TypeStarCellDensity: 10
-    - _G_TypeStarCellSpeed: 3
-    - _G_TypeStarSolarFlareStrength: 3.5
+    - _G_TypeStarCellDensity: 25
+    - _G_TypeStarCellSpeed: 2
+    - _G_TypeStarSolarFlareStrength: 2
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:
-    - _G_TypeStarCellColor: {r: 489.45898, g: 214.15775, b: 0, a: 1}
-    - _G_TypeStarColor: {r: 55.065437, g: 12.20176, b: 0, a: 1}
+    - _G_TypeStarCellColor: {r: 1024, g: 342.33594, b: 0, a: 1}
+    - _G_TypeStarColor: {r: 0.8491189, g: 0.244084, b: 0, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &3156696935875370674
