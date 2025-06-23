@@ -38,6 +38,9 @@ public class PlayerMove : NetworkBehaviour
     {
         sm = GameObject.FindGameObjectWithTag("SeatHandler").GetComponent<SeatManager>();
 
+        transform.GetComponent<CapsuleCollider>().excludeLayers = LayerMask.GetMask("None");
+        transform.GetComponent<Rigidbody>().useGravity = true;
+
         move_coroutine = StartCoroutine(checkForMovement());
     }
 
