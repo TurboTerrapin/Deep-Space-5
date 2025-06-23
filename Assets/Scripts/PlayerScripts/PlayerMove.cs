@@ -4,7 +4,7 @@
     - Handles seating/unseating teleporting
     - Handles shifting while seated
     Contributor(s): John Aylward, Jake Schott
-    Last Updated: 6/7/2025
+    Last Updated: 6/23/2025
 */
 
 using System.Collections;
@@ -27,7 +27,7 @@ public class PlayerMove : NetworkBehaviour
     private Coroutine shift_coroutine = null;
     private Coroutine move_coroutine = null;
     private bool is_left = false; //used for shifting
-    private SeatManager sm = null;
+    private SeatManager seat_manager = null;
 
     void Start()
     {
@@ -36,7 +36,7 @@ public class PlayerMove : NetworkBehaviour
 
     public void initialize()
     {
-        sm = GameObject.FindGameObjectWithTag("SeatHandler").GetComponent<SeatManager>();
+        seat_manager = GameObject.FindGameObjectWithTag("SeatHandler").GetComponent<SeatManager>();
 
         transform.GetComponent<CapsuleCollider>().excludeLayers = LayerMask.GetMask("None");
         transform.GetComponent<Rigidbody>().useGravity = true;
@@ -54,18 +54,18 @@ public class PlayerMove : NetworkBehaviour
         move_coroutine = null;
 
         //figure out which shift point the player is closer to
-        float dist_to_left_pos = Vector3.Distance(transform.position, sm.left_shift_position_points[pos].transform.position);
-        float dist_to_right_pos = Vector3.Distance(transform.position, sm.right_shift_position_points[pos].transform.position);
+        float dist_to_left_pos = Vector3.Distance(transform.position, seat_manager.left_shift_position_points[pos].transform.position);
+        float dist_to_right_pos = Vector3.Distance(transform.position, seat_manager.right_shift_position_points[pos].transform.position);
 
         is_left = (dist_to_left_pos < dist_to_right_pos);
 
         if (is_left == true)
         {
-            transform.position = sm.left_shift_position_points[pos].transform.position;
+            transform.position = seat_manager.left_shift_position_points[pos].transform.position;
         }
         else
         {
-            transform.position = sm.right_shift_position_points[pos].transform.position;
+            transform.position = seat_manager.right_shift_position_points[pos].transform.position;
         }
 
         if (sit_coroutine != null)
@@ -99,7 +99,7 @@ public class PlayerMove : NetworkBehaviour
 
         if (pos == 3) //captain exception
         {
-            transform.localPosition = sm.position_points[3].transform.localPosition;
+            transform.localPosition = seat_manager.position_points[3].transform.localPosition;
         }
 
         move_coroutine = StartCoroutine(checkForMovement());
@@ -137,11 +137,11 @@ public class PlayerMove : NetworkBehaviour
                 int pos = ControlScript.Instance.currentSeat();
                 if (is_left == true) //left to right
                 {
-                    shift_coroutine = StartCoroutine(shift(sm.left_shift_position_points[pos].transform.localPosition, sm.right_shift_position_points[pos].transform.localPosition));
+                    shift_coroutine = StartCoroutine(shift(seat_manager.left_shift_position_points[pos].transform.localPosition, seat_manager.right_shift_position_points[pos].transform.localPosition));
                 }
                 else //right to left
                 {
-                    shift_coroutine = StartCoroutine(shift(sm.right_shift_position_points[pos].transform.localPosition, sm.left_shift_position_points[pos].transform.localPosition));
+                    shift_coroutine = StartCoroutine(shift(seat_manager.right_shift_position_points[pos].transform.localPosition, seat_manager.left_shift_position_points[pos].transform.localPosition));
                 }
             }
             yield return null;
