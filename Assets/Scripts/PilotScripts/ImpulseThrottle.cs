@@ -22,8 +22,8 @@ public class ImpulseThrottle : NetworkBehaviour, IControllable
     private List<Button> BUTTONS = new List<Button>();
 
     public GameObject handle;
-    public GameObject display_canvas; //used to display the bars beneath the handle
-    public GameObject speed_information; //used to update the speedometer
+    public GameObject blue_bars; //used to display the bars beneath the handle
+    public GameObject speed_text; //used to update the speedometer
 
     private float impulse = 0.0f;
     private Vector3 initial_pos; //handle starting position (0% impulse)
@@ -54,7 +54,7 @@ public class ImpulseThrottle : NetworkBehaviour, IControllable
         int impulse_as_int = (int)(impulse * 100.0f);
         if (impulse_as_int < 100)
         { 
-            display_canvas.transform.GetChild((impulse_as_int / 5) + 1).gameObject.GetComponent<UnityEngine.UI.RawImage>().color = new Color(0, 0.93f, 1.0f, (0.2f * (impulse_as_int % 5)));
+            blue_bars.transform.GetChild((impulse_as_int / 5) + 1).gameObject.GetComponent<UnityEngine.UI.RawImage>().color = new Color(0, 0.93f, 1.0f, (0.2f * (impulse_as_int % 5)));
         }
 
         //update lever position
@@ -64,7 +64,7 @@ public class ImpulseThrottle : NetworkBehaviour, IControllable
                         Mathf.Lerp(initial_pos.z, final_pos.z, impulse));
         
         //update speedometer text
-        speed_information.transform.GetChild(1).gameObject.GetComponent<TMP_Text>().SetText("" + Mathf.Round(impulse * 100.0f));
+        speed_text.GetComponent<TMP_Text>().SetText("" + Mathf.Round(impulse * 100.0f));
     }
     public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)
     {

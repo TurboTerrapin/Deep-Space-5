@@ -6,8 +6,8 @@ public class PilotingSystem : MonoBehaviour
     private GameObject controlHandler;
 
     [Header("Speed Settings")]
-    private float maxThrusterSpeed = 8f;
-    private float maxImpulseSpeed = 30f;
+    private float maxThrusterSpeed = 50f;
+    private float maxImpulseSpeed = 100f;
 
     [Header("Rotation Settings")]
      private float rotationPower = 6f;
