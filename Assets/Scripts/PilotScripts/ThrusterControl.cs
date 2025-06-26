@@ -15,7 +15,7 @@ public class ThrusterControl : NetworkBehaviour
 {
     //CLASS CONSTANTS
     protected static float PUSH_SPEED = 4.0f; //how fast the physical button takes to be pushed relative to the bars
-    protected static float MOVE_SPEED = 1.0f;
+    protected static float MOVE_SPEED = 0.5f;
 
     public List<Transform> thruster_buttons;
     public GameObject display_canvas;

@@ -44,20 +44,9 @@ public class VerticalThrusters : ThrusterControl, IControllable
         return hud_info;
     }
 
-    public int getVerticalThrusterState()
+    public float getVerticalThrusterState()
     {
-        if (thruster_percentage[0] > 0f && thruster_percentage[1] <= 0f)
-        {
-            return -1; // Descending
-        }
-        else if (thruster_percentage[1] > 0f && thruster_percentage[0] <= 0f)
-        {
-            return 1; // Ascending
-        }
-        else
-        {
-            return 0; // Neutral (both inactive or conflicting inputs)
-        }
+        return (thruster_percentage[1] - thruster_percentage[0]);
     }
 
     IEnumerator adjustingThrust()

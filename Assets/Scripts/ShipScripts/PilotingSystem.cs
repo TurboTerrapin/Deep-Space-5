@@ -6,23 +6,23 @@ public class PilotingSystem : MonoBehaviour
     private GameObject controlHandler;
 
     [Header("Speed Settings")]
-    private float maxThrusterSpeed = 50f;
-    private float maxImpulseSpeed = 100f;
+    private float maxThrusterSpeed = 4f;
+    private float maxImpulseSpeed = 70f;
 
     [Header("Rotation Settings")]
-     private float rotationPower = 6f;
-     private float steeringResponsiveness = 5f;
-     private float maxRotationSpeed = 25f;
+     private float rotationPower = 3f;
+     private float steeringResponsiveness = 2.5f;
+     private float maxRotationSpeed = 5f;
 
     [Header("Impulse Settings")]
-    private float impulseAccelerationRate = 0.8f;
-    private float impulseDecelerationRate = 1.75f;
+    //private float impulseAccelerationRate = 0.8f;
+    //private float impulseDecelerationRate = 1.75f;
 
     [Header("Thruster Settings")]
-    private float baseThrusterAccelerationRate = 0.5f;
-    private float maxThrusterAccelerationRate = 1.5f;
-    private float timeToMaxThrustAccel = 2f;
-    private float thrusterDecelerationRate = 0.5f;
+    //private float baseThrusterAccelerationRate = 0.5f;
+    //private float maxThrusterAccelerationRate = 1.5f;
+    //private float timeToMaxThrustAccel = 1.0f;
+    //private float thrusterDecelerationRate = 5.0f;
 
     // Component references
     private ImpulseThrottle impulseThrottle;
@@ -38,8 +38,8 @@ public class PilotingSystem : MonoBehaviour
 
     // Movement state
     private float smoothedSteeringInput = 0f;
-    private float horizontalThrusterActiveTime;
-    private float verticalThrusterActiveTime;
+    //private float horizontalThrusterActiveTime;
+    //private float verticalThrusterActiveTime;
     public float currentRotationSpeed;
     public float forwardSpeed;
     public Vector3 currentVelocity;
@@ -75,12 +75,19 @@ public class PilotingSystem : MonoBehaviour
         Vector3 horizontal = -transform.right;
         Vector3 vertical = transform.up;
 
+        currentImpulseSpeed = currentImpulse * maxImpulseSpeed;
+
+        currentHorizontalSpeed = maxThrusterSpeed * horizontalThrust;
+        currentVerticalSpeed = maxThrusterSpeed * verticalThrust;
+
+        /* OLD CODE 
         // Update impulse speed
         currentImpulseSpeed = Mathf.MoveTowards(
             currentImpulseSpeed,
             currentImpulse * maxImpulseSpeed,
             ((Mathf.Abs(currentImpulseSpeed) < Mathf.Abs(currentImpulse * maxImpulseSpeed)) ? impulseAccelerationRate : impulseDecelerationRate) * dt
         );
+        
 
         // Update horizontal thruster speed
         float horizontalRate = GetThrusterAccelerationRate(horizontalThrusterActiveTime);
@@ -97,6 +104,7 @@ public class PilotingSystem : MonoBehaviour
             verticalThrust * maxThrusterSpeed,
             ((Mathf.Abs(currentVerticalSpeed) < Mathf.Abs(verticalThrust * maxThrusterSpeed)) ? verticalRate : thrusterDecelerationRate) * dt
         );
+        */
 
         Vector3 impulseVelocity = forward * currentImpulseSpeed;
         Vector3 horizontalVelocity = horizontal * currentHorizontalSpeed;
@@ -118,11 +126,12 @@ public class PilotingSystem : MonoBehaviour
         HandleRotation(dt);
     }
 
+    /*
     private float GetThrusterAccelerationRate(float activeTime)
     {
         return Mathf.Lerp(baseThrusterAccelerationRate, maxThrusterAccelerationRate,
             Mathf.Clamp01(activeTime / timeToMaxThrustAccel));
-    }
+    }*/
 
     private void HandleRotation(float dt)
     {
