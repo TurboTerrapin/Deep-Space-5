@@ -13,15 +13,17 @@ public class DustParticleManager : MonoBehaviour
     //CLASS CONSTANTS
     private static int NUM_PARTICLES = 500;
     private static float MIN_DISTANCE = 30.0f;
-    private static float MAX_DISTANCE = 180.0f;
-    private static float STAR_MIN_SIZE = 0.3f;
-    private static float STAR_MAX_SIZE = 0.5f;
+    private static float MAX_DISTANCE = 155.0f;
+    private static float STAR_MIN_SIZE = 0.35f;
+    private static float STAR_MAX_SIZE = 0.55f;
     private static float TIME_TO_APPEAR = 1.0f; //seconds
+
+    private GameObject spaceship;
 
     private void resetStar(GameObject star)
     {
         float star_size = Random.Range(STAR_MIN_SIZE, STAR_MAX_SIZE);
-        star.transform.position = Camera.main.transform.position + Random.insideUnitSphere * MAX_DISTANCE;
+        star.transform.position = spaceship.transform.position + Random.insideUnitSphere * MAX_DISTANCE * Random.Range(0.7f, 1.0f);
         StartCoroutine(growStar(star, star_size));
     }
 
@@ -41,13 +43,15 @@ public class DustParticleManager : MonoBehaviour
 
     private void Start()
     {
+        //get ship
+        spaceship = GameObject.FindGameObjectWithTag("Spaceship");
         //initialize particles
         for (int i = 0; i < NUM_PARTICLES; i++)
         {
             GameObject new_star = GameObject.Instantiate(transform.GetChild(0).gameObject, transform);
             float star_size = Random.Range(STAR_MIN_SIZE, STAR_MAX_SIZE);
             new_star.transform.localScale = new Vector3(star_size, star_size, star_size);
-            new_star.transform.position = Camera.main.transform.position + Random.insideUnitSphere * (MAX_DISTANCE - MIN_DISTANCE) * Random.Range(0.1f, 1.0f);
+            new_star.transform.position = spaceship.transform.position + Random.insideUnitSphere * (MAX_DISTANCE - MIN_DISTANCE) * Random.Range(0.3f, 1.0f);
             new_star.SetActive(true);
         }
     }
