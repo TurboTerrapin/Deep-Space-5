@@ -106,7 +106,6 @@ public class VerticalThrusters : ThrusterControl, IControllable
         List<GameObject> bars = new List<GameObject>();
         int[] marker_indices = new int[4];
         int[] corresponding_markers = new int[4];
-        Debug.Log(Mathf.Abs((current_altitude - 50000.0f) % 5.0f) / 1.0f);
         int marker_index = 18 - (int)(Mathf.Abs((current_altitude - 50000.0f) % 5.0f) / 1.0f);
         if (current_altitude > 0.0f)
         {

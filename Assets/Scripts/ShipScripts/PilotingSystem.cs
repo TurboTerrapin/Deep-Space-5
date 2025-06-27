@@ -7,7 +7,8 @@ public class PilotingSystem : MonoBehaviour
 
     [Header("Speed Settings")]
     private float maxThrusterSpeed = 6f;
-    private float maxImpulseSpeed = 70f;
+    private float maxImpulseForwardSpeed = 70f;
+    private float maxImpulseReverseSpeed = 20f;
 
     [Header("Rotation Settings")]
      private float rotationPower = 3f;
@@ -40,6 +41,7 @@ public class PilotingSystem : MonoBehaviour
     private float smoothedSteeringInput = 0f;
     //private float horizontalThrusterActiveTime;
     //private float verticalThrusterActiveTime;
+    private bool in_reverse;
     public float currentRotationSpeed;
     public float forwardSpeed;
     public Vector3 currentVelocity;
@@ -59,6 +61,11 @@ public class PilotingSystem : MonoBehaviour
                horizontalThrusters && verticalThrusters;
     }
 
+    public void shiftDirection(bool new_direction)
+    {
+        in_reverse = new_direction;
+    }
+
     public void UpdateInput()
     {
         currentImpulse = impulseThrottle.getCurrentImpulse();
@@ -75,7 +82,14 @@ public class PilotingSystem : MonoBehaviour
         Vector3 horizontal = -transform.right;
         Vector3 vertical = transform.up;
 
-        currentImpulseSpeed = currentImpulse * maxImpulseSpeed;
+        if (in_reverse == false)
+        {
+            currentImpulseSpeed = currentImpulse * maxImpulseForwardSpeed;
+        }
+        else
+        {
+            currentImpulseSpeed = currentImpulse * -maxImpulseReverseSpeed;
+        }
 
         currentHorizontalSpeed = maxThrusterSpeed * horizontalThrust;
         currentVerticalSpeed = maxThrusterSpeed * verticalThrust;
@@ -112,11 +126,11 @@ public class PilotingSystem : MonoBehaviour
 
         currentVelocity = impulseVelocity + horizontalVelocity + verticalVelocity;
 
-        if (currentVelocity.magnitude > maxImpulseSpeed)
+        if (currentVelocity.magnitude > maxImpulseForwardSpeed)
         {
-            currentVelocity = currentVelocity.normalized * maxImpulseSpeed;
+            currentVelocity = currentVelocity.normalized * maxImpulseForwardSpeed;
         }
-
+        
         if (worldRoot != null)
         {
             worldRoot.position -= currentVelocity * dt;
@@ -136,7 +150,7 @@ public class PilotingSystem : MonoBehaviour
     private void HandleRotation(float dt)
     {
         forwardSpeed = currentVelocity.magnitude;
-        float speedFactor = Mathf.Clamp01(forwardSpeed / maxImpulseSpeed);
+        float speedFactor = Mathf.Clamp01(forwardSpeed / maxImpulseForwardSpeed);
 
         smoothedSteeringInput = Mathf.Lerp(
             smoothedSteeringInput,
@@ -160,6 +174,13 @@ public class PilotingSystem : MonoBehaviour
             currentRotationSpeed = Mathf.Lerp(currentRotationSpeed, 0f, rotationPower * dt);
         }
 
-        transform.Rotate(0f, currentRotationSpeed * dt, 0f);
+        if (in_reverse == false)
+        {
+            transform.Rotate(0f, currentRotationSpeed * dt, 0f);
+        }
+        else
+        {
+            transform.Rotate(0f, -1.0f * currentRotationSpeed * dt, 0f);
+        }
     }
 }

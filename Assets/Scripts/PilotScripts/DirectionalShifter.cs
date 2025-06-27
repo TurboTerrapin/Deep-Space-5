@@ -26,6 +26,7 @@ public class DirectionalShifter : NetworkBehaviour, IControllable
     public GameObject directional_arrow; //on the speedometer screen
     public GameObject forward_indicator;
     public GameObject reverse_indicator;
+    private GameObject spaceship;
 
     private List<KeyCode> keys_down = new List<KeyCode>();
 
@@ -42,10 +43,15 @@ public class DirectionalShifter : NetworkBehaviour, IControllable
         BUTTONS.Add(new Button(CONTROL_DESCS[0], CONTROL_INDEXES[0], true, false));
         hud_info.setButtons(BUTTONS);
 
+        spaceship = GameObject.FindGameObjectWithTag("Spaceship");
         forward_pos = lever.transform.localPosition;
     }
     public HUDInfo getHUDinfo(GameObject current_target)
     {
+        if (shift_adjuster_coroutine == null)
+        {
+            BUTTONS[0].updateInteractable(transform.GetComponent<ImpulseThrottle>().getCurrentImpulse() == 0.0f);
+        }
         return hud_info;
     }
     private void displayAdjustment()
@@ -156,13 +162,14 @@ public class DirectionalShifter : NetworkBehaviour, IControllable
     {
         shift_percentage = sp;
         in_reverse = reverse;
+        spaceship.GetComponent<PilotingSystem>().shiftDirection(in_reverse);
         displayAdjustment();
     }
 
     public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)
     {
         keys_down = inputs;
-        if (shift_adjuster_coroutine == null)
+        if (shift_adjuster_coroutine == null && transform.GetComponent<ImpulseThrottle>().getCurrentImpulse() == 0.0f)
         {
             for (int i = 0; i < CONTROL_INDEXES.Count; i++)
             {
