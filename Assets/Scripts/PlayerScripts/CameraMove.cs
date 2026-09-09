@@ -4,9 +4,9 @@
     - Handles looking around
     - Handles camera zoom (using RMB or CTRL)
     - Handles camera shaking
-    - Handles displaying hints if hints enabled (ex. MISSION OBJECTIVE, POWER MONITORING)
+    - Handles displaying hints if hints enabled (station functions)
     Contributor(s): John Aylward, Jake Schott
-    Last Updated: 8/29/2026
+    Last Updated: 9/6/2026
 */
 
 using System.Collections;
@@ -317,7 +317,7 @@ public class CameraMove : MonoBehaviour
 
             cameraHolder.localRotation = Quaternion.AngleAxis(prevPos.x, Vector3.up) * Quaternion.AngleAxis(prevPos.y, Vector3.right);
 
-            if((PrimaryScript.Instance as BridgePrimaryScript).currentSeat() == 3)
+            if (PrimaryScript.Instance.isCaptainMode())
             {
                 animatorHandler.chestlookat = 0;
                 //animatorHandler.chestlookat = -Mathf.Abs(prevPos.x / 180) + 1;
@@ -330,7 +330,7 @@ public class CameraMove : MonoBehaviour
                 animatorHandler.chestlookat = chestIKLookAtCurve.Evaluate(prevPos.x / 120);
             }
 
-                animatorHandler.chestlookat *= (prevPos.y + 10) / 100;
+            animatorHandler.chestlookat *= (prevPos.y + 10) / 100;
         }
 
         cameraHolder.position = headTransform.position;

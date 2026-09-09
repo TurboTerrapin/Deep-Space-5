@@ -2,17 +2,18 @@
     SecondaryScript.cs
     - Helps with secondary info that isn't primary control interactions
     Contributor(s): Jake Schott
-    Last Updated: 8/3/2026
+    Last Updated: 9/6/2026
 */
 
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SecondaryScript : MonoBehaviour
 {
     //CLASS CONSTANTS
-    private static Color DEFAULT_BORDER_CORDER = new Color(0.12f, 0.12f, 0.12f, 1.0f);
+    public static Color DEFAULT_BORDER_CORDER = new Color(0.12f, 0.12f, 0.12f, 1.0f);
 
     public GameObject secondary_info;
 
@@ -23,7 +24,6 @@ public class SecondaryScript : MonoBehaviour
     private GameObject mission_objective;
     private GameObject sitting_overlay;
     private GameObject sitting_left_side;
-    private GameObject shift_button;
     private GameObject sitting_right_side;
     private GameObject primary_default_power_circles;
 
@@ -39,7 +39,6 @@ public class SecondaryScript : MonoBehaviour
         mission_objective = permanent_overlay.transform.GetChild(3).gameObject;
         sitting_overlay = secondary_info.transform.GetChild(1).gameObject;
         sitting_left_side = sitting_overlay.transform.GetChild(0).gameObject;
-        shift_button = sitting_left_side.transform.GetChild(2).gameObject;
         sitting_right_side = sitting_overlay.transform.GetChild(1).gameObject;
         primary_default_power_circles = transform.GetChild(1).GetChild(0).GetChild(1).GetChild(3).GetChild(1).gameObject;
     }
@@ -65,44 +64,35 @@ public class SecondaryScript : MonoBehaviour
     }
 
     //updates station indicator in top right as well as colors on top
-    public void onStationChange(int pos)
+    public void onStationChange(Color c, Texture icon)
     {
-        //show/hide position icon
-        current_station_indicator.transform.GetChild(2).gameObject.SetActive(pos >= 0);
-        current_station_indicator.transform.GetChild(3).gameObject.SetActive(pos < 0);
-        if (pos >= 0) //set permanent overlay color to color of position
+        //handle station functions top left indicator and station icon top right indicator
+        if (SceneManager.GetActiveScene().name.CompareTo("IntroSequence") != 0)
         {
-            for (int i = 0; i < 4; i++)
-            {
-                current_station_indicator.transform.GetChild(1).GetChild(i).GetComponent<UnityEngine.UI.RawImage>().color = ReferenceAssistor.COLOR_OPTIONS[pos];
-            }
-            foreach (Transform t in stations_button.transform.GetChild(1))
-            {
-                t.GetComponent<UnityEngine.UI.RawImage>().color = ReferenceAssistor.COLOR_OPTIONS[pos];
-            }
-            current_station_indicator.transform.GetChild(2).GetComponent<UnityEngine.UI.RawImage>().texture = ReferenceAssistor.Instance.position_icons[pos];
-            current_station_indicator.transform.GetChild(2).GetComponent<UnityEngine.UI.RawImage>().color = ReferenceAssistor.COLOR_OPTIONS[pos];
-        }
-        else //set default border color to permanent overlay borders
-        {
+            //update station icon
+            current_station_indicator.transform.GetChild(2).gameObject.SetActive(icon != null);
+            current_station_indicator.transform.GetChild(3).gameObject.SetActive(icon == null);
+            current_station_indicator.transform.GetChild(2).GetComponent<UnityEngine.UI.RawImage>().texture = icon;
+            current_station_indicator.transform.GetChild(2).GetComponent<UnityEngine.UI.RawImage>().color = c;
             foreach (Transform t in current_station_indicator.transform.GetChild(1))
             {
-                t.GetComponent<UnityEngine.UI.RawImage>().color = DEFAULT_BORDER_CORDER;
+                t.GetComponent<UnityEngine.UI.RawImage>().color = c;
             }
+
+            //update station buttons
             foreach (Transform t in stations_button.transform.GetChild(1))
             {
-                t.GetComponent<UnityEngine.UI.RawImage>().color = DEFAULT_BORDER_CORDER;
+                t.GetComponent<UnityEngine.UI.RawImage>().color = c;
             }
         }
 
-        //do nothing more if not sitting
-        if (pos < 0)
+        //stop updating if default because default will never be used for sitting overlay
+        if (c == DEFAULT_BORDER_CORDER)
         {
             return;
         }
 
         //update sitting overlay if sitting
-        Color c = ReferenceAssistor.COLOR_OPTIONS[pos];
         foreach (Transform t in transform.GetChild(1).GetChild(0).GetChild(1).GetChild(1))
         {
             foreach (Transform b in t)
@@ -166,7 +156,7 @@ public class SecondaryScript : MonoBehaviour
     }
 
     //updates shift direction UI indicator and get up indicator
-    public void updateShiftIndicators(bool is_shifting, int curr_pos, SeatManager seat_manager)
+    public void updateShiftIndicators(bool is_shifting, bool shiftable_position, bool can_shift_left, bool can_shift_right)
     {
         float a = 1.0f;
         if (is_shifting == true)
@@ -175,9 +165,9 @@ public class SecondaryScript : MonoBehaviour
         }
         sitting_left_side.transform.GetChild(1).GetChild(2).GetChild(0).gameObject.SetActive(!is_shifting);
         sitting_left_side.transform.GetChild(1).GetChild(3).GetComponent<CanvasGroup>().alpha = a;
-        sitting_left_side.transform.GetChild(2).gameObject.SetActive(curr_pos != 3);
-        sitting_left_side.transform.GetChild(2).GetChild(2).GetChild(0).gameObject.SetActive(seat_manager.canShiftLeft(curr_pos) && !is_shifting);
-        sitting_left_side.transform.GetChild(2).GetChild(3).GetChild(0).gameObject.SetActive(seat_manager.canShiftRight(curr_pos) && !is_shifting);
+        sitting_left_side.transform.GetChild(2).gameObject.SetActive(shiftable_position);
+        sitting_left_side.transform.GetChild(2).GetChild(2).GetChild(0).gameObject.SetActive(can_shift_left && !is_shifting);
+        sitting_left_side.transform.GetChild(2).GetChild(3).GetChild(0).gameObject.SetActive(can_shift_right && !is_shifting);
         sitting_left_side.transform.GetChild(2).GetChild(4).GetComponent<CanvasGroup>().alpha = a;
     }
 
@@ -252,7 +242,7 @@ public class SecondaryScript : MonoBehaviour
     {
         bool inputted = PrimaryScript.checkInputIndexDown(15);
 
-        if (inputted == false && force_hide == false)
+        if ((SceneManager.GetActiveScene().name.CompareTo("IntroSequence") == 0) || (inputted == false && force_hide == false))
         {
             return;
         }
@@ -422,12 +412,12 @@ public class SecondaryScript : MonoBehaviour
         mission_objective.SetActive(true);
 
         //background, border, dividers, and "MISSION OBJECTIVE"
-        float anim_time = 2.0f;
+        float anim_time = 1.0f;
         while (anim_time > 0.0f)
         {
             anim_time = Mathf.Max(0.0f, anim_time - Time.deltaTime);
 
-            float a = Mathf.Lerp(1.0f, 0.0f, anim_time / 2.0f);
+            float a = Mathf.Lerp(1.0f, 0.0f, anim_time);
             mission_objective.transform.GetChild(0).GetComponent<CanvasGroup>().alpha = a;
             mission_objective.transform.GetChild(1).GetComponent<CanvasGroup>().alpha = a;
             mission_objective.transform.GetChild(2).GetComponent<TMP_Text>().alpha = a;
@@ -435,20 +425,20 @@ public class SecondaryScript : MonoBehaviour
             yield return null;
         }
 
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(0.5f);
 
         //bullet one
-        anim_time = 2.0f;
+        anim_time = 1.0f;
         while (anim_time > 0.0f)
         {
             anim_time = Mathf.Max(0.0f, anim_time - Time.deltaTime);
 
-            mission_objective.transform.GetChild(3).GetComponent<TMP_Text>().alpha = Mathf.Lerp(1.0f, 0.0f, anim_time / 2.0f);
+            mission_objective.transform.GetChild(3).GetComponent<TMP_Text>().alpha = Mathf.Lerp(1.0f, 0.0f, anim_time);
 
             yield return null;
         }
 
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(0.5f);
 
         //show exit button
         anim_time = 1.0f;

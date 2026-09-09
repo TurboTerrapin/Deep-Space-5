@@ -207,20 +207,20 @@ public class PlayerManager : NetworkBehaviour
         GameObject.Find("LoadHandler").GetComponent<LoadHandler>().startLoad();
     }
 
-    private void freezePlayer(GameObject plr)
+    public static void freezePlayer(GameObject player)
     {
-        plr.transform.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
-        plr.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
-        plr.transform.GetComponent<CapsuleCollider>().excludeLayers = LayerMask.NameToLayer("Everything");
-        plr.transform.GetComponent<Rigidbody>().excludeLayers = LayerMask.NameToLayer("Everything");
-        plr.transform.GetComponent<Rigidbody>().useGravity = false;
+        player.transform.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+        player.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+        player.transform.GetComponent<CapsuleCollider>().excludeLayers = LayerMask.NameToLayer("Everything");
+        player.transform.GetComponent<Rigidbody>().excludeLayers = LayerMask.NameToLayer("Everything");
+        player.transform.GetComponent<Rigidbody>().useGravity = false;
     }
 
-    private void unfreezePlayer(GameObject plr)
+    public static void unfreezePlayer(GameObject player)
     {
-        plr.GetComponent<CapsuleCollider>().excludeLayers = LayerMask.GetMask("None");
-        plr.GetComponent<Rigidbody>().excludeLayers = LayerMask.GetMask("None");
-        plr.GetComponent<Rigidbody>().useGravity = true;
+        player.GetComponent<CapsuleCollider>().excludeLayers = LayerMask.GetMask("None");
+        player.GetComponent<Rigidbody>().excludeLayers = LayerMask.GetMask("None");
+        player.GetComponent<Rigidbody>().useGravity = true;
     }
 
     //called by FailureHandler.cs

@@ -2,7 +2,7 @@
     CrewManifest.cs
     - Handles displaying crew member names from within the bridge
     Contributor(s): Jake Schott
-    Last Updated: 6/21/2026
+    Last Updated: 9/8/2026
 */
 
 using System.Collections.Generic;
@@ -15,22 +15,11 @@ public class CrewManifest : NetworkBehaviour
 {
     public GameObject crew_manifest_display;
 
-    private Dictionary<ulong, string> crew_member_names = new Dictionary<ulong, string>(); //key steam ID, value crew member name (ex. "J. KIRK")
+    private Dictionary<ulong, string> crew_member_names = new Dictionary<ulong, string>(); //key steam ID, value crew member name (ex. "JAMES KIRK")
 
     public void reportAsReady()
     {
-        string crew_member_name = "B. SANDERS";
-
-        if (PlayerPrefs.HasKey("CustomizeCharacterData"))
-        {
-            //get the JSON string we stored in PlayerPrefs
-            string json = PlayerPrefs.GetString("CustomizeCharacterData");
-            //convert the string back to a CustomizeCharacterData object
-            CustomizeCharacterData data = JsonUtility.FromJson<CustomizeCharacterData>(json);
-            crew_member_name = data.FirstName[0] + ". " + data.LastName;
-            crew_member_name = crew_member_name.ToUpper();
-        }
-
+        string crew_member_name = CustomizeCharacterMenu.GetFirstName() + " " + CustomizeCharacterMenu.GetLastName();
         transmitCrewMemberNameRPC(SteamClient.SteamId, crew_member_name);
     }
 
@@ -47,7 +36,10 @@ public class CrewManifest : NetworkBehaviour
         {
             if (i < plr_steam_ids.Count && crew_member_names.ContainsKey(plr_steam_ids[i]) == true)
             {
-                crew_manifest_display.transform.GetChild(1).GetChild(i).GetComponent<TMP_Text>().SetText("• " + crew_member_names[plr_steam_ids[i]]);
+                string character_name = crew_member_names[plr_steam_ids[i]];
+                string display_name = character_name[0] + ". ";
+                display_name += character_name.Substring(character_name.IndexOf(" ") + 1);
+                crew_manifest_display.transform.GetChild(1).GetChild(i).GetComponent<TMP_Text>().SetText("• " + display_name);
                 crew_manifest_display.transform.GetChild(1).GetChild(i).GetComponent<TMP_Text>().color = new Color(0.0f, 0.84f, 1.0f, 1.0f);
             }
             else

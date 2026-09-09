@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using TMPro;
-using System.ComponentModel.Design;
 
 //contains info for a lifeform scan
 public struct LifeformScanData

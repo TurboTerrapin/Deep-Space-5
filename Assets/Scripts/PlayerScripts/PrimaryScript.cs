@@ -6,12 +6,14 @@
     - Sends user inputs to control script if looking at said control and within RAYCAST_RANGE
     - Handles transmitting IK targets for hand movement animations
     Contributor(s): Jake Schott, John Aylward
-    Last Updated: 8/28/2026
+    Last Updated: 9/6/2026
 */
 
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public abstract class PrimaryScript : MonoBehaviour
 {
@@ -42,6 +44,7 @@ public abstract class PrimaryScript : MonoBehaviour
     protected IControllable current_controllable = null;
     protected IDescribable current_describable = null;
     protected bool control_update_flag = false;
+    protected int curr_seat = -1;
     protected bool is_sitting = false;
     protected Coroutine intro_yield_coroutine = null;
     protected Coroutine seat_check_coroutine = null;
@@ -121,6 +124,42 @@ public abstract class PrimaryScript : MonoBehaviour
         Instance = this;
     }
 
+    //returns true if in captain mode
+    public abstract bool isCaptainMode();
+
+    //called whenever something related to shifting or sitting down happens
+    public abstract void onShiftChange();
+
+    //handles checking whatever is currently detected by raycast
+    protected abstract HUDInfo checkRayTarget();
+
+    //returns seat index of closest seat or -1 if none
+    protected abstract int getClosestSeat();
+
+    //returns corresponding color of seat
+    protected abstract Color getSeatColor(int seat);
+
+    //returns corresponding name of seat
+    protected abstract string getSeatName(int seat);
+
+    //returns true if seat claim was successful
+    protected abstract bool claimSeat(int seat);
+
+    //starts sit down animation
+    protected abstract void startSitDownAnimation();
+
+    //handles script-specific things on completion of sit down animation
+    protected abstract void handleCompletedSitDown();
+
+    //starts get up animation
+    protected abstract void startGetUpAnimation();
+
+    //handles script-specific things on completion of get up animation
+    protected abstract void handleCompletedGetUp();
+
+    //called when hitting shift while sitting down
+    protected abstract void attemptSeatShift();
+
     public void unlockPlayer(GameObject plr_prefab)
     {
         player_prefab = plr_prefab;
@@ -134,12 +173,12 @@ public abstract class PrimaryScript : MonoBehaviour
         //begin control interfacing
         primary_info.SetActive(false);
 
-        //free player movement, start checking to sit down, begin the scenario
+        //free player movement, start checking to sit down, begin gameplay
         can_pause = true;
         player_prefab.GetComponent<PlayerMove>().Initialize();
         if (hints_setting == true && HUD_setting < 2)
         {
-            GetComponent<SecondaryScript>().displayMissionObjective(this.GetType().Name.CompareTo("BridgePrimaryScript") != 0, 1.0f);
+            GetComponent<SecondaryScript>().displayMissionObjective((SceneManager.GetActiveScene().name.CompareTo("IntroSequence") != 0), 1.0f);
             intro_yield_coroutine = StartCoroutine(introYield());
         }
         else
@@ -241,6 +280,17 @@ public abstract class PrimaryScript : MonoBehaviour
         {
             current_info.getButtons()[b].updateInteractable(temp_info.getButtons()[b].getInteractable());
         }
+    }
+
+    //returns true if looking to the left
+    public bool isLookingLeft()
+    {
+        return (Vector3.SignedAngle(player_prefab.transform.forward, plr_camera.transform.forward, player_prefab.transform.up) < 0.0f);
+    }
+
+    public int currentSeat()
+    {
+        return curr_seat;
     }
 
     //used by settings
@@ -403,8 +453,6 @@ public abstract class PrimaryScript : MonoBehaviour
         minimized_view.transform.GetChild(1).gameObject.SetActive(is_sitting);
     }
 
-    public abstract void onShiftChange();
-
     protected void updateInfoOverlayOffset()
     {
         if (current_ray_target == null || !current_ray_target.name.Contains("manual_options") || HUD_setting > 1)
@@ -428,19 +476,100 @@ public abstract class PrimaryScript : MonoBehaviour
         seat_check_coroutine = null;
     }
 
-    protected abstract HUDInfo checkRayTarget();
-
     //called by seatCheck()
-    protected abstract void checkForSeats();
+    protected void checkForSeats()
+    {
+        if (!paused && is_active && player_prefab != null)
+        {
+            int closest_seat = getClosestSeat();
+            if (closest_seat >= 0) //can sit
+            {
+                //update seat indicator color and information
+                Color c = getSeatColor(closest_seat);
+                foreach (Transform t in default_view.transform.GetChild(0).GetChild(1))
+                {
+                    t.GetComponent<UnityEngine.UI.RawImage>().color = c;
+                }
+                default_view.transform.GetChild(0).GetChild(2).GetComponent<TMP_Text>().color = c;
+                default_view.transform.GetChild(0).GetChild(2).GetComponent<TMP_Text>().SetText(getSeatName(closest_seat));
 
-    public abstract int getCurrPos();
+                primary_info.SetActive(true);
 
-    public abstract void assumePosition();
+                if (UnityEngine.Input.GetKeyDown(input_options[13][0])) //trying to sit down
+                {
+                    is_sitting = claimSeat(closest_seat);
+                    if (is_sitting == true)
+                    {
+                        curr_seat = closest_seat;
+                        onSittingChange();
+                        primary_info.SetActive(false);
+                        player_prefab.GetComponent<CameraMove>().LockCamera();
+                        player_prefab.GetComponent<CameraMove>().cameraHolder.parent = player_prefab.GetComponent<CameraMove>().headTransform;
+                        startSitDownAnimation();
+                    }
+                }
+            }
+            else //can't sit
+            {
+                primary_info.SetActive(false);
+            }
 
-    public abstract void relinquishPosition();
+            return;
+        }
+        primary_info.SetActive(false);
+    }
 
-    //called by checkForControlsAndInputs() on start of get up
-    protected abstract void getUp();
+    //called by AnimatorHandler.cs when sit down animation is completed
+    public void onSitDownAnimationCompleted()
+    {
+        handleCompletedSitDown();
+        player_prefab.GetComponent<CameraMove>().parentRotationLock = true;
+        player_prefab.GetComponent<CameraMove>().UnlockCamera(new Vector2(0.0f, 30.0f));
+
+        my_animation_controller.setIKActive(true);
+        my_animation_controller.setIKHead(true);
+
+        GetComponent<SecondaryScript>().setSittingOverlayVisibility(HUD_setting == 0);
+
+        ray_target_check_coroutine = StartCoroutine(rayCheck());
+        control_check_coroutine = StartCoroutine(controlCheck());
+        onShiftChange();
+    }
+
+    //called by AnimatorHandler.cs when get up animation is completed
+    public void onGetUpAnimationCompleted()
+    {
+        handleCompletedGetUp();
+        my_animation_controller.setIKActive(true);
+        my_animation_controller.setIKHead(true);
+        my_animation_controller.setIKLeftArm(false);
+        my_animation_controller.setIKRightArm(false);
+
+        player_prefab.GetComponent<PlayerMove>().Initialize();
+
+        curr_seat = -1;
+        seat_check_coroutine = StartCoroutine(seatCheck());
+    }
+
+    public void initiateGetUp()
+    {
+        is_sitting = false;
+
+        my_animation_controller.setIKActive(false);
+
+        current_ray_target = null;
+        updateCursorMode();
+        updateInfoOverlayOffset();
+
+        primary_info.SetActive(false);
+        GetComponent<SecondaryScript>().setSittingOverlayVisibility(false);
+        GetComponent<SecondaryScript>().setSittingRightSideVisibility(false);
+
+        resetButtons();
+        onSittingChange();
+
+        startGetUpAnimation();
+    }
 
     protected void updateIK()
     {
@@ -450,9 +579,9 @@ public abstract class PrimaryScript : MonoBehaviour
 
         if (current_controllable != null) //IControllable, move hand
         {
-            bool looking_right = (Vector3.SignedAngle(player_prefab.transform.forward, plr_camera.transform.forward, player_prefab.transform.up) > 0);
-            my_animation_controller.setIKRightArm(looking_right);
-            my_animation_controller.setIKLeftArm(!looking_right);
+            bool looking_left = isLookingLeft();
+            my_animation_controller.setIKRightArm(!looking_left);
+            my_animation_controller.setIKLeftArm(looking_left);
 
             IIKTargetable target_IK = current_controllable as IIKTargetable;
             if (target_IK != null)
@@ -464,7 +593,13 @@ public abstract class PrimaryScript : MonoBehaviour
                 //set the animation type
                 my_animation_controller.setHandInteractionType(target_IK.getHandInteractionType());
 
-                if (looking_right == true)
+                if (looking_left == true)
+                {
+                    //move the left arm target
+                    my_animation_controller.setLeftArmIKTransform(target_IK.getIKTarget(current_ray_target.gameObject));
+                    my_animation_controller.setAnimatorLayerWeight("LeftHandLayer", 1f);
+                }
+                else
                 {
                     //move the right arm target
                     my_animation_controller.setRightArmIKTransform(target_IK.getIKTarget(current_ray_target.gameObject));
@@ -476,25 +611,18 @@ public abstract class PrimaryScript : MonoBehaviour
                     my_animation_controller.adjustRightArmIKPosition(target_IK.getRightHandOffset());
                     my_animation_controller.setAnimatorLayerWeight("RightHandLayer", 1f);
                 }
-                else
-                {
-                    //move the left arm target
-                    my_animation_controller.setLeftArmIKTransform(target_IK.getIKTarget(current_ray_target.gameObject));
-                    my_animation_controller.setAnimatorLayerWeight("LeftHandLayer", 1f);
-                }
             }
-            //otherwise fallback to normal IK mode
-            else
+            else //otherwise fallback to normal IK mode
             {
-                if (looking_right == true)
-                {
-                    my_animation_controller.setRightArmIKPosition(current_ray_target.transform.position);
-                    my_animation_controller.setRightArmIKRotation(player_prefab.transform.localRotation);
-                }
-                else
+                if (looking_left == true)
                 {
                     my_animation_controller.setLeftArmIKPosition(current_ray_target.transform.position);
                     my_animation_controller.setLeftArmIKRotation(player_prefab.transform.localRotation);
+                }
+                else
+                {
+                    my_animation_controller.setRightArmIKPosition(current_ray_target.transform.position);
+                    my_animation_controller.setRightArmIKRotation(player_prefab.transform.localRotation);
                 }
             }
         }
@@ -575,14 +703,14 @@ public abstract class PrimaryScript : MonoBehaviour
                     //check if trying to unseat
                     if (UnityEngine.Input.GetKeyDown(input_options[13][0])) //trying to stand up
                     {
-                        getUp();
+                        initiateGetUp();
                         return;
                     }
 
                     //check if trying to shift
                     if (UnityEngine.Input.GetKeyDown(KeyCode.LeftShift) || UnityEngine.Input.GetKeyDown(KeyCode.RightShift)) //trying to shift
                     {
-                        player_prefab.GetComponent<PlayerMove>().SeatShift(getCurrPos());
+                        attemptSeatShift();
                     }
                 }
 
@@ -680,7 +808,7 @@ public abstract class PrimaryScript : MonoBehaviour
                     float dt = Mathf.Min(Time.deltaTime, 1.0f / 30.0f);
                     if (current_controllable != null)
                     {
-                        current_controllable.handleInputs(current_inputs, current_ray_target, dt, getCurrPos()); //call when all inputs have been checked
+                        current_controllable.handleInputs(current_inputs, current_ray_target, dt, currentSeat()); //call when all inputs have been checked
                     }
                     return;
                 }

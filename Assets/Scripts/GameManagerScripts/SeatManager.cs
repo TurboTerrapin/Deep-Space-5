@@ -1,5 +1,6 @@
 /*
     SeatManager.cs
+    - Used for BridgeEnvironment only
     - Used to ensure two players are not sitting in the same seat at the same time
     - Checks if a player is close enough to sit down
     - Handles RPCs which position the seats
@@ -7,7 +8,7 @@
     - Handles storing/giving seat indexes (where they are shifted)
     - Handles weird captain chair mechanics (the moving parts)
     Contributor(s): Jake Schott
-    Last Updated: 4/25/2026
+    Last Updated: 9/5/2026
 */
 
 using System.Collections;
@@ -20,13 +21,14 @@ using UnityEngine;
 public class SeatManager : NetworkBehaviour
 {
     //CLASS CONSTANTS
-    private static float SIT_RANGE = 0.5f;
+    public const float SIT_RANGE = 0.5f;
     public static Vector2[][] SEAT_COORDINATES = new Vector2[4][]{
         new Vector2[]{ new Vector2(-0.92f, 0.0f), new Vector2(0.0f, 0.0f) }, //pilot seat positions
         new Vector2[]{ new Vector2(0.0f, 0.0f), new Vector2(0.92f, 0.0f) }, //tactician seat positions
         new Vector2[]{ new Vector2(0.0f, 0.0f), new Vector2(-0.6f, -0.6f), new Vector2(-1.1f, -1.1f), new Vector2(-1.7f, -1.7f), new Vector2(-2.05f, -2.05f)}, //engineer seat positions
         new Vector2[]{} //captain seat positions
     };
+    public static Vector2[] SEAT_PUSH_IN_ADJUSTMENTS = new Vector2[] { new Vector2(0.0f, 0.33f), new Vector2(0.0f, 0.33f), new Vector2(0.23f, -0.23f), Vector2.zero }; //pilot, tactician, engineer, captain 
 
     //GAME OBJECTS
     public List<GameObject> physical_seats = null;
@@ -43,7 +45,7 @@ public class SeatManager : NetworkBehaviour
 
     private void Start()
     {
-        player_manager = GameObject.Find("PlayerManager").GetComponent<PlayerManager>();
+        player_manager = ReferenceAssistor.Instance.player_manager;
         power_control = ReferenceAssistor.Instance.module_handlers[4].GetComponent<PowerControl>();
     }
 
@@ -65,7 +67,7 @@ public class SeatManager : NetworkBehaviour
     //returns -1 if no unoccupied seats within SIT_RANGE, otherwise returns index (0-3) of position available
     public int checkSeats(Vector3 player_pos)
     {
-        int closest_pos = -1;
+        int closest_seat = -1;
         for (int i = 0; i < 4; i++)
         {
             if (occupied_seats[i] == 0)
@@ -74,7 +76,7 @@ public class SeatManager : NetworkBehaviour
                 {
                     if (Vector3.Distance(player_pos, physical_seats[3].transform.GetChild(0).position) < SIT_RANGE)
                     {
-                        closest_pos = 3;
+                        closest_seat = 3;
                     }
                 }
                 else
@@ -87,21 +89,21 @@ public class SeatManager : NetworkBehaviour
                         {
                             if (right_check == true)
                             {
-                                closest_pos = i;
+                                closest_seat = i;
                             }
                         }
                         else if (seat_indexes[i] == SEAT_COORDINATES[i].Length - 1) //seat is shifted all the way to the right
                         {
                             if (left_check == true)
                             {
-                                closest_pos = i;
+                                closest_seat = i;
                             }
                         }
                         else //seat is somewhere between left and right
                         {
                             if (left_check == true || right_check == true)
                             {
-                                closest_pos = i;
+                                closest_seat = i;
                             }
                         }
                     }
@@ -109,7 +111,7 @@ public class SeatManager : NetworkBehaviour
             }
         }
 
-        return closest_pos;
+        return closest_seat;
     }
 
     //called by LobbyHandler.cs on lobby change to replace seats deleted on network despawn when a client quits while sitting
@@ -141,30 +143,30 @@ public class SeatManager : NetworkBehaviour
         }
     }
 
-    public GameObject getSitDownPosition(int pos, Vector3 player_pos)
+    public GameObject getSitDownPosition(int seat, Vector3 player_pos)
     {
-        bool direction = getSitDownDirection(pos, player_pos);
+        bool direction = getSitDownDirection(seat, player_pos);
         if (direction == true) //needs to sit left, send right
         {
-            return physical_seats[pos].transform.GetChild(1).gameObject;
+            return physical_seats[seat].transform.GetChild(1).gameObject;
         }
-        return physical_seats[pos].transform.GetChild(0).gameObject; //needs to sit right, send left
+        return physical_seats[seat].transform.GetChild(0).gameObject; //needs to sit right, send left
     }
 
     //true is left, false is right
-    public bool getSitDownDirection(int pos, Vector3 player_pos)
+    public bool getSitDownDirection(int seat, Vector3 player_pos)
     {
-        if (seat_indexes[pos] == 0) //seat to the left
+        if (seat_indexes[seat] == 0) //seat to the left
         {
             return true;
         }
-        else if (seat_indexes[pos] == SEAT_COORDINATES.Length) //seat to the right, send left
+        else if (seat_indexes[seat] == SEAT_COORDINATES.Length) //seat to the right, send left
         {
             return false;
         }
 
         //else, pick whichever is closest to player (could be left or right)
-        if (Vector3.Distance(player_pos, physical_seats[pos].transform.GetChild(0).position) < Vector3.Distance(player_pos, physical_seats[pos].transform.GetChild(1).position))
+        if (Vector3.Distance(player_pos, physical_seats[seat].transform.GetChild(0).position) < Vector3.Distance(player_pos, physical_seats[seat].transform.GetChild(1).position))
         {
             return false;
         }
@@ -172,9 +174,9 @@ public class SeatManager : NetworkBehaviour
     }
 
     //true is left, false is right
-    public bool getGetUpDirection(int pos)
+    public bool getGetUpDirection(int seat)
     {
-        if (seat_indexes[pos] == 0)
+        if (seat_indexes[seat] == 0)
         {
             return true;
         }
@@ -182,53 +184,53 @@ public class SeatManager : NetworkBehaviour
     }
 
     //called to trigger an RPC to occupy a seat
-    public bool sitDown(int seat)
+    public bool claimSeatOccupancy(int seat)
     {
-        if (occupied_seats[seat] != 0)
+        if (occupied_seats[seat] == 0)
         {
-            return false;
+            transmitSeatOccupantChangeRPC(seat, NetworkManager.Singleton.LocalClientId, SteamClient.SteamId, true);
+            return true;
         }
-        transmitSeatOccupantChangeRPC(seat, NetworkManager.Singleton.LocalClientId, SteamClient.SteamId, true);
-        return true;
+        return false;
     }
 
     //returns true if able to shift left
-    public bool canShiftLeft(int pos)
+    public bool canShiftLeft(int seat)
     {
-        return (seat_indexes[pos] > 0);
+        return (seat_indexes[seat] > 0);
     }
 
     //returns true if able to shift right
-    public bool canShiftRight(int pos)
+    public bool canShiftRight(int seat)
     {
-        return (seat_indexes[pos] < (SEAT_COORDINATES[pos].Length - 1));
+        return (seat_indexes[seat] < (SEAT_COORDINATES[seat].Length - 1));
     }
 
     //returns the SEAT_COORDINATES index based on whether the seat is farthest left, farthest right, or if in the middle, look direction (left = false)
-    public int getShiftLocation(int pos, bool look_direction)
+    public int getShiftLocation(int seat, bool look_direction)
     {
-        if (pos == 0 || pos == 1)
+        if (seat <= 1)
         {
             int new_seat_index = 0;
-            if (seat_indexes[pos] == 0) //if left, then right
+            if (seat_indexes[seat] == 0) //if left, then right
             {
                 new_seat_index = 1;
             }
             return new_seat_index; //left
         }
-        if (seat_indexes[pos] == 0) //if furthest left, one to the right
+        if (seat_indexes[seat] == 0) //if furthest left, one to the right
         {
             return 1;
         }
-        if (seat_indexes[pos] == SEAT_COORDINATES[pos].Length - 1) //if furthest right, one to the left
+        if (seat_indexes[seat] == SEAT_COORDINATES[seat].Length - 1) //if furthest right, one to the left
         {
-            return SEAT_COORDINATES[pos].Length - 2;
+            return SEAT_COORDINATES[seat].Length - 2;
         }
-        if (look_direction == true) //if looking right
+        if (look_direction == false) //if looking right
         {
-            return seat_indexes[pos] + 1; //right
+            return seat_indexes[seat] + 1; //right
         }
-        return seat_indexes[pos] - 1; //left
+        return seat_indexes[seat] - 1; //left
     }
 
     //called by shifting player after shift to a new SEAT_LOCATION
@@ -238,14 +240,12 @@ public class SeatManager : NetworkBehaviour
     }
 
     //called to trigger an RPC to relinquish a seat
-    public bool getUp(int seat)
+    public void clearSeatOccupancy(int seat)
     {
         if (occupied_seats[seat] == SteamClient.SteamId)
         {
             transmitSeatOccupantChangeRPC(seat, NetworkManager.Singleton.LocalClientId, SteamClient.SteamId, false);
-            return true;
         }
-        return false;
     }
 
     public void reflectPowerChange()

@@ -151309,7 +151309,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.0312, y: 0.0047998647}
+  m_AnchoredPosition: {x: 0.0312, y: 0.0048}
   m_SizeDelta: {x: 0.08, y: 0.08}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &602127792
@@ -235173,7 +235173,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.0312, y: -0.001000294}
+  m_AnchoredPosition: {x: 0.0312, y: -0.001}
   m_SizeDelta: {x: 0.08, y: 0.08}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &943559201
@@ -246680,6 +246680,7 @@ MonoBehaviour:
   world_root: {fileID: 0}
   spaceship: {fileID: 271686953}
   camera_settings: {fileID: 353639901}
+  intro_sequence_manager: {fileID: 0}
   audio_manager: {fileID: 17234537}
   effects_handler: {fileID: 629750337}
   failure_handler: {fileID: 1294688396}
@@ -429483,7 +429484,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.0312, y: 0.020599684}
+  m_AnchoredPosition: {x: 0.0312, y: 0.0206}
   m_SizeDelta: {x: 0.08, y: 0.08}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1735206249
@@ -528051,7 +528052,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.0312, y: 0.012699774}
+  m_AnchoredPosition: {x: 0.0312, y: 0.0127}
   m_SizeDelta: {x: 0.08, y: 0.08}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2136185224
