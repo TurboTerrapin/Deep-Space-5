@@ -104,7 +104,7 @@ public class BriefingConsoleOptions : MonoBehaviour, IControllable, IIKTargetabl
     private void updateButtons()
     {
         BUTTONS[0].updateInteractable(is_active && briefing_console_screen.getCurrentPage() > 0 && button_press_coroutine == null);
-        BUTTONS[1].updateInteractable(is_active && (briefing_console_screen.getCurrentPage() < (BriefingConsoleScreen.PAGE_MESSAGES.Length - 1)) && button_press_coroutine == null);
+        BUTTONS[1].updateInteractable(is_active && (briefing_console_screen.getCurrentPage() < (BriefingConsoleScreen.NUM_PAGES - 1)) && button_press_coroutine == null);
     }
 
     IEnumerator buttonPress(int index)

@@ -12,7 +12,7 @@ using UnityEngine;
 public class BriefingConsoleScreen : MonoBehaviour, IDescribable
 {
     //CLASS CONSTANTS
-    public static string[][] PAGE_MESSAGES = new string[][]
+    private string[][] PAGE_MESSAGES = new string[][]
     {
         new string[] { "GOOD MORNING ENSIGN ", "- OPERATION HOLIDAY IS A GO", "- ALL SAFETY CHECKS ARE VERIFIED", "- EVERY TEAM MEMBER IS ACCOUNTED FOR", "- YOU ARE THE LAST TO REPORT", "PROCEED TO NEXT PAGE" }, //page 1
         new string[] { "YOUR TARGET IS SCC-3002", "- U.S.S. RENEWAL, MANIFEST CLASS", "- MAXIMUM CREW SIZE OF 50", "- READY FOR LONG-DISTANCE TRAVEL", "- CURRENTLY UNDERGOING RENOVATIONS", "PROCEED TO NEXT PAGE" }, //page 2
@@ -23,6 +23,7 @@ public class BriefingConsoleScreen : MonoBehaviour, IDescribable
         new string[] { "GOOD LUCK ENSIGN ", "- IF YOU ARE CAUGHT, I CANNOT HELP YOU", "- IF YOU DEFY THESE INSTRUCTIONS, I CANNOT HELP YOU", "- EXIT DOOR IS NOW UNLOCKED", "- THIS MESSAGE WILL AUTO-DELETE IN 10 MINUTES" }, //page 7
         new string[] { "I HOPE TO SEE YOU FACE-TO-FACE AT DEEP SPACE FIVE IN APPROXIMATELY 4 DAYS TO DISCUSS YOUR NEXT STEPS", "YOUR VALUE CANNOT BE UNDERSTATED", "YOUR TRAINING IS YOUR STRENGTH", "YOUR FRIEND ON THE INSIDE,", "- W.G." } //page 8
     };
+    public const int NUM_PAGES = 8;
     private static float DELETE_DELAY = 600.0f; //10 minutes
 
     private static string CONTROL_NAME = "BRIEFING CONSOLE DISPLAY";
