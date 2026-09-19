@@ -6,18 +6,19 @@
     - Sends user inputs to control script if looking at said control and within RAYCAST_RANGE
     - Handles transmitting IK targets for hand movement animations
     Contributor(s): Jake Schott, John Aylward
-    Last Updated: 9/6/2026
+    Last Updated: 9/16/2026
 */
 
 using UnityEngine;
+using System.Collections;
 
 public class IntroPrimaryScript : PrimaryScript
 {
     public override void onShiftChange()
     {
-        bool can_shift_left = false;
-        bool can_shift_right = false;
-        GetComponent<SecondaryScript>().updateShiftIndicators(false, (IntroSequenceManager.SEAT_COORDINATES[curr_seat].Length > 0), can_shift_left, can_shift_right);
+        bool can_shift_left = ReferenceAssistor.Instance.intro_sequence_manager.canShiftLeft(curr_seat);
+        bool can_shift_right = ReferenceAssistor.Instance.intro_sequence_manager.canShiftRight(curr_seat);
+        GetComponent<SecondaryScript>().updateShiftIndicators(player_prefab.GetComponent<PlayerMove>().IsShifting(), (IntroSequenceManager.SEAT_COORDINATES[curr_seat].Length > 0), can_shift_left, can_shift_right);
     }
 
     public override bool isCaptainMode()
@@ -95,14 +96,34 @@ public class IntroPrimaryScript : PrimaryScript
 
         //update camera
         player_prefab.GetComponent<CameraMove>().parentRotationLock = false;
-        float[] rotations = new float[] { 90.0f };
+        float[] rotations = new float[] { 90.0f, 180.0f };
         player_prefab.GetComponent<CameraMove>().UnlockCamera(new Vector2(rotations[curr_seat], 30.0f));
     }
 
     //called when hitting shift while sitting down
     protected override void attemptSeatShift()
     {
+        //briefing room seat doesn't shift
+        if (curr_seat == 0)
+        {
+            return;
+        }
 
+        StartCoroutine(seatShift());
+    }
+
+    private IEnumerator seatShift()
+    {
+        //trigger shift positional adjustments
+        GameObject physical_seat = ReferenceAssistor.Instance.intro_sequence_manager.physical_seats[curr_seat];
+        Vector2 push_adjustment = IntroSequenceManager.SEAT_PUSH_IN_ADJUSTMENTS[curr_seat];
+        int new_seat_index = ReferenceAssistor.Instance.intro_sequence_manager.getShiftLocation(curr_seat, isLookingLeft());
+        Vector3 end_shift_position = new Vector3(IntroSequenceManager.SEAT_COORDINATES[curr_seat][new_seat_index].x, physical_seat.transform.localPosition.y, IntroSequenceManager.SEAT_COORDINATES[curr_seat][new_seat_index].y);
+
+        yield return player_prefab.GetComponent<PlayerMove>().SeatShift(physical_seat, push_adjustment, end_shift_position);
+
+        ReferenceAssistor.Instance.intro_sequence_manager.updateSeatIndex(curr_seat, new_seat_index);
+        onShiftChange();
     }
 
     protected override HUDInfo checkRayTarget()

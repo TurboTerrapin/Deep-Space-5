@@ -2,7 +2,7 @@
     BriefingConsoleScreen.cs
     - Used to give the player the background information for their mission
     Contributor(s): Jake Schott
-    Last Updated: 9/8/2026
+    Last Updated: 9/18/2026
 */
 
 using System.Collections;
@@ -19,9 +19,9 @@ public class BriefingConsoleScreen : MonoBehaviour, IDescribable
         new string[] { "TARGET SHIP IS CURRENTLY UNGUARDED", "- MOVE WITH HASTE", "- DO NOT STOP FOR ANYTHING OR ANYONE", "- REMAIN CALM AND PROFESSIONAL", "- STICK TO THE PLAN", "PROCEED TO NEXT PAGE" }, //page 3
         new string[] { "MEET YOUR TEAM ABOARD SCC-3002", "- DEPART IMMEDIATELY", "- ENGAGE WARP DRIVE", "- MAINTAIN RADIO SILENCE", "- RENDEZVOUS AT DEEP SPACE FIVE",  "PROCEED TO NEXT PAGE" }, //page 4
         new string[] { "AS A REMINDER", "- YOU WILL PASS THROUGH ITEM STORAGE", "- YOU WILL PASS THROUGH CONSOLE REPAIR", "- YOU WILL ARRIVE AT HANGAR CONTROL", "- YOU WILL PROCEED TO HANGAR B3", "PROCEED TO NEXT PAGE" }, //page 5
-        new string[] { "WHEN YOU ARRIVE AT HANGAR CONTROL", "- ASSUME CONTROL CONSOLE", "- SET AUTHORIZATION CODE TO ", "- SET CLEARANCE DESIGNATION TO ", "- IF CORRECT, DOOR WILL OPEN", "PROCEED TO NEXT PAGE" }, //page 6
+        new string[] { "WHEN YOU ARRIVE AT HANGAR CONTROL", "- ASSUME CONTROL CONSOLE", "- OPEN HANGAR SPACE DOORS", "- SET CLEARANCE CODE TO ", "- IF CORRECT, DOOR WILL OPEN", "PROCEED TO NEXT PAGE" }, //page 6
         new string[] { "GOOD LUCK ENSIGN ", "- IF YOU ARE CAUGHT, I CANNOT HELP YOU", "- IF YOU DEFY THESE INSTRUCTIONS, I CANNOT HELP YOU", "- EXIT DOOR IS NOW UNLOCKED", "- THIS MESSAGE WILL AUTO-DELETE IN 10 MINUTES" }, //page 7
-        new string[] { "I HOPE TO SEE YOU FACE-TO-FACE AT DEEP SPACE FIVE IN APPROXIMATELY 4 DAYS TO DISCUSS YOUR NEXT STEPS", "YOUR VALUE CANNOT BE UNDERSTATED", "YOUR TRAINING IS YOUR STRENGTH", "YOUR FRIEND ON THE INSIDE,", "- W.G." } //page 8
+        new string[] { "I WILL SEE YOU FACE-TO-FACE AT DEEP SPACE FIVE IN APPROXIMATELY 4 DAYS TO DISCUSS YOUR NEXT STEPS", "DO NOT ATTEMPT TO CONTACT ME", "DO NOT MENTION MY NAME TO ANYONE", "YOUR FRIEND ON THE INSIDE,", "- W.G." } //page 8
     };
     public const int NUM_PAGES = 8;
     private static float DELETE_DELAY = 600.0f; //10 minutes
@@ -52,8 +52,7 @@ public class BriefingConsoleScreen : MonoBehaviour, IDescribable
         briefing_console_report_display.transform.GetChild(3).GetChild(0).GetComponent<TMP_Text>().SetText("ENCRYPTED MESSAGE FOR\n" + CustomizeCharacterMenu.GetFirstName() + " " + CustomizeCharacterMenu.GetLastName());
         PAGE_MESSAGES[0][0] += CustomizeCharacterMenu.GetLastName();
         PAGE_MESSAGES[6][0] += CustomizeCharacterMenu.GetLastName();
-        PAGE_MESSAGES[5][2] += ReferenceAssistor.Instance.intro_sequence_manager.getOverrideCode();
-        PAGE_MESSAGES[5][3] += IntroSequenceManager.SHAPE_NAMES[ReferenceAssistor.Instance.intro_sequence_manager.getOverrideShape()];
+        PAGE_MESSAGES[5][3] += ReferenceAssistor.Instance.intro_sequence_manager.getClearanceCode();
 
         hud_info = new HUDInfo(CONTROL_NAME);
         hud_info.setInfo(CONTROL_INFO);

@@ -206,10 +206,10 @@ public class SeatManager : NetworkBehaviour
         return (seat_indexes[seat] < (SEAT_COORDINATES[seat].Length - 1));
     }
 
-    //returns the SEAT_COORDINATES index based on whether the seat is farthest left, farthest right, or if in the middle, look direction (left = false)
+    //returns the SEAT_COORDINATES index based on whether the seat is farthest left, farthest right, or if in the middle, look direction (left = true)
     public int getShiftLocation(int seat, bool look_direction)
     {
-        if (seat <= 1)
+        if (seat < 2) //pilot and tactician
         {
             int new_seat_index = 0;
             if (seat_indexes[seat] == 0) //if left, then right
@@ -218,6 +218,8 @@ public class SeatManager : NetworkBehaviour
             }
             return new_seat_index; //left
         }
+
+        //else, engineer
         if (seat_indexes[seat] == 0) //if furthest left, one to the right
         {
             return 1;
