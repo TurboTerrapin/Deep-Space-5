@@ -47,6 +47,7 @@ public class PowerAllocation : NetworkBehaviour, IControllable, IPowerable, IIKT
 
     [Header("IK Targetable Details")]
     public List<GameObject> IK_targets = null;
+    public List<GameObject> hand_placements = null;
     public AnimatorHandler.HandInteractionType hand_interaction_type = AnimatorHandler.HandInteractionType.Pinch;
     public float hand_pose = 0;
     public bool does_right_hand_flip = false;
@@ -83,7 +84,24 @@ public class PowerAllocation : NetworkBehaviour, IControllable, IPowerable, IIKT
     public Transform getIKTarget(GameObject current_target)
     {
         int index = ray_targets.IndexOf(current_target.name);
-        return IK_targets[index].transform;
+
+        float shortestDistance;
+        int shortestIndex = index * 2;
+        shortestDistance = Vector3.Distance(hand_placements[index].transform.position, IK_targets[shortestIndex].transform.position);
+
+        int topSearchBound = shortestIndex + 1;
+
+        for (int i = index * 2; i <= topSearchBound; i++)
+        {
+            float distance = Vector3.Distance(hand_placements[index].transform.position, IK_targets[i].transform.position);
+            if (distance < shortestDistance)
+            {
+                shortestDistance = distance;
+                shortestIndex = i;
+            }
+        }
+
+        return IK_targets[shortestIndex].transform;
     }
 
     public AnimatorHandler.HandInteractionType getHandInteractionType()

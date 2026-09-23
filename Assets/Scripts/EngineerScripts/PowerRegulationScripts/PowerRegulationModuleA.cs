@@ -80,17 +80,16 @@ public class PowerRegulationModuleA : NetworkBehaviour, IControllable, IPowerReg
     public Transform getIKTarget(GameObject current_target)
     {
         int index = ray_targets.IndexOf(current_target.name);
-        int offset = index;
-
+        
         float shortestDistance;
-        int shortestIndex = offset * 4;
-        shortestDistance = Vector3.Distance(hand_placements[offset].transform.position, IK_targets[shortestIndex].transform.position);
+        int shortestIndex = index * 4;
+        shortestDistance = Vector3.Distance(hand_placements[index].transform.position, IK_targets[shortestIndex].transform.position);
 
         int topSearchBound = shortestIndex + 3;
 
-        for (int i = offset * 4; i <= topSearchBound; i++)
+        for (int i = index * 4; i <= topSearchBound; i++)
         {
-            float distance = Vector3.Distance(hand_placements[offset].transform.position, IK_targets[i].transform.position);
+            float distance = Vector3.Distance(hand_placements[index].transform.position, IK_targets[i].transform.position);
             if (distance < shortestDistance)
             {
                 shortestDistance = distance;

@@ -33322,6 +33322,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: CharacterWithZeroAlphaHands
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 0e581236a56a5a54da28fc27b8b1565d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

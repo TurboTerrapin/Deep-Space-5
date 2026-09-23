@@ -5,6 +5,7 @@
     Last Updated: 6/27/2026
 */
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -83,32 +84,21 @@ public class PhaserFrequency : NetworkBehaviour, IControllable, IPowerable, IIKT
         {
             float shortestDistance;
             int shortestIndex = 1;
-            if (increasing)
+
+            shortestDistance = Vector3.Distance(hand_placements[0].transform.position, IK_targets[shortestIndex].transform.position);
+
+            int topSearchBound = shortestIndex + 3;
+
+            for (int i = 2; i < IK_targets.Count; i++)
             {
-                shortestDistance = Vector3.Distance(hand_placements[0].transform.position, IK_targets[shortestIndex].transform.position);
-                for (int i = 2; i < IK_targets.Count; i++)
+                float distance = Vector3.Distance(hand_placements[0].transform.position, IK_targets[i].transform.position);
+                if (distance < shortestDistance)
                 {
-                    float distance = Vector3.Distance(hand_placements[0].transform.position, IK_targets[i].transform.position);
-                    if (distance < shortestDistance)
-                    {
-                        shortestDistance = distance;
-                        shortestIndex = i;
-                    }
+                    shortestDistance = distance;
+                    shortestIndex = i;
                 }
             }
-            else
-            {
-                shortestDistance = Vector3.Distance(hand_placements[0].transform.position, IK_targets[shortestIndex].transform.position);
-                for (int i = 2; i < IK_targets.Count; i++)
-                {
-                    float distance = Vector3.Distance(hand_placements[0].transform.position, IK_targets[i].transform.position);
-                    if (distance < shortestDistance)
-                    {
-                        shortestDistance = distance;
-                        shortestIndex = i;
-                    }
-                }
-            }
+
             return IK_targets[shortestIndex].transform;
         }
     }
