@@ -22,6 +22,9 @@ public class CameraMove : MonoBehaviour
     private static float ZOOMED_FOV = 40.0f;
     private static float DEFAULT_FOV = 60.0f;
     private static Vector2[] SITTING_CAMERA_HORIZONTAL_RANGES = new Vector2[] { new Vector2(-120.0f, 120.0f), new Vector2(-80.0f, 80.0f) }; //Non-captain and captain
+    [SerializeField]
+    private static Vector2 SITTING_CAMERA_VERTICAL_RANGE = new Vector2(-10.0f, 55.0f); //Negative is for how far you can look up, weirdly
+    private static Vector2 STANDING_CAMERA_VERTICAL_RANGE = new Vector2(-70.0f, 85.0f);
 
     public Transform cameraHolder;
     public Transform headTransform;
@@ -31,7 +34,7 @@ public class CameraMove : MonoBehaviour
     private AnimatorHandler animatorHandler = null;
 
     private bool cameraLocked = true; //If true, means camera cannot be moved with mouse
-    private Vector2 mouseMove = new Vector2();
+    private Vector2 mouseMove = new Vector2(); //Stores the current frames mouse movement (usually a fairly small value)
     private Vector2 prevPos = new Vector2(0.0f, 0.0f); //X represents angle of camera, Y represents angle of player capsule
     private Vector2 sittingHorizontalRange = SITTING_CAMERA_HORIZONTAL_RANGES[0];
     private Vector3 cameraOffset = Vector3.zero; //Offset (for camera shake)
@@ -295,14 +298,14 @@ public class CameraMove : MonoBehaviour
 
         if (!parentRotationLock) //Free roaming
         {
-            prevPos.y = Mathf.Clamp(prevPos.y, -70.0f, 85.0f);
+            prevPos.y = Mathf.Clamp(prevPos.y, STANDING_CAMERA_VERTICAL_RANGE.x, STANDING_CAMERA_VERTICAL_RANGE.y);
 
             transform.localRotation = Quaternion.AngleAxis(prevPos.x, Vector3.up);
             cameraHolder.localRotation = Quaternion.AngleAxis(prevPos.y, Vector3.right);
         }
         else //Sitting down
         {
-            prevPos.y = Mathf.Clamp(prevPos.y, -10.0f, 50.0f);
+            prevPos.y = Mathf.Clamp(prevPos.y, SITTING_CAMERA_VERTICAL_RANGE.x, SITTING_CAMERA_VERTICAL_RANGE.y);
             prevPos.x = Mathf.Clamp(prevPos.x, sittingHorizontalRange.x, sittingHorizontalRange.y);
 
             cameraHolder.localRotation = Quaternion.AngleAxis(prevPos.x, Vector3.up) * Quaternion.AngleAxis(prevPos.y, Vector3.right);
@@ -325,7 +328,7 @@ public class CameraMove : MonoBehaviour
                 animatorHandler.chestlookat = chestIKLookAtCurve.Evaluate(prevPos.x / 120);
             }
 
-                animatorHandler.chestlookat *= (prevPos.y + 10) / 100;
+            animatorHandler.chestlookat *= (prevPos.y + 10) / 100;
         }
 
         cameraHolder.position = headTransform.position;

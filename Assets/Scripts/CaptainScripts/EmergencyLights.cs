@@ -36,9 +36,9 @@ public class EmergencyLights : NetworkBehaviour, IControllable, IPowerable, IIKT
     private static HUDInfo hud_info = null;
 
     [Header("IK Targetable Details")]
-    public GameObject ik_target = null;
-    public AnimatorHandler.HandInteractionType hand_interaction_type = AnimatorHandler.HandInteractionType.Pinch;
-    public float hand_pose = 0;
+    public List<GameObject> IK_targets = null;
+    public List<AnimatorHandler.HandInteractionType> hand_interaction_types = null;
+    public List<float> hand_poses = null;
     public bool does_right_hand_flip = false;
     public Vector3 right_hand_offset = Vector3.zero;
     [Tooltip("Set to -1 for no lerp")]
@@ -57,15 +57,18 @@ public class EmergencyLights : NetworkBehaviour, IControllable, IPowerable, IIKT
     }
     public Transform getIKTarget(GameObject current_target)
     {
-        return ik_target.transform;
+        if (emergency_lights_enabled) return IK_targets[0].transform;
+        return IK_targets[1].transform;
     }
     public AnimatorHandler.HandInteractionType getHandInteractionType()
     {
-        return hand_interaction_type;
+        if(emergency_lights_enabled) return hand_interaction_types[0];
+        return hand_interaction_types[1];
     }
     public float getHandPose()
     {
-        return hand_pose;
+        if (emergency_lights_enabled) return hand_poses[0];
+        return hand_poses[1];
     }
     public bool getRightHandFlip()
     {

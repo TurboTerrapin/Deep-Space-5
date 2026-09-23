@@ -238,7 +238,8 @@ public class AnimatorHandler : MonoBehaviour
     private Quaternion currentRotationL;
     //a callback for calculating IK
 
-    public Transform temp = null;
+    [SerializeField]
+    private Transform rightArmAdjusted = null;
 
 
     void OnAnimatorIK()
@@ -291,11 +292,11 @@ public class AnimatorHandler : MonoBehaviour
                     myAnimator.SetIKRotation(AvatarIKGoal.RightHand, currentRotationR);
 
 
-                    temp.transform.position = currentR;
-                    temp.transform.rotation = currentRotationR;
-                    temp.Translate(rArmAdjustment);
+                    rightArmAdjusted.transform.position = currentR;
+                    rightArmAdjusted.transform.rotation = currentRotationR;
+                    rightArmAdjusted.Translate(rArmAdjustment);
 
-                    myAnimator.SetIKPosition(AvatarIKGoal.RightHand, temp.position);
+                    myAnimator.SetIKPosition(AvatarIKGoal.RightHand, rightArmAdjusted.position);
 
                 }
                 else

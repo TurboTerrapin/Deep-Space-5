@@ -6730,7 +6730,7 @@ MonoBehaviour:
   - {fileID: 1443438323}
   - {fileID: 1574954115}
   hand_interaction_types: 0300000003000000
-  hand_pose: 0.45
+  hand_pose: 0.9
   does_right_hand_flip: 0
   right_hand_offset: {x: 0.07, y: 0, z: 0}
   lerp_speed: 5
@@ -55779,7 +55779,7 @@ GameObject:
   m_Component:
   - component: {fileID: 187232675}
   m_Layer: 0
-  m_Name: ShipBeaconDialIKTarget
+  m_Name: ShipBeaconDialIOFFKTarget
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -55793,13 +55793,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 187232674}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.5, y: -0.5, z: -0.50000006, w: 0.50000006}
-  m_LocalPosition: {x: 0.11379999, y: -0.093201056, z: 0.102100015}
+  m_LocalRotation: {x: 0.56098557, y: -0.43045938, z: -0.56098557, w: 0.43045938}
+  m_LocalPosition: {x: 0.1094, y: 0.0142, z: 0.0855}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 256594264}
-  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 180}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: -105}
 --- !u!1 &187389095
 GameObject:
   m_ObjectHideFlags: 0
@@ -67285,7 +67285,7 @@ Transform:
   m_GameObject: {fileID: 231432121}
   serializedVersion: 2
   m_LocalRotation: {x: 0.40557978, y: -0.40557978, z: -0.579228, w: 0.579228}
-  m_LocalPosition: {x: -0.333, y: 2.441, z: -0.8166}
+  m_LocalPosition: {x: -0.333, y: 2.4541, z: -0.8166}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -72658,6 +72658,7 @@ Transform:
   m_Children:
   - {fileID: 242510998}
   - {fileID: 187232675}
+  - {fileID: 604393208}
   m_Father: {fileID: 876596181}
   m_LocalEulerAnglesHint: {x: 0, y: -21, z: 180}
 --- !u!23 &256594265
@@ -127697,11 +127698,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ship_beacon_dial: {fileID: 256594263}
   ship_beacon_display: {fileID: 567502037}
-  ik_target: {fileID: 187232674}
-  hand_interaction_type: 1
-  hand_pose: 0.4
+  IK_targets:
+  - {fileID: 604393207}
+  - {fileID: 187232674}
+  hand_interaction_types: 0100000003000000
+  hand_poses:
+  - 0.4
+  - 0.9
   does_right_hand_flip: 0
-  right_hand_offset: {x: 0, y: 0, z: 0}
+  right_hand_offset: {x: 0.07, y: 0, z: 0}
   lerp_speed: 5
 --- !u!114 &446617456
 MonoBehaviour:
@@ -127718,11 +127723,15 @@ MonoBehaviour:
   emergency_lights_dial: {fileID: 813894520}
   emergency_lights_display: {fileID: 1033748839}
   lights_manager: {fileID: 1205278334}
-  ik_target: {fileID: 1082454006}
-  hand_interaction_type: 1
-  hand_pose: 0.4
+  IK_targets:
+  - {fileID: 1155654757}
+  - {fileID: 1082454006}
+  hand_interaction_types: 0100000003000000
+  hand_poses:
+  - 0.4
+  - 0.9
   does_right_hand_flip: 0
-  right_hand_offset: {x: 0, y: 0, z: 0}
+  right_hand_offset: {x: 0.07, y: 0, z: 0}
   lerp_speed: 5
 --- !u!114 &446617459
 MonoBehaviour:
@@ -139080,7 +139089,7 @@ Transform:
   m_GameObject: {fileID: 482611855}
   serializedVersion: 2
   m_LocalRotation: {x: 0.40557975, y: -0.40557972, z: -0.579228, w: 0.57922804}
-  m_LocalPosition: {x: -0.304, y: 2.468, z: -0.827}
+  m_LocalPosition: {x: -0.304, y: 2.4811, z: -0.827}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -150324,7 +150333,7 @@ Transform:
   m_GameObject: {fileID: 521139981}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7933532, y: -0.000000029802322, z: -0.000000029802322, w: -0.6087617}
-  m_LocalPosition: {x: -0.0295, y: 0.1321, z: 0.0968}
+  m_LocalPosition: {x: -0.0297, y: 0.0941, z: 0.0978}
   m_LocalScale: {x: 0.005, y: 0.005, z: 0.005}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -175916,6 +175925,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 604379206}
   m_CullTransparentMesh: 1
+--- !u!1 &604393207
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 604393208}
+  m_Layer: 0
+  m_Name: ShipBeaconDialONIKTarget
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &604393208
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 604393207}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -0.0308, y: 0.1196, z: 0.0657}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 256594264}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &604444192
 GameObject:
   m_ObjectHideFlags: 0
@@ -178397,7 +178437,7 @@ Transform:
   m_GameObject: {fileID: 616136118}
   serializedVersion: 2
   m_LocalRotation: {x: 0.40557978, y: -0.40557978, z: -0.579228, w: 0.579228}
-  m_LocalPosition: {x: -0.304, y: 2.44, z: -0.827}
+  m_LocalPosition: {x: -0.304, y: 2.4531, z: -0.827}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -237313,6 +237353,7 @@ Transform:
   m_Children:
   - {fileID: 76973898}
   - {fileID: 1082454007}
+  - {fileID: 1155654758}
   m_Father: {fileID: 1622474539}
   m_LocalEulerAnglesHint: {x: 0, y: -21, z: 0}
 --- !u!23 &813894522
@@ -306881,7 +306922,7 @@ Transform:
   m_GameObject: {fileID: 1068538156}
   serializedVersion: 2
   m_LocalRotation: {x: -0.5609854, y: 0.5609852, z: 0.4304597, w: -0.43045962}
-  m_LocalPosition: {x: 0.1113, y: 0.0505, z: 0.0968}
+  m_LocalPosition: {x: 0.0941, y: 0.0297, z: 0.0978}
   m_LocalScale: {x: 0.005, y: 0.005, z: 0.005}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -311375,7 +311416,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1082454007}
   m_Layer: 0
-  m_Name: EmergencyLightsDialIKTarget
+  m_Name: EmergencyLightsOFFDialIKTarget
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -311389,13 +311430,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1082454006}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.5, y: 0.5, z: 0.50000006, w: 0.50000006}
-  m_LocalPosition: {x: -0.1469, y: 0.04659678, z: 0.13100003}
+  m_LocalRotation: {x: 0.4304593, y: 0.56098557, z: 0.4304593, w: 0.56098557}
+  m_LocalPosition: {x: -0.109, y: -0.0144, z: 0.0825}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 813894521}
-  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 180}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 75}
 --- !u!1 &1082665557
 GameObject:
   m_ObjectHideFlags: 0
@@ -332162,6 +332203,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1155392884}
   m_CullTransparentMesh: 1
+--- !u!1 &1155654757
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1155654758}
+  m_Layer: 0
+  m_Name: EmergencyLightsONDialIKTarget
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1155654758
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1155654757}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -0.0387, y: 0.1234, z: 0.0568}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 813894521}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &1156063301
 GameObject:
   m_ObjectHideFlags: 0
@@ -413654,7 +413726,7 @@ Transform:
   m_GameObject: {fileID: 1422672054}
   serializedVersion: 2
   m_LocalRotation: {x: 0.40557978, y: -0.40557978, z: -0.579228, w: 0.579228}
-  m_LocalPosition: {x: -0.333, y: 2.466, z: -0.817}
+  m_LocalPosition: {x: -0.333, y: 2.4791, z: -0.817}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -439378,7 +439450,7 @@ Transform:
   m_GameObject: {fileID: 1517538267}
   serializedVersion: 2
   m_LocalRotation: {x: 0.40557978, y: -0.40557978, z: -0.579228, w: 0.579228}
-  m_LocalPosition: {x: -0.367, y: 2.454, z: -0.805}
+  m_LocalPosition: {x: -0.367, y: 2.4671, z: -0.805}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -500459,7 +500531,7 @@ Transform:
   m_GameObject: {fileID: 1733024002}
   serializedVersion: 2
   m_LocalRotation: {x: -0.000000014901161, y: 0.79335314, z: 0.60876167, w: 0.000000029802322}
-  m_LocalPosition: {x: 0.0297, y: -0.0903, z: 0.0968}
+  m_LocalPosition: {x: 0.0297, y: -0.0941, z: 0.0978}
   m_LocalScale: {x: 0.005, y: 0.005, z: 0.005}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -556007,7 +556079,7 @@ Transform:
   m_GameObject: {fileID: 1935201011}
   serializedVersion: 2
   m_LocalRotation: {x: 0.4055798, y: -0.4055798, z: -0.579228, w: 0.579228}
-  m_LocalPosition: {x: -0.387, y: 2.454, z: -0.798}
+  m_LocalPosition: {x: -0.387, y: 2.4671, z: -0.798}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -569774,7 +569846,7 @@ Transform:
   m_GameObject: {fileID: 1983296240}
   serializedVersion: 2
   m_LocalRotation: {x: -0.56098545, y: -0.56098545, z: -0.43045944, w: -0.4304595}
-  m_LocalPosition: {x: -0.1111, y: -0.0087, z: 0.0968}
+  m_LocalPosition: {x: -0.0941, y: -0.0297, z: 0.0978}
   m_LocalScale: {x: 0.005, y: 0.005, z: 0.005}
   m_ConstrainProportionsScale: 0
   m_Children: []
