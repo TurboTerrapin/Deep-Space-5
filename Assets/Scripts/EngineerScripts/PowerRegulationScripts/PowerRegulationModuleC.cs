@@ -36,7 +36,8 @@ public class PowerRegulationModuleC : NetworkBehaviour, IControllable, IPowerReg
     private static HUDInfo hud_info = null;
 
     [Header("IK Targetable Details")]
-    public GameObject IK_target = null;
+    public List<GameObject> IK_targets = null;
+    public List<GameObject> hand_placements = null;
     public AnimatorHandler.HandInteractionType hand_interaction_type = AnimatorHandler.HandInteractionType.Pinch;
     public float hand_pose = 0;
     public bool does_right_hand_flip = false;
@@ -63,7 +64,21 @@ public class PowerRegulationModuleC : NetworkBehaviour, IControllable, IPowerReg
 
     public Transform getIKTarget(GameObject current_target)
     {
-        return IK_target.transform;
+        float shortestDistance;
+        int shortestIndex = 0;
+        shortestDistance = Vector3.Distance(hand_placements[0].transform.position, IK_targets[shortestIndex].transform.position);
+
+        for (int i = 1; i < IK_targets.Count; i++)
+        {
+            float distance = Vector3.Distance(hand_placements[0].transform.position, IK_targets[i].transform.position);
+            if (distance < shortestDistance)
+            {
+                shortestDistance = distance;
+                shortestIndex = i;
+            }
+        }
+
+        return IK_targets[shortestIndex].transform;
     }
 
     public AnimatorHandler.HandInteractionType getHandInteractionType()

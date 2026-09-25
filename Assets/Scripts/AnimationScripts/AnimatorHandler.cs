@@ -9,9 +9,10 @@
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
+//using static UnityEditor.PlayerSettings;
 
 [RequireComponent(typeof(Animator))]
-public class AnimatorHandler : MonoBehaviour
+public class AnimatorHandler : NetworkBehaviour
 {
     [SerializeField]
     private Animator myAnimator = null;
@@ -81,15 +82,17 @@ public class AnimatorHandler : MonoBehaviour
     public void setRightArmIKPosition(Vector3 pos)
     {
         rightHandObj.position = pos;
+        //setIKRightArmPositionRPC(pos);
     }
     public void setRightArmIKRotation(Quaternion rot)
     {
         rightHandObj.rotation = rot;
     }
-    public void setRightArmIKTransform(Transform transform)
+    public void setRightArmIKTransform(Transform tr)
     {
-        rightHandObj.position = transform.position;
-        rightHandObj.rotation = transform.rotation;
+        rightHandObj.position = tr.position;
+        rightHandObj.rotation = tr.rotation;
+        //setIKRightArmPositionRPC(tr.position);
     }
     public void flipRightArmIKRotation(bool flip)
     {
@@ -107,16 +110,18 @@ public class AnimatorHandler : MonoBehaviour
     public void setLeftArmIKPosition(Vector3 pos)
     {
         leftHandObj.position = pos;
+        //setIKLeftArmPositionRPC(pos);
     }
 
     public void setLeftArmIKRotation(Quaternion rot)
     {
         leftHandObj.rotation = rot;
     }
-    public void setLeftArmIKTransform(Transform transform)
+    public void setLeftArmIKTransform(Transform tr)
     {
-        leftHandObj.position = transform.position;
-        leftHandObj.rotation = transform.rotation;
+        leftHandObj.position = tr.position;
+        leftHandObj.rotation = tr.rotation;
+        //setIKLeftArmPositionRPC(tr.position);
     }
 
     public void setHeadIKPosition(Vector3 pos)
@@ -376,4 +381,16 @@ public class AnimatorHandler : MonoBehaviour
     {
         ikLeftArm = value;
     }
+
+//    [Rpc(SendTo.NotMe)]
+//    public void setIKRightArmPositionRPC(Vector3 pos)
+//    {
+//        rightHandObj.transform.position = pos;
+//    }
+
+//    [Rpc(SendTo.NotMe)]
+//    public void setIKLeftArmPositionRPC(Vector3 pos)
+//    {
+//        leftHandObj.transform.position = pos;
+//    }
 }
