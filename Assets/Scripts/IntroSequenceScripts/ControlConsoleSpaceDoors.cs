@@ -22,6 +22,8 @@ public class ControlConsoleSpaceDoors : MonoBehaviour, IControllable, IIKTargeta
     private List<int> CONTROL_INDEXES = new List<int>() { 4, 5 };
     private List<Button> BUTTONS = new List<Button>();
 
+    public GameObject top_space_door;
+    public GameObject bottom_space_door;
     public GameObject space_doors_handle;
     public GameObject space_doors_handle_display; //used to display the bars on the side of the handle
     public GameObject space_doors_wall_display; //used to display the wall
@@ -115,6 +117,10 @@ public class ControlConsoleSpaceDoors : MonoBehaviour, IControllable, IIKTargeta
         }
         space_doors_wall_display.transform.GetChild(4).gameObject.SetActive(space_doors_open_percentage < 1.0f);
         space_doors_wall_display.transform.GetChild(5).gameObject.SetActive(space_doors_open_percentage == 1.0f);
+
+        //update space doors
+        top_space_door.transform.localPosition = Vector3.Lerp(Vector3.zero, new Vector3(0.0f, 40.0f, 0.0f), space_doors_open_percentage);
+        bottom_space_door.transform.localPosition = Vector3.Lerp(Vector3.zero, new Vector3(0.0f, -40.0f, 0.0f), space_doors_open_percentage);
 
         //check for door unlock
         ReferenceAssistor.Instance.intro_sequence_manager.checkForDoorUnlock();
