@@ -27,7 +27,16 @@ public class SensorDescriptor : MonoBehaviour, IDescribable
         "ship_overview",
         "ship_health",
         "ship_inventory",
-        "engine_temperature_information"
+        "engine_temperature_information",
+        "hangar_climate_control",
+        "hangar_power_status",
+        "hangar_auxiliary_power",
+        "hangar_drydock_overview",
+        "hangar_space_doors_status",
+        "hangar_inventory",
+        "hangar_life_support",
+        "hangar_umbilical_connection",
+        "hangar_door_access"
     };
 
     //module titles 
@@ -47,7 +56,16 @@ public class SensorDescriptor : MonoBehaviour, IDescribable
         "SHIP OVERVIEW",
         "SHIP HEALTH",
         "SHIP INVENTORY",
-        "ENGINE TEMPERATURE INFORMATION"
+        "ENGINE TEMPERATURE INFORMATION",
+        "HANGAR CLIMATE CONTROL",
+        "HANGAR POWER STATUS",
+        "HANGAR AUXILIARY POWER",
+        "HANGAR DRYDOCK OVERVIEW",
+        "SPACE DOORS STATUS",
+        "HANGAR INVENTORY",
+        "HANGAR LIFE SUPPORT",
+        "HANGAR UMBILICAL CONNECTION",
+        "HANGAR DOOR ACCESS"
     };
 
     //module additional info, or "" if none
@@ -67,7 +85,16 @@ public class SensorDescriptor : MonoBehaviour, IDescribable
         "",
         "",
         "Shows ship inventory for probes, escape pods, shield batteries, cargo, and torpedoes.",
-        "Shows engine coolant supply flow and current engine temperature. Increased engine temperature causes maximum ship travel speed to be reduced."
+        "Shows engine coolant supply flow and current engine temperature. Increased engine temperature causes maximum ship travel speed to be reduced.",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Unlocks when space doors are fully open and clearance dode is correct."
     };
 
     private List<HUDInfo> corresponding_infos = new List<HUDInfo>();

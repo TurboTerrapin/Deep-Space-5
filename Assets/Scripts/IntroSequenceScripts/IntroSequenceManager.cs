@@ -2,7 +2,7 @@
     IntroSequenceManager.cs
     - Used to manage the intro sequence where the player walks around (tutorial)
     Contributor(s): Jake Schott
-    Last Updated: 9/18/2026
+    Last Updated: 9/26/2026
 */
 
 using System.Collections;
@@ -30,6 +30,7 @@ public class IntroSequenceManager : MonoBehaviour
     public List<GameObject> physical_seats = null;
     public GameObject hangar_door;
     public GameObject hangar_door_display;
+    public GameObject hangar_clearance_access_display;
 
     private int[] seat_indexes = new int[2] { -1, 0 };
     private string hangar_door_clearance_code = "";
@@ -74,6 +75,9 @@ public class IntroSequenceManager : MonoBehaviour
             hangar_door.transform.GetChild(3).gameObject.GetComponent<Renderer>().material = ReferenceAssistor.Instance.lit_red;
             hangar_door.transform.GetChild(4).gameObject.GetComponent<Renderer>().material = ReferenceAssistor.Instance.pure_black;
         }
+
+        hangar_clearance_access_display.transform.GetChild(1).gameObject.SetActive(!door_unlocked);
+        hangar_clearance_access_display.transform.GetChild(2).gameObject.SetActive(door_unlocked);
     }
 
     public int checkSeats(Vector3 player_pos)
