@@ -6,7 +6,7 @@
     - Sends user inputs to control script if looking at said control and within RAYCAST_RANGE
     - Handles transmitting IK targets for hand movement animations
     Contributor(s): Jake Schott, John Aylward
-    Last Updated: 9/6/2026
+    Last Updated: 9/27/2026
 */
 
 using System.Collections;
@@ -46,7 +46,7 @@ public abstract class PrimaryScript : MonoBehaviour
     protected bool control_update_flag = false;
     protected int curr_seat = -1;
     protected bool is_sitting = false;
-    protected Coroutine intro_yield_coroutine = null;
+    protected Coroutine mission_objective_yield_coroutine = null;
     protected Coroutine seat_check_coroutine = null;
     protected Coroutine control_check_coroutine = null;
     protected Coroutine ray_target_check_coroutine = null;
@@ -173,46 +173,46 @@ public abstract class PrimaryScript : MonoBehaviour
         //begin control interfacing
         primary_info.SetActive(false);
 
-        //free player movement, start checking to sit down, begin gameplay
+        //free player movement, start mission objective notification, begin gameplay
         can_pause = true;
         player_prefab.GetComponent<PlayerMove>().Initialize();
         if (hints_setting == true && HUD_setting < 2)
         {
             GetComponent<SecondaryScript>().displayMissionObjective((SceneManager.GetActiveScene().name.CompareTo("IntroSequence") != 0), 1.0f);
-            intro_yield_coroutine = StartCoroutine(introYield());
+            mission_objective_yield_coroutine = StartCoroutine(missionObjectiveYield());
         }
         else
         {
-            onIntroComplete();
+            onMissionObjectiveComplete();
             unpause();
         }
     }
 
-    //called after intro 
-    protected void onIntroComplete()
+    //called after mission objective being shown 
+    protected void onMissionObjectiveComplete()
     {
+        activate();
         GetComponent<SecondaryScript>().endMissionObjectiveReveal();
         GetComponent<SecondaryScript>().setPermanentOverlayVisibility(hints_setting && HUD_setting < 2);
-        activate();
         seat_check_coroutine = StartCoroutine(seatCheck());
     }
 
-    protected IEnumerator introYield()
+    protected IEnumerator missionObjectiveYield()
     {
         do
         {
             yield return null;
         }
-        while (GetComponent<SecondaryScript>().isDisplayingIntro() == true);
+        while (GetComponent<SecondaryScript>().isAnimatingNotification() == true);
 
-        while (Input.GetKeyDown(KeyCode.Space) == false)
+        while (checkInputIndexDown(13) == false)
         {
             yield return null;
         }
 
-        intro_yield_coroutine = null;
+        mission_objective_yield_coroutine = null;
 
-        onIntroComplete();
+        onMissionObjectiveComplete();
         unpause();
     }
 
@@ -369,12 +369,12 @@ public abstract class PrimaryScript : MonoBehaviour
         GetComponent<SecondaryScript>().setSecondaryInfoVisibility(false);
         paused = true;
         cursor.SetActive(false);
-        if (intro_yield_coroutine != null)
+        if (mission_objective_yield_coroutine != null)
         {
-            StopCoroutine(intro_yield_coroutine);
-            intro_yield_coroutine = null;
+            StopCoroutine(mission_objective_yield_coroutine);
+            mission_objective_yield_coroutine = null;
             GetComponent<SecondaryScript>().endMissionObjectiveReveal();
-            onIntroComplete();
+            onMissionObjectiveComplete();
         }
     }
 
@@ -386,22 +386,25 @@ public abstract class PrimaryScript : MonoBehaviour
         pause_settings_menu.SetActive(false);
         pause_controls_menu.SetActive(false);
         pause_confirm_quit_menu.SetActive(false);
-        GetComponent<SecondaryScript>().setSecondaryInfoVisibility(is_active && HUD_setting < 2);
-        GetComponent<SecondaryScript>().setPermanentOverlayVisibility(is_active && HUD_setting == 0);
-        GetComponent<SecondaryScript>().setSittingOverlayVisibility(is_active && is_sitting && HUD_setting == 0);
+        if (GetComponent<SecondaryScript>().hasTutorialNotificationsInQueue() == false)
+        {
+            GetComponent<SecondaryScript>().setSecondaryInfoVisibility(is_active && HUD_setting < 2);
+            GetComponent<SecondaryScript>().setPermanentOverlayVisibility(is_active && HUD_setting == 0);
+            GetComponent<SecondaryScript>().setSittingOverlayVisibility(is_active && is_sitting && HUD_setting == 0);
+        }
         paused = false;
         if (is_active == true)
         {
             if (HUD_setting != 4)
             {
-                cursor.SetActive(true);
+                cursor.SetActive(GetComponent<SecondaryScript>().isDisplayingNotification() == false);
             }
         }
     }
 
     public void activate()
     {
-        if (intro_yield_coroutine != null)
+        if (mission_objective_yield_coroutine != null)
         {
             return;
         }

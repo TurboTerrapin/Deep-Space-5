@@ -2,7 +2,7 @@
     SensorDescriptor.cs
     - Used to give UI indicators for non-controllable screens
     Contributor(s): Jake Schott
-    Last Updated: 8/6/2026
+    Last Updated: 9/26/2026
 */
 
 using UnityEngine;
@@ -94,7 +94,7 @@ public class SensorDescriptor : MonoBehaviour, IDescribable
         "",
         "",
         "",
-        "Unlocks when space doors are fully open and clearance dode is correct."
+        "Unlocks when space doors are fully open and clearance code is correct."
     };
 
     private List<HUDInfo> corresponding_infos = new List<HUDInfo>();

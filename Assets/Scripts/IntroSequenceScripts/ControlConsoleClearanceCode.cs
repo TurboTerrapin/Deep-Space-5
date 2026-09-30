@@ -189,10 +189,12 @@ public class ControlConsoleClearanceCode : MonoBehaviour, IControllable, IIKTarg
         //flash if correct code
         if (codeIsCorrect() && correct_code_flasher_coroutine == null)
         {
+            ReferenceAssistor.Instance.hints_manager.removeHint(IntroPrimaryScript.HINT_MESSAGES[2] + ReferenceAssistor.Instance.intro_sequence_manager.getClearanceCode(), 5); //remove hint
             correct_code_flasher_coroutine = StartCoroutine(correctCodeFlasher());
         }
         else
         {
+            ReferenceAssistor.Instance.hints_manager.addHint(IntroPrimaryScript.HINT_MESSAGES[2] + ReferenceAssistor.Instance.intro_sequence_manager.getClearanceCode(), 5); //add/keep hint
             if (correct_code_flasher_coroutine != null)
             {
                 StopCoroutine(correct_code_flasher_coroutine);

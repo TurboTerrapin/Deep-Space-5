@@ -699,7 +699,7 @@ public class ScenarioManager : NetworkBehaviour
         ReferenceAssistor.Instance.player_manager.getLocalPlayer().GetComponent<CameraMove>().ResetCameraEffects();
 
         //show transition
-        scenario_transitioner.GetComponent<TransitionHandler>().ShowTransition(transition_option, OverviewTracker.getStarDate(percent_to_DSF), OverviewTracker.getDistanceToDSF(percent_to_DSF));
+        scenario_transitioner.GetComponent<TransitionHandler>().ShowTransition(transition_option, OverviewTracker.getStardate(percent_to_DSF), OverviewTracker.getDistanceToDSF(percent_to_DSF));
 
         //update overview screen in back of bridge
         ReferenceAssistor.Instance.module_handlers[4].GetComponent<OverviewTracker>().updateOverviewDisplay(percent_to_DSF);
@@ -734,7 +734,7 @@ public class ScenarioManager : NetworkBehaviour
         PrimaryScript.Instance.deactivate(false, true);
 
         //display death screen using scenario number sn and death message frm
-        failure_handler.GetComponent<FailureHandler>().displayDeathScreen(lobby_handler.getPlayerNamesInLobby(), lobby_handler.getPlayerSteamIDsInLobby(), OverviewTracker.getStarDate(percent_to_DSF), failure_message, caught);
+        failure_handler.GetComponent<FailureHandler>().displayDeathScreen(lobby_handler.getPlayerNamesInLobby(), lobby_handler.getPlayerSteamIDsInLobby(), OverviewTracker.getStardate(percent_to_DSF), failure_message, caught);
     }
 
     //used to update the boundary expiration timer in engineer position

@@ -19,7 +19,7 @@ public class BriefingConsoleScreen : MonoBehaviour, IDescribable
         new string[] { "TARGET SHIP IS CURRENTLY UNGUARDED", "- MOVE WITH HASTE", "- DO NOT STOP FOR ANYTHING OR ANYONE", "- REMAIN CALM AND PROFESSIONAL", "- STICK TO THE PLAN", "PROCEED TO NEXT PAGE" }, //page 3
         new string[] { "MEET YOUR TEAM ABOARD SCC-3002", "- DEPART IMMEDIATELY", "- ENGAGE WARP DRIVE", "- MAINTAIN RADIO SILENCE", "- RENDEZVOUS AT DEEP SPACE FIVE",  "PROCEED TO NEXT PAGE" }, //page 4
         new string[] { "AS A REMINDER", "- YOU WILL PASS THROUGH ITEM STORAGE", "- YOU WILL PASS THROUGH CONSOLE REPAIR", "- YOU WILL ARRIVE AT HANGAR CONTROL", "- YOU WILL PROCEED TO HANGAR B3", "PROCEED TO NEXT PAGE" }, //page 5
-        new string[] { "WHEN YOU ARRIVE AT HANGAR CONTROL", "- ASSUME CONTROL CONSOLE", "- OPEN HANGAR SPACE DOORS", "- SET CLEARANCE CODE TO ", "- IF CORRECT, DOOR WILL OPEN", "PROCEED TO NEXT PAGE" }, //page 6
+        new string[] { "WHEN YOU ARRIVE AT HANGAR CONTROL", "- ASSUME CONTROL CONSOLE", "- OPEN HANGAR SPACE DOORS", "- SET CLEARANCE CODE TO ", "- ONCE COMPLETE, ACCESS DOOR WILL OPEN", "PROCEED TO NEXT PAGE" }, //page 6
         new string[] { "GOOD LUCK ENSIGN ", "- IF YOU ARE CAUGHT, I CANNOT HELP YOU", "- IF YOU DEFY THESE INSTRUCTIONS, I CANNOT HELP YOU", "- EXIT DOOR IS NOW UNLOCKED", "- THIS MESSAGE WILL AUTO-DELETE IN 10 MINUTES" }, //page 7
         new string[] { "I WILL SEE YOU FACE-TO-FACE AT DEEP SPACE FIVE IN APPROXIMATELY 4 DAYS TO DISCUSS YOUR NEXT STEPS", "DO NOT ATTEMPT TO CONTACT ME", "DO NOT MENTION MY NAME TO ANYONE", "YOUR FRIEND ON THE INSIDE,", "- W.G." } //page 8
     };
@@ -199,6 +199,9 @@ public class BriefingConsoleScreen : MonoBehaviour, IDescribable
         briefing_room_exit_door.transform.GetChild(4).GetComponent<MeshRenderer>().material = ReferenceAssistor.Instance.lit_green;
         briefing_room_exit_door_display.transform.GetChild(1).gameObject.SetActive(false);
         briefing_room_exit_door_display.transform.GetChild(2).gameObject.SetActive(true);
+
+        //end hint
+        ReferenceAssistor.Instance.hints_manager.removeHint(IntroPrimaryScript.HINT_MESSAGES[0], 5);
     }
 
     IEnumerator autoDeleteDelay()

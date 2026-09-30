@@ -6,7 +6,7 @@
     - Sends user inputs to control script if looking at said control and within RAYCAST_RANGE
     - Handles transmitting IK targets for hand movement animations
     Contributor(s): Jake Schott, John Aylward
-    Last Updated: 9/16/2026
+    Last Updated: 9/27/2026
 */
 
 using UnityEngine;
@@ -14,6 +14,11 @@ using System.Collections;
 
 public class IntroPrimaryScript : PrimaryScript
 {
+    //CLASS CONSTANTS
+    public static string[] HINT_MESSAGES = new string[] { "VIEW CONSOLE MESSAGE", "OPEN SPACE DOORS", "ENTER CODE " };
+
+    private bool[] hints_shown = new bool[2] { false, false };
+
     public override void onShiftChange()
     {
         bool can_shift_left = ReferenceAssistor.Instance.intro_sequence_manager.canShiftLeft(curr_seat);
@@ -76,6 +81,19 @@ public class IntroPrimaryScript : PrimaryScript
         GameObject physical_seat = ReferenceAssistor.Instance.intro_sequence_manager.physical_seats[curr_seat];
         Vector2 push_adjustment = IntroSequenceManager.SEAT_PUSH_IN_ADJUSTMENTS[curr_seat];
         player_prefab.GetComponent<PlayerMove>().SeatPush(physical_seat, push_adjustment);
+
+        //display hint(s)
+        if (curr_seat == 0 && hints_shown[0] == false)
+        {
+            hints_shown[0] = true;
+            ReferenceAssistor.Instance.hints_manager.addHint(HINT_MESSAGES[0], 5);
+        }
+        else if (curr_seat == 1 && hints_shown[1] == false)
+        {
+            hints_shown[1] = true;
+            ReferenceAssistor.Instance.hints_manager.addHint(HINT_MESSAGES[2] + ReferenceAssistor.Instance.intro_sequence_manager.getClearanceCode(), 5);
+            ReferenceAssistor.Instance.hints_manager.addHint(HINT_MESSAGES[1], 5);
+        }
     }
 
     //starts get up animation

@@ -2,10 +2,11 @@
     SecondaryScript.cs
     - Helps with secondary info that isn't primary control interactions
     Contributor(s): Jake Schott
-    Last Updated: 9/6/2026
+    Last Updated: 9/26/2026
 */
 
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -27,8 +28,9 @@ public class SecondaryScript : MonoBehaviour
     private GameObject sitting_right_side;
     private GameObject primary_default_power_circles;
 
+    private List<int> tutorial_notification_queue = new List<int>();
     private float displayed_power = 0.0f;
-    private Coroutine mission_objective_display_coroutine = null;
+    private Coroutine notification_animation_coroutine = null;
 
     private void Awake()
     {
@@ -262,24 +264,48 @@ public class SecondaryScript : MonoBehaviour
 
     public void displayMissionObjective(bool bridge_environment_intro, float delay)
     {
-        if (mission_objective_display_coroutine != null)
+        if (notification_animation_coroutine != null)
         {
-            StopCoroutine(mission_objective_display_coroutine);
+            StopCoroutine(notification_animation_coroutine);
         }
 
         if (bridge_environment_intro == true)
         {
-            mission_objective_display_coroutine = StartCoroutine(bridgeEnvironmentMissionObjectiveReveal(delay));
+            notification_animation_coroutine = StartCoroutine(bridgeEnvironmentMissionObjectiveReveal(delay));
         }
         else
         {
-            mission_objective_display_coroutine = StartCoroutine(introSequenceMissionObjectiveReveal(delay));
+            notification_animation_coroutine = StartCoroutine(introSequenceMissionObjectiveReveal(delay));
         }
     }
 
-    public bool isDisplayingIntro()
+    public void displayIntroSequenceTutorialNotification(int tutorial_index)
     {
-        return (mission_objective_display_coroutine != null);
+        if (tutorial_notification_queue.Count == 0 && isDisplayingNotification() == false)
+        {
+            notification_animation_coroutine = StartCoroutine(introSequenceNotificationAnimation(tutorial_index));
+        }
+        else
+        {
+            tutorial_notification_queue.Add(tutorial_index);
+        }
+    }
+
+    public bool isDisplayingNotification()
+    {
+        for (int i = 3; i < permanent_overlay.transform.childCount; i++)
+        {
+            if (permanent_overlay.transform.GetChild(i).gameObject.activeSelf == true)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public bool isAnimatingNotification()
+    {
+        return (notification_animation_coroutine != null);
     }
 
     public void endMissionObjectiveReveal()
@@ -289,12 +315,40 @@ public class SecondaryScript : MonoBehaviour
         current_station_indicator.SetActive(true);
 
         //end intro and hide mission objective
-        if (mission_objective_display_coroutine != null)
+        if (notification_animation_coroutine != null)
         {
-            StopCoroutine(mission_objective_display_coroutine);
-            mission_objective_display_coroutine = null;
+            StopCoroutine(notification_animation_coroutine);
+            notification_animation_coroutine = null;
         }
         mission_objective.SetActive(false);
+
+        //check for tutorial notification to display after
+        checkForTutorialNotificationToDisplay();
+    }
+
+    public bool hasTutorialNotificationsInQueue()
+    {
+        return (tutorial_notification_queue.Count > 0);
+    }
+
+    private void clearTutorialNotifications()
+    {
+        //clear tutorial queue
+        tutorial_notification_queue.Clear();
+
+        //hide all tutorial notifications
+        for (int i = 4; i < permanent_overlay.transform.childCount; i++)
+        {
+            permanent_overlay.transform.GetChild(i).gameObject.SetActive(false);
+        }
+    }
+
+    private void checkForTutorialNotificationToDisplay()
+    {
+        if (notification_animation_coroutine == null && tutorial_notification_queue.Count > 0)
+        {
+            notification_animation_coroutine = StartCoroutine(introSequenceNotificationAnimation(tutorial_notification_queue[0]));
+        }
     }
 
     IEnumerator bridgeEnvironmentMissionObjectiveReveal(float delay)
@@ -388,7 +442,7 @@ public class SecondaryScript : MonoBehaviour
             yield return null;
         }
 
-        mission_objective_display_coroutine = null;
+        notification_animation_coroutine = null;
     }
 
     IEnumerator introSequenceMissionObjectiveReveal(float delay)
@@ -451,6 +505,56 @@ public class SecondaryScript : MonoBehaviour
             yield return null;
         }
 
-        mission_objective_display_coroutine = null;
+        notification_animation_coroutine = null;
+    }
+
+    IEnumerator introSequenceNotificationAnimation(int tutorial_index)
+    {
+        GameObject tutorial_notification = permanent_overlay.transform.GetChild(4 + tutorial_index).gameObject;
+        PrimaryScript.Instance.deactivate(true, false);
+        setSecondaryInfoVisibility(true);
+        setPermanentOverlayVisibility(true);
+
+        foreach (Transform t in tutorial_notification.transform)
+        {
+            t.GetComponent<CanvasGroup>().alpha = 0.0f;
+        }
+        tutorial_notification.gameObject.SetActive(true);
+
+        for (int i = 0; i < tutorial_notification.transform.childCount; i++)
+        {
+            CanvasGroup cg = tutorial_notification.transform.GetChild(i).GetComponent<CanvasGroup>();
+            float anim_time = 1.0f;
+            while (anim_time > 0.0f && PrimaryScript.Instance.isPaused() == false)
+            {
+                anim_time = Mathf.Max(0.0f, anim_time - Time.deltaTime);
+
+                cg.alpha = 1.0f - anim_time;
+
+                yield return null;
+            }
+            if (PrimaryScript.Instance.isPaused() == true)
+            {
+                break;
+            }
+        }
+
+        while (PrimaryScript.checkInputIndexDown(13) == false && PrimaryScript.Instance.isPaused() == false)
+        {
+            yield return null;
+        }
+
+        tutorial_notification_queue.Remove(tutorial_index);
+        tutorial_notification.gameObject.SetActive(false);
+        if (PrimaryScript.Instance.isPaused() == true)
+        {
+            clearTutorialNotifications();
+        }
+
+        yield return null;
+
+        PrimaryScript.Instance.activate();
+        notification_animation_coroutine = null;
+        checkForTutorialNotificationToDisplay();
     }
 }

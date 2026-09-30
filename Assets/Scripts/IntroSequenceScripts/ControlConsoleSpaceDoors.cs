@@ -2,7 +2,7 @@
     ControlConsoleSpaceDoors.cs
     - Handles inputs for space doors lever
     Contributor(s): Jake Schott
-    Last Updated: 9/18/2026
+    Last Updated: 9/29/2026
 */
 
 using System.Collections;
@@ -24,6 +24,7 @@ public class ControlConsoleSpaceDoors : MonoBehaviour, IControllable, IIKTargeta
 
     public GameObject top_space_door;
     public GameObject bottom_space_door;
+    public AudioSource space_door_close_sound;
     public GameObject space_doors_handle;
     public GameObject space_doors_handle_display; //used to display the bars on the side of the handle
     public GameObject space_doors_wall_display; //used to display the wall
@@ -94,6 +95,29 @@ public class ControlConsoleSpaceDoors : MonoBehaviour, IControllable, IIKTargeta
         return (space_doors_open_percentage == 1.0f);
     }
 
+    IEnumerator doorClose(float time)
+    {
+        Vector3 starting_pos_t = top_space_door.transform.localPosition;
+        Vector3 starting_pos_b = bottom_space_door.transform.localPosition;
+
+        float anim_time = time;
+        while (anim_time > 0.0f)
+        {
+            anim_time = Mathf.Max(0.0f, anim_time - Time.deltaTime);
+
+            top_space_door.transform.localPosition = Vector3.Lerp(Vector3.zero, starting_pos_t, anim_time / time);
+            bottom_space_door.transform.localPosition = Vector3.Lerp(Vector3.zero, starting_pos_b, anim_time / time);
+
+            yield return null;
+        }
+
+        space_door_close_sound.Play();
+    }
+    public void closeDoors(float time)
+    {
+        StartCoroutine(doorClose(time));
+    }
+
     private void displayAdjustment()
     {
         //update lever position
@@ -124,6 +148,16 @@ public class ControlConsoleSpaceDoors : MonoBehaviour, IControllable, IIKTargeta
 
         //check for door unlock
         ReferenceAssistor.Instance.intro_sequence_manager.checkForDoorUnlock();
+
+        //check hint
+        if (space_doors_open_percentage == 1.0f)
+        {
+            ReferenceAssistor.Instance.hints_manager.removeHint(IntroPrimaryScript.HINT_MESSAGES[1], 5); //remove hint if open
+        }
+        else
+        {
+            ReferenceAssistor.Instance.hints_manager.addHint(IntroPrimaryScript.HINT_MESSAGES[1], 5); //keep/add hint if closed
+        }
     }
 
     private bool checkIfChangeNecessary()

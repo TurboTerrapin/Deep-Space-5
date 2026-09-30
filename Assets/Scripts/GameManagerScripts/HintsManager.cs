@@ -2,7 +2,7 @@
     HintsManager.cs
     - Handles displaying helpful hints on left side of screen
     Contributor(s): Jake Schott
-    Last Updated: 8/8/2026
+    Last Updated: 9/27/2026
 */
 
 using System.Collections;
@@ -16,9 +16,9 @@ public class HintsManager : NetworkBehaviour
     private static float HINT_SHOW_TIME = 1.0f;
     private static float HINT_HIDE_TIME = 0.25f;
     private static float HINT_FLASH_TIME = 0.5f;
-    private static Color[] HINT_BORDER_COLOR_OPTIONS = new Color[] { ReferenceAssistor.COLOR_OPTIONS[0], ReferenceAssistor.COLOR_OPTIONS[1], ReferenceAssistor.COLOR_OPTIONS[2], ReferenceAssistor.COLOR_OPTIONS[3], Color.red };
-    private static Texture[] HINT_ICON_OPTIONS = new Texture[] { null, null, null, null, null }; //pilot, tactician, engineer, captain, info
-    private static Color[] HINT_ICON_COLOR_OPTIONS = new Color[] { ReferenceAssistor.COLOR_OPTIONS[0], ReferenceAssistor.COLOR_OPTIONS[1], ReferenceAssistor.COLOR_OPTIONS[2], ReferenceAssistor.COLOR_OPTIONS[3], Color.red };
+    private static Color[] HINT_BORDER_COLOR_OPTIONS = new Color[] { ReferenceAssistor.COLOR_OPTIONS[0], ReferenceAssistor.COLOR_OPTIONS[1], ReferenceAssistor.COLOR_OPTIONS[2], ReferenceAssistor.COLOR_OPTIONS[3], Color.red, new Color(0.0f, 0.09f, 0.75f) };
+    private static Texture[] HINT_ICON_OPTIONS = new Texture[] { null, null, null, null, null, null }; //pilot, tactician, engineer, captain, info, SCC
+    private static Color[] HINT_ICON_COLOR_OPTIONS = new Color[] { ReferenceAssistor.COLOR_OPTIONS[0], ReferenceAssistor.COLOR_OPTIONS[1], ReferenceAssistor.COLOR_OPTIONS[2], ReferenceAssistor.COLOR_OPTIONS[3], Color.red, new Color(0.0f, 0.09f, 0.75f) };
 
     public GameObject hints_overlay;
     public Texture hint_icon;
@@ -44,6 +44,7 @@ public class HintsManager : NetworkBehaviour
             HINT_ICON_OPTIONS[i] = ReferenceAssistor.Instance.position_icons[i];
         }
         HINT_ICON_OPTIONS[4] = hint_icon;
+        HINT_ICON_OPTIONS[5] = hint_icon;
     }
 
     public struct Hint
@@ -247,7 +248,7 @@ public class HintsManager : NetworkBehaviour
 
     public void addHint(string msg, int hint_type)
     {
-        if (NetworkManager.Singleton.IsHost == false)
+        if (NetworkManager.Singleton.IsListening == true && NetworkManager.Singleton.IsHost == false)
         {
             return;
         }
@@ -258,17 +259,32 @@ public class HintsManager : NetworkBehaviour
             return;
         }
 
-        transmitHintAdditionRPC(msg, hint_type);
+        if (NetworkManager.Singleton.IsListening == true) //multiplayer
+        {
+            transmitHintAdditionRPC(msg, hint_type);
+        }
+        else //single player
+        {
+            displayHint(to_add);
+        }
     }
 
     public void removeHint(string msg, int hint_type)
     {
-        if (NetworkManager.Singleton.IsHost == false)
+        if (NetworkManager.Singleton.IsListening == true && NetworkManager.Singleton.IsHost == false)
         {
             return;
         }
 
-        transmitHintRemovalRPC(msg, hint_type);
+        if (NetworkManager.Singleton.IsListening == true) //multiplayer
+        {
+            transmitHintRemovalRPC(msg, hint_type);
+        }
+        else //single player
+        {
+            Hint hint_to_remove = new Hint(msg, (HintType)hint_type);
+            removeHint(hint_to_remove);
+        }
     }
 
     [Rpc(SendTo.Everyone)]
