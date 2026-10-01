@@ -190,8 +190,6 @@ public class BriefingConsoleScreen : MonoBehaviour, IDescribable
         StartCoroutine(autoDeleteDelay());
 
         //enable door
-        briefing_room_exit_door.transform.GetChild(0).GetComponent<BoxCollider>().enabled = false;
-        briefing_room_exit_door.transform.GetChild(1).GetComponent<BoxCollider>().enabled = false;
         briefing_room_exit_door.transform.GetChild(2).gameObject.SetActive(true);
 
         //change door locked symbol

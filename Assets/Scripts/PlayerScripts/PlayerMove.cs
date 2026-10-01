@@ -25,6 +25,7 @@ public class PlayerMove : NetworkBehaviour
     private Vector2 moveDir = new Vector2();
     [SerializeField]
     private Rigidbody playerRB = null;
+    private GameObject myCamera = null;
 
     private Coroutine seatChangeCoroutine = null; //Used for sit down or get up animations
     private Coroutine shiftCoroutine = null; //Used for seat shifting
@@ -42,6 +43,7 @@ public class PlayerMove : NetworkBehaviour
             DontDestroyOnLoad(gameObject);
         }
 
+        myCamera = GetComponent<CameraMove>().myCamera.gameObject;
         myAnimationController = GetComponent<AnimationController>();
 
         if (NetworkManager.Singleton.IsListening == false || GetComponent<NetworkObject>().IsOwner == true)
@@ -324,7 +326,7 @@ public class PlayerMove : NetworkBehaviour
     //Checks inputs and triggers move
     private void UpdateMovement()
     {
-        if (!PrimaryScript.Instance.isPaused())
+        if (!PrimaryScript.Instance.isPaused() && myCamera.activeSelf)
         {
             moveDir.x = Input.GetAxis("Horizontal");
             moveDir.y = Input.GetAxis("Vertical");

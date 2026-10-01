@@ -262,21 +262,14 @@ public class SecondaryScript : MonoBehaviour
         GetComponent<PrimaryScript>().setCursorVisibility(hide && !force_hide);
     }
 
-    public void displayMissionObjective(bool bridge_environment_intro, float delay)
+    public void displayBridgeEnvironmentMissionObjective(float delay)
     {
         if (notification_animation_coroutine != null)
         {
             StopCoroutine(notification_animation_coroutine);
         }
 
-        if (bridge_environment_intro == true)
-        {
-            notification_animation_coroutine = StartCoroutine(bridgeEnvironmentMissionObjectiveReveal(delay));
-        }
-        else
-        {
-            notification_animation_coroutine = StartCoroutine(introSequenceMissionObjectiveReveal(delay));
-        }
+        notification_animation_coroutine = StartCoroutine(bridgeEnvironmentMissionObjectiveReveal(delay));
     }
 
     public void displayIntroSequenceTutorialNotification(int tutorial_index)
@@ -308,7 +301,7 @@ public class SecondaryScript : MonoBehaviour
         return (notification_animation_coroutine != null);
     }
 
-    public void endMissionObjectiveReveal()
+    public void endBridgeEnvironmentMissionObjectiveReveal()
     {
         //show stations button and current station indicator
         stations_button.SetActive(true);
@@ -321,9 +314,6 @@ public class SecondaryScript : MonoBehaviour
             notification_animation_coroutine = null;
         }
         mission_objective.SetActive(false);
-
-        //check for tutorial notification to display after
-        checkForTutorialNotificationToDisplay();
     }
 
     public bool hasTutorialNotificationsInQueue()
@@ -337,7 +327,7 @@ public class SecondaryScript : MonoBehaviour
         tutorial_notification_queue.Clear();
 
         //hide all tutorial notifications
-        for (int i = 4; i < permanent_overlay.transform.childCount; i++)
+        for (int i = 3; i < permanent_overlay.transform.childCount; i++)
         {
             permanent_overlay.transform.GetChild(i).gameObject.SetActive(false);
         }
@@ -445,72 +435,9 @@ public class SecondaryScript : MonoBehaviour
         notification_animation_coroutine = null;
     }
 
-    IEnumerator introSequenceMissionObjectiveReveal(float delay)
-    {
-        //set transparency to 0
-        mission_objective.transform.GetChild(0).GetComponent<CanvasGroup>().alpha = 0.0f;
-        mission_objective.transform.GetChild(1).GetComponent<CanvasGroup>().alpha = 0.0f;
-        for (int i = 0; i < 2; i++)
-        {
-            mission_objective.transform.GetChild(i + 2).GetComponent<TMP_Text>().alpha = 0.0f;
-        }
-        mission_objective.transform.GetChild(4).GetComponent<CanvasGroup>().alpha = 0.0f;
-
-        yield return new WaitForSeconds(delay);
-
-        secondary_info.SetActive(true);
-        permanent_overlay.SetActive(true);
-        stations_button.SetActive(false);
-        current_station_indicator.SetActive(false);
-        station_functions.SetActive(false);
-        mission_objective.SetActive(true);
-
-        //background, border, dividers, and "MISSION OBJECTIVE"
-        float anim_time = 1.0f;
-        while (anim_time > 0.0f)
-        {
-            anim_time = Mathf.Max(0.0f, anim_time - Time.deltaTime);
-
-            float a = Mathf.Lerp(1.0f, 0.0f, anim_time);
-            mission_objective.transform.GetChild(0).GetComponent<CanvasGroup>().alpha = a;
-            mission_objective.transform.GetChild(1).GetComponent<CanvasGroup>().alpha = a;
-            mission_objective.transform.GetChild(2).GetComponent<TMP_Text>().alpha = a;
-
-            yield return null;
-        }
-
-        yield return new WaitForSeconds(0.5f);
-
-        //bullet one
-        anim_time = 1.0f;
-        while (anim_time > 0.0f)
-        {
-            anim_time = Mathf.Max(0.0f, anim_time - Time.deltaTime);
-
-            mission_objective.transform.GetChild(3).GetComponent<TMP_Text>().alpha = Mathf.Lerp(1.0f, 0.0f, anim_time);
-
-            yield return null;
-        }
-
-        yield return new WaitForSeconds(0.5f);
-
-        //show exit button
-        anim_time = 1.0f;
-        while (anim_time > 0.0f)
-        {
-            anim_time = Mathf.Max(0.0f, anim_time - Time.deltaTime);
-
-            mission_objective.transform.GetChild(4).GetComponent<CanvasGroup>().alpha = Mathf.Lerp(1.0f, 0.0f, anim_time);
-
-            yield return null;
-        }
-
-        notification_animation_coroutine = null;
-    }
-
     IEnumerator introSequenceNotificationAnimation(int tutorial_index)
     {
-        GameObject tutorial_notification = permanent_overlay.transform.GetChild(4 + tutorial_index).gameObject;
+        GameObject tutorial_notification = permanent_overlay.transform.GetChild(3 + tutorial_index).gameObject;
         PrimaryScript.Instance.deactivate(true, false);
         setSecondaryInfoVisibility(true);
         setPermanentOverlayVisibility(true);

@@ -6,7 +6,7 @@
     - Handles camera shaking
     - Handles displaying hints if hints enabled (station functions)
     Contributor(s): John Aylward, Jake Schott
-    Last Updated: 9/6/2026
+    Last Updated: 9/30/2026
 */
 
 using System.Collections;
@@ -25,11 +25,11 @@ public class CameraMove : MonoBehaviour
     private static Vector2[] SITTING_CAMERA_HORIZONTAL_RANGES = new Vector2[] { new Vector2(-120.0f, 120.0f), new Vector2(-80.0f, 80.0f) }; //Non-captain and captain
 
     public Transform cameraHolder;
+    public Camera myCamera;
     public Transform headTransform;
+    public AnimatorHandler animatorHandler = null;
     public bool parentRotationLock = false;
-    private Camera myCamera;
     private Rigidbody rb;
-    private AnimatorHandler animatorHandler = null;
 
     private bool cameraLocked = true; //If true, means camera cannot be moved with mouse
     private Vector2 mouseMove = new Vector2();
@@ -102,6 +102,7 @@ public class CameraMove : MonoBehaviour
         cameraHolder.parent = transform;
         cameraLocked = false;
         prevPos = initialPos;
+        MouseMove();
     }
 
     public void LockCamera()
@@ -256,7 +257,7 @@ public class CameraMove : MonoBehaviour
         }
         
         //If not paused
-        if (Cursor.lockState == CursorLockMode.Locked && cameraLocked == false)
+        if (myCamera.gameObject.activeSelf == true && Cursor.lockState == CursorLockMode.Locked && cameraLocked == false)
         {
             MouseMove();
         }
@@ -270,7 +271,7 @@ public class CameraMove : MonoBehaviour
                 PrimaryScript.Instance.GetComponent<SecondaryScript>().checkStationFunctionsInput(false);
             }
 
-            if (cameraLocked == false)
+            if (cameraLocked == false && myCamera.gameObject.activeSelf == true)
             {
                 //Zoom in
                 if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl) || Input.GetKey(KeyCode.Mouse1))

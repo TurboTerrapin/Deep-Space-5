@@ -2,7 +2,7 @@
     IntroSequenceManager.cs
     - Used to manage the intro sequence where the player walks around (tutorial)
     Contributor(s): Jake Schott
-    Last Updated: 9/28/2026
+    Last Updated: 9/30/2026
 */
 
 using System.Collections;
@@ -13,6 +13,7 @@ using UnityEngine;
 public class IntroSequenceManager : MonoBehaviour
 {
     //CLASS CONSTANTS
+    private static Vector3 PLAYER_STARTING_POS = new Vector3(0.0f, 1.0f, 0.0f);
     public static Color[] SEAT_COLORS = new Color[2] { new Color(0.0f, 0.08f, 0.75f), new Color(0.0f, 0.08f, 0.75f) };
     public static string[] SEAT_NAMES = new string[2] { "BRIEFING CONSOLE", "HANGAR CONTROL" };
     public static Vector2[][] SEAT_COORDINATES = new Vector2[2][]
@@ -30,12 +31,14 @@ public class IntroSequenceManager : MonoBehaviour
     public GameObject cutscene_camera;
     public GameObject opening_scene_camera_positions;
     public GameObject ending_scene_camera_positions;
+    public GameObject hallway_exterior_cutscene_light;
     public GameObject quarters_room_lights;
     public GameObject quarters_alarm_clock_display;
     public GameObject opening_scene_canvas;
     public GameObject ending_scene_canvas;
     public GameObject hangar_control_lights;
     public GameObject hangar_control_SCC_logos;
+    public GameObject hangar_control_alert_indicators;
     public GameObject hangar_control_navigation_display;
     public GameObject hangar_control_schedule_display;
     public GameObject hangar_control_alerts_display;
@@ -46,19 +49,19 @@ public class IntroSequenceManager : MonoBehaviour
     public AudioSource alarm_sound;
     public AudioSource ending_scene_music;
     public List<GameObject> physical_seats = null;
-    public GameObject hangar_door;
-    public GameObject hangar_door_display;
+    public GameObject hangar_access_door;
+    public GameObject hangar_access_door_display;
     public GameObject hangar_clearance_access_display;
 
     private int[] seat_indexes = new int[2] { -1, 0 };
-    private string hangar_door_clearance_code = "";
+    private string hangar_access_door_clearance_code = "";
 
     private void Awake()
     {
         for (int i = 0; i < 2; i++)
         {
             string digit = Random.Range(1, 10).ToString();
-            hangar_door_clearance_code += digit + digit;
+            hangar_access_door_clearance_code += digit + digit;
         }
 
         StartCoroutine(openingScene());
@@ -166,20 +169,18 @@ public class IntroSequenceManager : MonoBehaviour
 
     IEnumerator openingScene()
     {
+        PrimaryScript.Instance.unlockPlayer(player);
+        PrimaryScript.Instance.deactivate(true, false);
         opening_scene_canvas.SetActive(true);
         yield return new WaitForSeconds(1.0f);
 
-        Cursor.lockState = CursorLockMode.Locked;
         GameObject.Find("LoadHandler").GetComponent<LoadHandler>().endLoad(false);
-
         yield return new WaitForSeconds(2.0f);
 
         StartCoroutine(cameraAdjustment(opening_scene_camera_positions.transform.GetChild(0), opening_scene_camera_positions.transform.GetChild(1), 16.0f));
         StartCoroutine(alphaAdjustment(opening_scene_canvas.transform.GetChild(0).GetChild(0).GetComponent<CanvasGroup>(), 1.0f, 0.8f, 6.0f));
-
         opening_scene_music.Play();
         ambient_noise.Play();
-
         yield return new WaitForSeconds(2.5f);
 
         yield return alphaAdjustment(opening_scene_canvas.transform.GetChild(0).GetChild(1).GetComponent<CanvasGroup>(), 0.0f, 1.0f, 1.0f);
@@ -220,9 +221,20 @@ public class IntroSequenceManager : MonoBehaviour
         player.SetActive(true);
         yield return cameraAdjustment(opening_scene_camera_positions.transform.GetChild(22), opening_scene_camera_positions.transform.GetChild(23), 3.5f);
 
+        hallway_exterior_cutscene_light.SetActive(false);
         cutscene_camera.gameObject.SetActive(false);
+        player.transform.localPosition = PLAYER_STARTING_POS;
         player.GetComponent<CameraMove>().GetCamera().SetActive(true);
-        PrimaryScript.Instance.unlockPlayer(player);
+        player.GetComponent<CameraMove>().UnlockCamera(Vector2.zero);
+        PrimaryScript.Instance.activate();
+        if (PrimaryScript.Instance.hintsEnabled() == true)
+        {
+            while (PrimaryScript.Instance.isPaused() == true)
+            {
+                yield return null;
+            }
+            PrimaryScript.Instance.GetComponent<SecondaryScript>().displayIntroSequenceTutorialNotification(0);
+        }
     }
 
     public void endTutorial()
@@ -298,6 +310,9 @@ public class IntroSequenceManager : MonoBehaviour
         hangar_control_alerts_display.transform.GetChild(1).gameObject.SetActive(false);
         hangar_control_alerts_display.transform.GetChild(2).gameObject.SetActive(true);
         hangar_control_access_door_wall_clock_display.transform.GetChild(1).GetComponent<TMP_Text>().color = Color.red;
+        hangar_control_alert_indicators.GetComponent<MeshRenderer>().material = ReferenceAssistor.Instance.lit_red;
+        hangar_access_door_display.transform.GetChild(1).gameObject.SetActive(true);
+        hangar_access_door_display.transform.GetChild(2).gameObject.SetActive(false);
     }
 
     IEnumerator endingScene()
@@ -368,20 +383,20 @@ public class IntroSequenceManager : MonoBehaviour
     {
         bool door_unlocked = (ReferenceAssistor.Instance.module_handlers[1].GetComponent<ControlConsoleSpaceDoors>().doorIsOpen() && ReferenceAssistor.Instance.module_handlers[1].GetComponent<ControlConsoleClearanceCode>().codeIsCorrect());
 
-        hangar_door_display.transform.GetChild(1).gameObject.SetActive(!door_unlocked);
-        hangar_door_display.transform.GetChild(2).gameObject.SetActive(door_unlocked);
+        hangar_access_door_display.transform.GetChild(1).gameObject.SetActive(!door_unlocked);
+        hangar_access_door_display.transform.GetChild(2).gameObject.SetActive(door_unlocked);
 
-        hangar_door.transform.GetChild(2).gameObject.SetActive(door_unlocked);
+        hangar_access_door.transform.GetChild(2).gameObject.SetActive(door_unlocked);
 
         if (door_unlocked == true)
         {
-            hangar_door.transform.GetChild(3).gameObject.GetComponent<Renderer>().material = ReferenceAssistor.Instance.pure_black;
-            hangar_door.transform.GetChild(4).gameObject.GetComponent<Renderer>().material = ReferenceAssistor.Instance.lit_green;
+            hangar_access_door.transform.GetChild(3).gameObject.GetComponent<Renderer>().material = ReferenceAssistor.Instance.pure_black;
+            hangar_access_door.transform.GetChild(4).gameObject.GetComponent<Renderer>().material = ReferenceAssistor.Instance.lit_green;
         }
         else
         {
-            hangar_door.transform.GetChild(3).gameObject.GetComponent<Renderer>().material = ReferenceAssistor.Instance.lit_red;
-            hangar_door.transform.GetChild(4).gameObject.GetComponent<Renderer>().material = ReferenceAssistor.Instance.pure_black;
+            hangar_access_door.transform.GetChild(3).gameObject.GetComponent<Renderer>().material = ReferenceAssistor.Instance.lit_red;
+            hangar_access_door.transform.GetChild(4).gameObject.GetComponent<Renderer>().material = ReferenceAssistor.Instance.pure_black;
         }
 
         hangar_clearance_access_display.transform.GetChild(1).gameObject.SetActive(!door_unlocked);
@@ -472,6 +487,6 @@ public class IntroSequenceManager : MonoBehaviour
 
     public string getClearanceCode()
     {
-        return hangar_door_clearance_code;
+        return hangar_access_door_clearance_code;
     }
 }

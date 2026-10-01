@@ -18,7 +18,7 @@ public class BridgePrimaryScript : PrimaryScript
     {
         bool can_shift_left = ReferenceAssistor.Instance.seat_manager.canShiftLeft(curr_seat);
         bool can_shift_right = ReferenceAssistor.Instance.seat_manager.canShiftRight(curr_seat);
-        GetComponent<SecondaryScript>().updateShiftIndicators(player_prefab.GetComponent<PlayerMove>().IsShifting(), (curr_seat == 3), can_shift_left, can_shift_right);
+        GetComponent<SecondaryScript>().updateShiftIndicators(player_prefab.GetComponent<PlayerMove>().IsShifting(), (curr_seat != 3), can_shift_left, can_shift_right);
     }
 
     public override bool isCaptainMode()

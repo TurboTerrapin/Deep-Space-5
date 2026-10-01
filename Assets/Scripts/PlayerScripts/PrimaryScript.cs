@@ -46,7 +46,7 @@ public abstract class PrimaryScript : MonoBehaviour
     protected bool control_update_flag = false;
     protected int curr_seat = -1;
     protected bool is_sitting = false;
-    protected Coroutine mission_objective_yield_coroutine = null;
+    protected Coroutine bridge_environment_mission_objective_yield_coroutine = null;
     protected Coroutine seat_check_coroutine = null;
     protected Coroutine control_check_coroutine = null;
     protected Coroutine ray_target_check_coroutine = null;
@@ -176,28 +176,28 @@ public abstract class PrimaryScript : MonoBehaviour
         //free player movement, start mission objective notification, begin gameplay
         can_pause = true;
         player_prefab.GetComponent<PlayerMove>().Initialize();
-        if (hints_setting == true && HUD_setting < 2)
+        if (hints_setting == true && HUD_setting < 2 && SceneManager.GetActiveScene().name.CompareTo("IntroSequence") != 0)
         {
-            GetComponent<SecondaryScript>().displayMissionObjective((SceneManager.GetActiveScene().name.CompareTo("IntroSequence") != 0), 1.0f);
-            mission_objective_yield_coroutine = StartCoroutine(missionObjectiveYield());
+            GetComponent<SecondaryScript>().displayBridgeEnvironmentMissionObjective(1.0f);
+            bridge_environment_mission_objective_yield_coroutine = StartCoroutine(bridgeEnvironmentMissionObjectiveYield());
         }
-        else
+        else //not bridge environment
         {
-            onMissionObjectiveComplete();
+            onBridgeEnvironmentMissionObjectiveComplete();
             unpause();
         }
     }
 
     //called after mission objective being shown 
-    protected void onMissionObjectiveComplete()
+    protected void onBridgeEnvironmentMissionObjectiveComplete()
     {
         activate();
-        GetComponent<SecondaryScript>().endMissionObjectiveReveal();
+        GetComponent<SecondaryScript>().endBridgeEnvironmentMissionObjectiveReveal();
         GetComponent<SecondaryScript>().setPermanentOverlayVisibility(hints_setting && HUD_setting < 2);
         seat_check_coroutine = StartCoroutine(seatCheck());
     }
 
-    protected IEnumerator missionObjectiveYield()
+    protected IEnumerator bridgeEnvironmentMissionObjectiveYield()
     {
         do
         {
@@ -210,9 +210,9 @@ public abstract class PrimaryScript : MonoBehaviour
             yield return null;
         }
 
-        mission_objective_yield_coroutine = null;
+        bridge_environment_mission_objective_yield_coroutine = null;
 
-        onMissionObjectiveComplete();
+        onBridgeEnvironmentMissionObjectiveComplete();
         unpause();
     }
 
@@ -369,12 +369,12 @@ public abstract class PrimaryScript : MonoBehaviour
         GetComponent<SecondaryScript>().setSecondaryInfoVisibility(false);
         paused = true;
         cursor.SetActive(false);
-        if (mission_objective_yield_coroutine != null)
+        if (bridge_environment_mission_objective_yield_coroutine != null)
         {
-            StopCoroutine(mission_objective_yield_coroutine);
-            mission_objective_yield_coroutine = null;
-            GetComponent<SecondaryScript>().endMissionObjectiveReveal();
-            onMissionObjectiveComplete();
+            StopCoroutine(bridge_environment_mission_objective_yield_coroutine);
+            bridge_environment_mission_objective_yield_coroutine = null;
+            GetComponent<SecondaryScript>().endBridgeEnvironmentMissionObjectiveReveal();
+            onBridgeEnvironmentMissionObjectiveComplete();
         }
     }
 
@@ -386,12 +386,9 @@ public abstract class PrimaryScript : MonoBehaviour
         pause_settings_menu.SetActive(false);
         pause_controls_menu.SetActive(false);
         pause_confirm_quit_menu.SetActive(false);
-        if (GetComponent<SecondaryScript>().hasTutorialNotificationsInQueue() == false)
-        {
-            GetComponent<SecondaryScript>().setSecondaryInfoVisibility(is_active && HUD_setting < 2);
-            GetComponent<SecondaryScript>().setPermanentOverlayVisibility(is_active && HUD_setting == 0);
-            GetComponent<SecondaryScript>().setSittingOverlayVisibility(is_active && is_sitting && HUD_setting == 0);
-        }
+        GetComponent<SecondaryScript>().setSecondaryInfoVisibility(is_active && HUD_setting < 2);
+        GetComponent<SecondaryScript>().setPermanentOverlayVisibility(is_active && HUD_setting == 0);
+        GetComponent<SecondaryScript>().setSittingOverlayVisibility(is_active && is_sitting && HUD_setting == 0);
         paused = false;
         if (is_active == true)
         {
@@ -404,7 +401,7 @@ public abstract class PrimaryScript : MonoBehaviour
 
     public void activate()
     {
-        if (mission_objective_yield_coroutine != null)
+        if (bridge_environment_mission_objective_yield_coroutine != null)
         {
             return;
         }

@@ -62,6 +62,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -83,9 +85,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!135 &7130190146382292593
 SphereCollider:
@@ -183,6 +187,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -204,9 +210,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!136 &6651144661822147006
 CapsuleCollider:
@@ -238,10 +246,10 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5044668463616075467}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Mass: 50
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -270,15 +278,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 4033476747
+  GlobalObjectIdHash: 2290305919
   InScenePlacedSourceGlobalObjectIdHash: 2049436854
+  DeferredDespawnTick: 0
+  Ownership: 1
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
+  m_InScenePlaced: 0
   ActiveSceneSynchronization: 0
   SceneMigrationSynchronization: 1
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!114 &8408303967717794670
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -291,6 +304,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e81591fc113bfb408dcbec7f3e29282, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   playerRB: {fileID: 3147236109247125174}
   animator: {fileID: 6310913860878337281}
 --- !u!114 &354468506889354184
@@ -305,6 +319,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 491b2c7318394eb439cbf30b515aedbc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   leftEyeObject: {fileID: 627195117442887100}
   rightEyeObject: {fileID: 5505749068501960175}
   playerObject: {fileID: 4198554170782870750}
@@ -355,6 +370,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27b70b88b9bbf624fb2fa7c99a196f2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  NetworkTransformExpanded: 0
+  AutoOwnerAuthorityTickOffset: 1
+  PositionInterpolationType: 0
+  RotationInterpolationType: 0
+  ScaleInterpolationType: 0
+  PositionLerpSmoothing: 1
+  PositionMaxInterpolationTime: 0.1
+  RotationLerpSmoothing: 1
+  RotationMaxInterpolationTime: 0.1
+  ScaleLerpSmoothing: 1
+  ScaleMaxInterpolationTime: 0.1
+  AuthorityMode: 0
+  TickSyncChildren: 0
   UseUnreliableDeltas: 0
   SyncPositionX: 1
   SyncPositionY: 1
@@ -372,6 +401,7 @@ MonoBehaviour:
   UseQuaternionCompression: 0
   UseHalfFloatPrecision: 0
   InLocalSpace: 1
+  SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
   SlerpPosition: 0
 --- !u!114 &7434551271023729940
@@ -399,7 +429,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraHolder: {fileID: 682683335958875487}
+  myCamera: {fileID: 6197885425970537174}
   headTransform: {fileID: 9205947212310833813}
+  animatorHandler: {fileID: 4949771906129122618}
   parentRotationLock: 0
   chestIKLookAtCurve:
     serializedVersion: 2
@@ -581,7 +613,6 @@ MonoBehaviour:
   m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
-  m_Version: 2
   m_TaaSettings:
     m_Quality: 3
     m_FrameInfluence: 0.1
@@ -589,6 +620,7 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+  m_Version: 2
 --- !u!1 &5342489398951201457
 GameObject:
   m_ObjectHideFlags: 0
@@ -682,6 +714,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -703,9 +737,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!135 &2893363917683214303
 SphereCollider:
@@ -915,6 +951,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -936,9 +974,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1001 &3587153704815255226
 PrefabInstance:
@@ -1095,8 +1135,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 790b1dbce3f0914429ad10cb990b9bfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TransitionStateInfoList: []
+  ShowTopMostFoldoutHeaderGroup: 1
+  NetworkAnimatorExpanded: 0
+  AuthorityMode: 0
   m_Animator: {fileID: 6310913860878337281}
+  TransitionStateInfoList: []
+  AnimatorParameterEntries:
+    ParameterEntries:
+    - name: SittingDown
+      NameHash: -1204353896
+      Synchronize: 1
+      ParameterType: 4
+    - name: GettingUp
+      NameHash: -638582828
+      Synchronize: 1
+      ParameterType: 4
+    - name: Movement
+      NameHash: 229373857
+      Synchronize: 1
+      ParameterType: 1
+    - name: Forward
+      NameHash: 673977882
+      Synchronize: 1
+      ParameterType: 1
+    - name: IsCaptain
+      NameHash: 1241738808
+      Synchronize: 1
+      ParameterType: 4
+    - name: IsLeft
+      NameHash: -587794606
+      Synchronize: 1
+      ParameterType: 4
+    - name: HandPose
+      NameHash: 1570488986
+      Synchronize: 1
+      ParameterType: 1
+    - name: HandAnimSpeed
+      NameHash: 799714183
+      Synchronize: 1
+      ParameterType: 1
+    - name: HandInteractionType
+      NameHash: 1631809459
+      Synchronize: 1
+      ParameterType: 3
+  AnimatorParametersExpanded: 0
 --- !u!137 &4978826998828849956 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 8417361359673230750, guid: 27f0dddf90b4e264e87d1b2927078c1f, type: 3}
