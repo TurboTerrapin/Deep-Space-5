@@ -152,6 +152,13 @@ public class PlayerManager : NetworkBehaviour
         }
     }
 
+
+    [Rpc(SendTo.Everyone)]
+    private void sendPlayerCustomizationDataRPC(int client_id, int hair_index, int uniform_index, Color hair_color, Color eye_color, Color skin_color)
+    {
+
+    }
+
     //called only at the start of the game
     [Rpc(SendTo.Everyone)]
     private void unlockPlayersRPC()

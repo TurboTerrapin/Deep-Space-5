@@ -38,8 +38,11 @@ public class CharacterCustomization : NetworkBehaviour
     [SerializeField]
     private int clothing = 0;
 
+    [SerializeField]
     private Color HairColor = Color.white;
+    [SerializeField]
     private Color EyeColor = Color.white;
+    [SerializeField]
     private Color SkinColor = Color.white;
 
 
@@ -153,17 +156,26 @@ public class CharacterCustomization : NetworkBehaviour
 
     }*/
 
-
-    [Rpc(SendTo.Everyone)]
-    public void SyncCustomizationRPC()
+    [Rpc(SendTo.Owner)]
+    public void SyncAllCustomizationsRPC()
     {
-        if (IsOwner)
-        {
-            ApplyHairColor(HairColor);
-            ApplyEyeColor(EyeColor);
-            ApplySkinTone(SkinColor);
-            ChangeHairType(hair);
-        }
+        SyncCustomizationRPC(HairColor, EyeColor, SkinColor, hair, clothing);
+    }
+
+    [Rpc(SendTo.NotMe)]
+    public void SyncCustomizationRPC(Color hairColor, Color eyeColor, Color skinColor, int hairType, int clothingType)
+    {
+        HairColor = hairColor;
+        EyeColor = eyeColor;
+        SkinColor = skinColor;
+        hair = hairType;
+        clothing = clothingType;
+
+        ApplyHairColor(HairColor);
+        ApplyEyeColor(EyeColor);
+        ApplySkinTone(SkinColor);
+        ChangeHairType(hair);
+        ChangeClothingType(clothing);
     }
 
 

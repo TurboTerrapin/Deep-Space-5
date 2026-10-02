@@ -47,6 +47,11 @@ public class UniversalSettingsController : MonoBehaviour
     public Slider SFXVolumeSlider;
     public Image SFXVolumeFillBar;
     public TMP_Text ActualSFXVolumeLabel;
+    
+    // Voice Volume
+    public Slider VoiceVolumeSlider;
+    public Image VoiceVolumeFillBar;
+    public TMP_Text ActualVoiceVolumeLabel;
 
     // Camera Sensitivity
     public Slider CameraSensitivitySlider;
@@ -110,8 +115,13 @@ public class UniversalSettingsController : MonoBehaviour
 
         // Loads player volume preferece (default is 50%)
         float SFXVolume = PlayerPrefs.GetFloat("SFXVolume", 0.5f);
-        SFXVolumeSlider.value = musicVolume;
-        HandleSFXVolumeDragged(musicVolume);
+        SFXVolumeSlider.value = SFXVolume;
+        HandleSFXVolumeDragged(SFXVolume);
+        
+        // Loads player volume preferece (default is 50%)
+        float voiceVolume = PlayerPrefs.GetFloat("VoiceVolume", 0.5f);
+        VoiceVolumeSlider.value = voiceVolume;
+        HandleVoiceVolumeDragged(voiceVolume);
 
         // Loads player VSync preference (default is true if nothing is saved)
         bool isVSyncOn = PlayerPrefs.GetInt("VSync", 0) == 1;
@@ -157,6 +167,7 @@ public class UniversalSettingsController : MonoBehaviour
         MasterVolumeSlider.onValueChanged.AddListener(HandleMasterVolumeDragged);
         MusicVolumeSlider.onValueChanged.AddListener(HandleMusicVolumeDragged);
         SFXVolumeSlider.onValueChanged.AddListener(HandleSFXVolumeDragged);
+        VoiceVolumeSlider.onValueChanged.AddListener(HandleVoiceVolumeDragged);
         CameraSensitivitySlider.onValueChanged.AddListener(HandleCameraSensitivityDragged);
         HUDVisibilityDropdown.onValueChanged.AddListener(HandleHUDDropdownClicked);
         InfoVisibilityToggle.onValueChanged.AddListener(HandleInfoVisibilityToggleClicked);
@@ -324,6 +335,21 @@ public class UniversalSettingsController : MonoBehaviour
 
         // Saves player preference
         PlayerPrefs.SetFloat("SFXVolume", volume);
+
+        // Writes to disk
+        PlayerPrefs.Save();
+    }
+
+    public void HandleVoiceVolumeDragged(float volume)
+    {
+        MasterMixer.SetFloat("Voice", 20 * Mathf.Log10(Mathf.Max(volume, 0.0001f)));
+
+        // Updates volume text
+        int percent = Mathf.RoundToInt(volume * 100);
+        ActualVoiceVolumeLabel.text = percent.ToString();
+
+        // Saves player preference
+        PlayerPrefs.SetFloat("VoiceVolume", volume);
 
         // Writes to disk
         PlayerPrefs.Save();

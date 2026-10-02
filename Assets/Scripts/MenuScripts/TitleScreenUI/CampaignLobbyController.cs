@@ -253,8 +253,9 @@ public class CampaignLobbyController : MonoBehaviour
         CharacterCustomization[] players = GameObject.FindObjectsByType<CharacterCustomization>(FindObjectsSortMode.InstanceID);
         foreach (CharacterCustomization c in players)
         {
-            c.SyncCustomizationRPC();
+            c.SyncAllCustomizationsRPC();
         }
+
         NetworkManager.Singleton.SceneManager.LoadScene("BridgeEnvironment", LoadSceneMode.Single);
     }
 
