@@ -57,9 +57,13 @@ public class PlayerManager : NetworkBehaviour
 
         individualBridgeEnvironmentLoadedRPC(SteamClient.SteamId);
 
-        if (NetworkManager.Singleton.IsHost == true)
+        if (NetworkManager.Singleton.IsHost == true && SceneManager.GetActiveScene().name.CompareTo("TrainingEnvironment") != 0)
         {
             StartCoroutine(waitForOthers());
+        }
+        else if (SceneManager.GetActiveScene().name.CompareTo("TrainingEnvironment") == 0)
+        {
+            player_prefabs.Add(SteamClient.SteamId, client_player);
         }
     }
 

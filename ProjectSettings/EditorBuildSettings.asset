@@ -23,5 +23,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/IntroSequence.unity
     guid: 5fde573f12fbc7a4ba8f2f761d573122
+  - enabled: 1
+    path: Assets/Scenes/TrainingEnvironment/TrainingEnvironment.unity
+    guid: 10849ee2cda4ea445a280e57621d1b80
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

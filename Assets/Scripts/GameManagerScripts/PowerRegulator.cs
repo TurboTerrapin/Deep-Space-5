@@ -310,7 +310,12 @@ public class PowerRegulator : NetworkBehaviour
     //waits a random amount of time (NEUTRAL_TIME - 5 seconds to NEUTRAL_TIME) to deplete a random power source
     IEnumerator neutralState()
     {
-        float neutral_time = NEUTRAL_TIME[GameObject.FindGameObjectWithTag("ScenarioManager").GetComponent<ScenarioManager>().getDifficulty()];
+        float neutral_time = NEUTRAL_TIME[0];
+        if (ReferenceAssistor.Instance.scenario_manager != null)
+        {
+            neutral_time = NEUTRAL_TIME[ReferenceAssistor.Instance.scenario_manager.getDifficulty()];
+        }
+
         yield return new WaitForSeconds(Random.Range(neutral_time - 5.0f, neutral_time));
 
         //begin depleting a new power source
@@ -385,7 +390,11 @@ public class PowerRegulator : NetworkBehaviour
         time_bar.color = new Color(1.0f, 0.47f, 0.0f);
         time_bar.fillAmount = 1.0f;
 
-        float depletion_time = DEPLETION_TIME[ReferenceAssistor.Instance.scenario_manager.getDifficulty()];
+        float depletion_time = DEPLETION_TIME[0];
+        if (ReferenceAssistor.Instance.scenario_manager != null)
+        {
+            depletion_time = DEPLETION_TIME[ReferenceAssistor.Instance.scenario_manager.getDifficulty()];
+        }
         float anim_time = depletion_time;
 
         while (anim_time > 0.0f)

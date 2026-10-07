@@ -4,7 +4,7 @@
     - Handles connecting/disconnecting as host and client
     - Communicates with LoadHandler for connecting/disconnect screens
     Contributor(s): John Aylward, Jake Schott
-    Last Updated: 7/2/2026
+    Last Updated: 10/6/2026
 */
 
 using System.Collections;
@@ -174,6 +174,11 @@ public class GameNetworkManager : MonoBehaviour
         if (result != Result.OK)
         {
             Debug.Log("Lobby creation failed");
+            Debug.Log(currentLobby.HasValue);
+            if (currentLobby.HasValue == true)
+            {
+                Debug.Log(currentLobby.Value.Owner);
+            }
         }
         else
         {
@@ -181,6 +186,7 @@ public class GameNetworkManager : MonoBehaviour
             lobby.SetPublic();
             lobby.SetJoinable(true);
             lobby.SetGameServer(lobby.Owner.Id);
+            GameObject.Find("LobbyHandler").GetComponent<LobbyHandler>().onSteamLobbySuccessfullyCreated();
         }
     }
 
@@ -199,7 +205,7 @@ public class GameNetworkManager : MonoBehaviour
         NetworkManager.Singleton.OnClientDisconnectCallback += Singleton_OnClientDisconnectCallback;
     }
 
-    //Called by CampaignOptionsController.cs when creating a lobby (if one does not already exist)
+    //Called by CampaignOptionsController.cs when creating a lobby
     public async void StartHost(int maxMembers)
     {
         LinkNetworkManagerEvents();

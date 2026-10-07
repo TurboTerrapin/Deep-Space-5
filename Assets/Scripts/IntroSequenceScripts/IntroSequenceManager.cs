@@ -233,7 +233,7 @@ public class IntroSequenceManager : MonoBehaviour
             {
                 yield return null;
             }
-            PrimaryScript.Instance.GetComponent<SecondaryScript>().displayIntroSequenceTutorialNotification(0);
+            PrimaryScript.Instance.GetComponent<SecondaryScript>().displayPopupNotification(0);
         }
     }
 

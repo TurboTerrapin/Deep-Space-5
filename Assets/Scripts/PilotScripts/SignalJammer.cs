@@ -329,7 +329,7 @@ public class SignalJammer : NetworkBehaviour, IControllable, IPowerable, IIKTarg
     private void transmitSignalJamRPC()
     {
         //if host, add COUNTDOWN_ADJUSTMENT_TIME to detection countdown
-        if (NetworkManager.Singleton.IsHost == true)
+        if (NetworkManager.Singleton.IsHost == true && ReferenceAssistor.Instance.scenario_manager != null)
         {
             ReferenceAssistor.Instance.scenario_manager.addCountdownTime(COUNTDOWN_ADJUSTMENT_TIME);
         }

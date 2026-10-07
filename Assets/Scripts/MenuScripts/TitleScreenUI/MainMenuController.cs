@@ -46,6 +46,12 @@ public class MainMenuController : MonoBehaviour
         SceneManager.LoadScene("IntroSequence");
     }
 
+    public void HandleTrainingButtonClick()
+    {
+        GameObject.Find("LoadHandler").GetComponent<LoadHandler>().startLoad();
+        SceneManager.LoadScene("TrainingEnvironment");
+    }
+
     public void HandleQuitButtonClick()
     {
         Application.Quit();

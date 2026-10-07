@@ -1,8 +1,9 @@
 /*
     SecondaryScript.cs
     - Helps with secondary info that isn't primary control interactions
+    - Handles displaying pop-up notifications
     Contributor(s): Jake Schott
-    Last Updated: 9/26/2026
+    Last Updated: 10/5/2026
 */
 
 using System.Collections;
@@ -28,9 +29,9 @@ public class SecondaryScript : MonoBehaviour
     private GameObject sitting_right_side;
     private GameObject primary_default_power_circles;
 
-    private List<int> tutorial_notification_queue = new List<int>();
+    private List<int> popup_notification_queue = new List<int>();
     private float displayed_power = 0.0f;
-    private Coroutine notification_animation_coroutine = null;
+    private Coroutine popup_notification_animation_coroutine = null;
 
     private void Awake()
     {
@@ -53,6 +54,12 @@ public class SecondaryScript : MonoBehaviour
     public void setPermanentOverlayVisibility(bool active)
     {
         permanent_overlay.SetActive(active);
+    }
+
+    private void setPermanentOverlayTopVisibility(bool active)
+    {
+        stations_button.SetActive(active);
+        current_station_indicator.SetActive(active);
     }
 
     public void setSittingOverlayVisibility(bool active)
@@ -262,29 +269,20 @@ public class SecondaryScript : MonoBehaviour
         GetComponent<PrimaryScript>().setCursorVisibility(hide && !force_hide);
     }
 
-    public void displayBridgeEnvironmentMissionObjective(float delay)
-    {
-        if (notification_animation_coroutine != null)
-        {
-            StopCoroutine(notification_animation_coroutine);
-        }
 
-        notification_animation_coroutine = StartCoroutine(bridgeEnvironmentMissionObjectiveReveal(delay));
-    }
-
-    public void displayIntroSequenceTutorialNotification(int tutorial_index)
+    public void displayPopupNotification(int popup_index)
     {
-        if (tutorial_notification_queue.Count == 0 && isDisplayingNotification() == false)
+        if (popup_notification_queue.Count == 0 && isDisplayingPopupNotification() == false)
         {
-            notification_animation_coroutine = StartCoroutine(introSequenceNotificationAnimation(tutorial_index));
+            popup_notification_animation_coroutine = StartCoroutine(popupNotificationAnimation(popup_index));
         }
         else
         {
-            tutorial_notification_queue.Add(tutorial_index);
+            popup_notification_queue.Add(popup_index);
         }
     }
 
-    public bool isDisplayingNotification()
+    public bool isDisplayingPopupNotification()
     {
         for (int i = 3; i < permanent_overlay.transform.childCount; i++)
         {
@@ -296,161 +294,56 @@ public class SecondaryScript : MonoBehaviour
         return false;
     }
 
-    public bool isAnimatingNotification()
+    public bool isAnimatingPopupNotification()
     {
-        return (notification_animation_coroutine != null);
+        return (popup_notification_animation_coroutine != null);
     }
 
-    public void endBridgeEnvironmentMissionObjectiveReveal()
+    public bool hasPopupNotificationsInQueue()
+    {
+        return (popup_notification_queue.Count > 0);
+    }
+
+    private void clearPopupNotifications()
     {
         //show stations button and current station indicator
-        stations_button.SetActive(true);
-        current_station_indicator.SetActive(true);
+        setPermanentOverlayTopVisibility(true);
 
-        //end intro and hide mission objective
-        if (notification_animation_coroutine != null)
-        {
-            StopCoroutine(notification_animation_coroutine);
-            notification_animation_coroutine = null;
-        }
-        mission_objective.SetActive(false);
-    }
+        //clear pop-up queue
+        popup_notification_queue.Clear();
 
-    public bool hasTutorialNotificationsInQueue()
-    {
-        return (tutorial_notification_queue.Count > 0);
-    }
-
-    private void clearTutorialNotifications()
-    {
-        //clear tutorial queue
-        tutorial_notification_queue.Clear();
-
-        //hide all tutorial notifications
+        //hide all pop-up notifications
         for (int i = 3; i < permanent_overlay.transform.childCount; i++)
         {
             permanent_overlay.transform.GetChild(i).gameObject.SetActive(false);
         }
     }
 
-    private void checkForTutorialNotificationToDisplay()
+    private void checkForPopupNotificationToDisplay()
     {
-        if (notification_animation_coroutine == null && tutorial_notification_queue.Count > 0)
+        if (popup_notification_animation_coroutine == null && popup_notification_queue.Count > 0)
         {
-            notification_animation_coroutine = StartCoroutine(introSequenceNotificationAnimation(tutorial_notification_queue[0]));
+            popup_notification_animation_coroutine = StartCoroutine(popupNotificationAnimation(popup_notification_queue[0]));
         }
     }
 
-    IEnumerator bridgeEnvironmentMissionObjectiveReveal(float delay)
+    IEnumerator popupNotificationAnimation(int popup_index)
     {
-        //set transparency to 0
-        mission_objective.transform.GetChild(0).GetComponent<CanvasGroup>().alpha = 0.0f;
-        mission_objective.transform.GetChild(1).GetComponent<CanvasGroup>().alpha = 0.0f;
-        for (int i = 0; i < 5; i++)
-        {
-            mission_objective.transform.GetChild(i + 2).GetComponent<TMP_Text>().alpha = 0.0f;
-        }
-        foreach (Transform t in mission_objective.transform.GetChild(7))
-        {
-            t.GetComponent<CanvasGroup>().alpha = 0.0f;
-        }
-        mission_objective.transform.GetChild(8).GetComponent<TMP_Text>().alpha = 0.0f;
-        mission_objective.transform.GetChild(9).GetComponent<CanvasGroup>().alpha = 0.0f;
-
-        yield return new WaitForSeconds(delay);
-
-        secondary_info.SetActive(true);
-        permanent_overlay.SetActive(true);
-        stations_button.SetActive(false);
-        current_station_indicator.SetActive(false);
-        station_functions.SetActive(false);
-        mission_objective.SetActive(true);
-
-        //background, border, dividers, and "MISSION OBJECTIVE"
-        float anim_time = 1.0f;
-        while (anim_time > 0.0f)
-        {
-            anim_time = Mathf.Max(0.0f, anim_time - Time.deltaTime);
-
-            float a = Mathf.Lerp(1.0f, 0.0f, anim_time);
-            mission_objective.transform.GetChild(0).GetComponent<CanvasGroup>().alpha = a;
-            mission_objective.transform.GetChild(1).GetComponent<CanvasGroup>().alpha = a;
-            mission_objective.transform.GetChild(2).GetComponent<TMP_Text>().alpha = a;
-
-            yield return null;
-        }
-
-        yield return new WaitForSeconds(0.5f);
-
-        //bullet points
-        for (int i = 0; i < 4; i++)
-        {
-            anim_time = 0.5f;
-            while (anim_time > 0.0f)
-            {
-                anim_time = Mathf.Max(0.0f, anim_time - Time.deltaTime);
-
-                mission_objective.transform.GetChild(i + 3).GetComponent<TMP_Text>().alpha = Mathf.Lerp(1.0f, 0.0f, anim_time / 0.5f);
-
-                yield return null;
-            }
-        }
-
-        //position icons
-        for (int i = 0; i < 4; i++)
-        {
-            anim_time = 0.5f;
-            while (anim_time > 0.0f)
-            {
-                anim_time = Mathf.Max(0.0f, anim_time - Time.deltaTime);
-
-                mission_objective.transform.GetChild(7).GetChild(i).GetComponent<CanvasGroup>().alpha = Mathf.Lerp(1.0f, 0.0f, anim_time / 0.5f);
-
-                yield return null;
-            }
-        }
-
-        //"USE STATION CONTROLS..."
-        anim_time = 1.0f;
-        while (anim_time > 0.0f)
-        {
-            anim_time = Mathf.Max(0.0f, anim_time - Time.deltaTime);
-
-            mission_objective.transform.GetChild(8).GetComponent<TMP_Text>().alpha = Mathf.Lerp(1.0f, 0.0f, anim_time);
-
-            yield return null;
-        }
-
-        //show exit button
-        anim_time = 0.5f;
-        while (anim_time > 0.0f)
-        {
-            anim_time = Mathf.Max(0.0f, anim_time - Time.deltaTime);
-
-            mission_objective.transform.GetChild(9).GetComponent<CanvasGroup>().alpha = Mathf.Lerp(1.0f, 0.0f, anim_time / 0.5f);
-
-            yield return null;
-        }
-
-        notification_animation_coroutine = null;
-    }
-
-    IEnumerator introSequenceNotificationAnimation(int tutorial_index)
-    {
-        GameObject tutorial_notification = permanent_overlay.transform.GetChild(3 + tutorial_index).gameObject;
+        GameObject popup_notification = permanent_overlay.transform.GetChild(3 + popup_index).gameObject;
         PrimaryScript.Instance.deactivate(true, false);
         setSecondaryInfoVisibility(true);
         setPermanentOverlayVisibility(true);
+        setPermanentOverlayTopVisibility(false);
 
-        foreach (Transform t in tutorial_notification.transform)
+        foreach (Transform t in popup_notification.transform)
         {
             t.GetComponent<CanvasGroup>().alpha = 0.0f;
         }
-        tutorial_notification.gameObject.SetActive(true);
+        popup_notification.gameObject.SetActive(true);
 
-        for (int i = 0; i < tutorial_notification.transform.childCount; i++)
+        for (int i = 0; i < popup_notification.transform.childCount; i++)
         {
-            CanvasGroup cg = tutorial_notification.transform.GetChild(i).GetComponent<CanvasGroup>();
+            CanvasGroup cg = popup_notification.transform.GetChild(i).GetComponent<CanvasGroup>();
             float anim_time = 1.0f;
             while (anim_time > 0.0f && PrimaryScript.Instance.isPaused() == false)
             {
@@ -471,17 +364,18 @@ public class SecondaryScript : MonoBehaviour
             yield return null;
         }
 
-        tutorial_notification_queue.Remove(tutorial_index);
-        tutorial_notification.gameObject.SetActive(false);
+        popup_notification_queue.Remove(popup_index);
+        popup_notification.gameObject.SetActive(false);
         if (PrimaryScript.Instance.isPaused() == true)
         {
-            clearTutorialNotifications();
+            clearPopupNotifications();
         }
 
         yield return null;
 
         PrimaryScript.Instance.activate();
-        notification_animation_coroutine = null;
-        checkForTutorialNotificationToDisplay();
+        setPermanentOverlayTopVisibility(true);
+        popup_notification_animation_coroutine = null;
+        checkForPopupNotificationToDisplay();
     }
 }

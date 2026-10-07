@@ -4,7 +4,7 @@
     - Handles physical buttons
     - Meant to be extended
     Contributor(s): Jake Schott
-    Last Updated: 7/25/2026
+    Last Updated: 10/5/2026
 */
 
 using System.Collections.Generic;
@@ -46,59 +46,33 @@ public class ThrusterControl : NetworkBehaviour
 
     protected bool checkNeutralState()
     {
-        bool neutral_state = true;
         for (int i = 0; i < 2; i++)
         {
-            if (thruster_percentage[i] > 0.0f)
+            if (thruster_percentage[i] > 0.0f || button_push_percentage[i] > 0.0f)
             {
-                neutral_state = false;
+                return false;
             }
         }
-        for (int i = 0; i < 2; i++)
-        {
-            if (button_push_percentage[i] > 0.0f)
-            {
-                neutral_state = false;
-            }
-        }
-        return neutral_state;
+        return true;
     }
 
     protected void adjustThrusterSounds()
     {
         for (int i = 0; i < 2; i++)
         {
-            if (thruster_percentage[i] > 0.0f && thruster_sounds[i].isPlaying == false)
-            {
-                thruster_sounds[i].Play();
-            }
-            else if (thruster_percentage[i] == 0.0f && thruster_sounds[i].isPlaying == true)
-            {
-                thruster_sounds[i].Stop();
-            }
             thruster_sounds[i].volume = thruster_percentage[i] * 0.5f;
         }
     }
 
     protected void adjustButton(Transform thruster_button, int button_index)
     {
-        //push the physical button in
+        //push the physical button
         thruster_button.transform.localPosition = Vector3.Lerp(Vector3.zero, BUTTON_FINAL_POS, button_push_percentage[button_index]);
 
         //handle thruster bars
-        int starting_bar = 11 - (button_index * 10);
-        //hide all to start
-        for (int i = starting_bar; i < starting_bar + 10; i++)
+        for (int i = 0; i < 10; i++)
         {
-            thruster_display.transform.GetChild(i).gameObject.SetActive(false);
-        }
-        int thruster_as_int = (int)(thruster_percentage[button_index] * 100.0f);
-        for (int i = starting_bar; i < starting_bar + 10; i++)
-        {
-            if (thruster_as_int >= (i - starting_bar + 1) * 10)
-            {
-                thruster_display.transform.GetChild(i).gameObject.SetActive(true);
-            }
+            thruster_display.transform.GetChild(button_index + 1).GetChild(i).gameObject.SetActive(thruster_percentage[button_index] > (i * 0.1f));
         }
     }
 }

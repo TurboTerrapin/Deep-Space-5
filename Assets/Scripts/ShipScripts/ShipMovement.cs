@@ -411,7 +411,14 @@ public class ShipMovement : NetworkBehaviour
                     {
                         if (transform.GetComponent<ShipHealth>().getHullIntegrity() > 0.0f)
                         {
-                            ReferenceAssistor.Instance.scenario_manager.endScenario(ScenarioManager.EndCondition.ReachedEndpoint);
+                            if (ReferenceAssistor.Instance.scenario_manager != null)
+                            {
+                                ReferenceAssistor.Instance.scenario_manager.endScenario(ScenarioManager.EndCondition.ReachedEndpoint);
+                            }
+                            else
+                            {
+                                ReferenceAssistor.Instance.training_handler.endTraining(true);
+                            }
                         }
                     }
                     return;
@@ -444,7 +451,15 @@ public class ShipMovement : NetworkBehaviour
         yield return new WaitForSeconds(2.0f);
         if (countdown <= 0)
         {
-            ReferenceAssistor.Instance.scenario_manager.endScenario(ScenarioManager.EndCondition.LeftBoundary);
+            if (ReferenceAssistor.Instance.scenario_manager != null)
+            {
+                ReferenceAssistor.Instance.scenario_manager.endScenario(ScenarioManager.EndCondition.LeftBoundary);
+            }
+            else
+            {
+                ReferenceAssistor.Instance.training_handler.endTraining(false);
+                ShipBoundaryChangeRPC(true, true);
+            }
         }
 
         boundaryCountdownCoroutine = null;

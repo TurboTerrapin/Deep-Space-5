@@ -118,7 +118,7 @@ public class Explosion : MonoBehaviour
         //damage nearby items (including ship)
         if (NetworkManager.Singleton.IsHost == true && deals_damage == true && GetComponent<NetworkObject>() != null)
         {
-            Collider[] explosion_targets = Physics.OverlapSphere(transform.position, size * EXPLOSION_SPHERE_FACTOR);
+            Collider[] explosion_targets = Physics.OverlapSphere(transform.position, size * EXPLOSION_SPHERE_FACTOR, LayerMask.GetMask("CollisionObjects", "ShipColliders"));
             foreach (Collider et in explosion_targets)
             {
                 if (et.GetComponent<Explosion>() == null)

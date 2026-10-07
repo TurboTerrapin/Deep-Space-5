@@ -3,7 +3,7 @@
     - Handles inputs for vertical thrusters
     - Extends ThrusterControl.cs
     Contributor(s): Jake Schott
-    Last Updated: 8/25/2026
+    Last Updated: 10/5/2026
 */
 
 using System.Collections;
@@ -120,6 +120,7 @@ public class VerticalThrusters : ThrusterControl, IControllable, IPowerable, IIK
         }
         thruster_coroutine = null;
     }
+
     private void displayAdjustment()
     {
         //adjust thruster sounds
@@ -130,13 +131,8 @@ public class VerticalThrusters : ThrusterControl, IControllable, IPowerable, IIK
         adjustButton(thruster_buttons[1], 1);
 
         //update diamond
-        GameObject diamond = thruster_display.transform.GetChild(0).gameObject;
         float diamond_location = (thrust_direction + 1.0f) / 2.0f;
-
-        diamond.transform.localPosition =
-            new Vector3(Mathf.Lerp(0.055f, -0.055f, diamond_location),
-                        diamond.transform.localPosition.y,
-                        diamond.transform.localPosition.z);
+        thruster_display.transform.GetChild(0).transform.localPosition = new Vector3(Mathf.Lerp(0.055f, -0.055f, diamond_location), 0.0f, 0.0f);
     }
 
     public void powerOn(int position)
@@ -156,17 +152,6 @@ public class VerticalThrusters : ThrusterControl, IControllable, IPowerable, IIK
         hud_info.setPowerConsumption(0.0f);
     }
 
-    [Rpc(SendTo.Everyone)]
-    private void transmitVerticalThrusterRPC(float down_thrust, float up_thrust, float down_button, float up_button)
-    {
-        thruster_percentage[0] = down_thrust;
-        thruster_percentage[1] = up_thrust;
-        button_push_percentage[0] = down_button;
-        button_push_percentage[1] = up_button;
-        updateThrust();
-        displayAdjustment();
-    }
-
     public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)
     {
         keys_down = inputs;
@@ -181,5 +166,16 @@ public class VerticalThrusters : ThrusterControl, IControllable, IPowerable, IIK
                 }
             }
         }
+    }
+
+    [Rpc(SendTo.Everyone)]
+    private void transmitVerticalThrusterRPC(float down_thrust, float up_thrust, float down_button, float up_button)
+    {
+        thruster_percentage[0] = down_thrust;
+        thruster_percentage[1] = up_thrust;
+        button_push_percentage[0] = down_button;
+        button_push_percentage[1] = up_button;
+        updateThrust();
+        displayAdjustment();
     }
 }

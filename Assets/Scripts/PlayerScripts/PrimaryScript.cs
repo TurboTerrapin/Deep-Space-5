@@ -6,7 +6,7 @@
     - Sends user inputs to control script if looking at said control and within RAYCAST_RANGE
     - Handles transmitting IK targets for hand movement animations
     Contributor(s): Jake Schott, John Aylward
-    Last Updated: 9/27/2026
+    Last Updated: 10/5/2026
 */
 
 using System.Collections;
@@ -46,7 +46,6 @@ public abstract class PrimaryScript : MonoBehaviour
     protected bool control_update_flag = false;
     protected int curr_seat = -1;
     protected bool is_sitting = false;
-    protected Coroutine bridge_environment_mission_objective_yield_coroutine = null;
     protected Coroutine seat_check_coroutine = null;
     protected Coroutine control_check_coroutine = null;
     protected Coroutine ray_target_check_coroutine = null;
@@ -173,47 +172,15 @@ public abstract class PrimaryScript : MonoBehaviour
         //begin control interfacing
         primary_info.SetActive(false);
 
-        //free player movement, start mission objective notification, begin gameplay
+        //free player movement, show initial pop-up notification, begin gameplay
         can_pause = true;
         player_prefab.GetComponent<PlayerMove>().Initialize();
+        seat_check_coroutine = StartCoroutine(seatCheck());
+        activate();
         if (hints_setting == true && HUD_setting < 2 && SceneManager.GetActiveScene().name.CompareTo("IntroSequence") != 0)
         {
-            GetComponent<SecondaryScript>().displayBridgeEnvironmentMissionObjective(1.0f);
-            bridge_environment_mission_objective_yield_coroutine = StartCoroutine(bridgeEnvironmentMissionObjectiveYield());
+            GetComponent<SecondaryScript>().displayPopupNotification(0);
         }
-        else //not bridge environment
-        {
-            onBridgeEnvironmentMissionObjectiveComplete();
-            unpause();
-        }
-    }
-
-    //called after mission objective being shown 
-    protected void onBridgeEnvironmentMissionObjectiveComplete()
-    {
-        activate();
-        GetComponent<SecondaryScript>().endBridgeEnvironmentMissionObjectiveReveal();
-        GetComponent<SecondaryScript>().setPermanentOverlayVisibility(hints_setting && HUD_setting < 2);
-        seat_check_coroutine = StartCoroutine(seatCheck());
-    }
-
-    protected IEnumerator bridgeEnvironmentMissionObjectiveYield()
-    {
-        do
-        {
-            yield return null;
-        }
-        while (GetComponent<SecondaryScript>().isAnimatingNotification() == true);
-
-        while (checkInputIndexDown(13) == false)
-        {
-            yield return null;
-        }
-
-        bridge_environment_mission_objective_yield_coroutine = null;
-
-        onBridgeEnvironmentMissionObjectiveComplete();
-        unpause();
     }
 
     //used to clear default buttons and minimized list entries
@@ -369,13 +336,6 @@ public abstract class PrimaryScript : MonoBehaviour
         GetComponent<SecondaryScript>().setSecondaryInfoVisibility(false);
         paused = true;
         cursor.SetActive(false);
-        if (bridge_environment_mission_objective_yield_coroutine != null)
-        {
-            StopCoroutine(bridge_environment_mission_objective_yield_coroutine);
-            bridge_environment_mission_objective_yield_coroutine = null;
-            GetComponent<SecondaryScript>().endBridgeEnvironmentMissionObjectiveReveal();
-            onBridgeEnvironmentMissionObjectiveComplete();
-        }
     }
 
     public void unpause()
@@ -394,17 +354,13 @@ public abstract class PrimaryScript : MonoBehaviour
         {
             if (HUD_setting != 4)
             {
-                cursor.SetActive(GetComponent<SecondaryScript>().isDisplayingNotification() == false);
+                cursor.SetActive(GetComponent<SecondaryScript>().isDisplayingPopupNotification() == false);
             }
         }
     }
 
     public void activate()
     {
-        if (bridge_environment_mission_objective_yield_coroutine != null)
-        {
-            return;
-        }
         is_active = true;
         can_pause = true;
         if (paused == false)
@@ -479,7 +435,7 @@ public abstract class PrimaryScript : MonoBehaviour
     //called by seatCheck()
     protected void checkForSeats()
     {
-        if (!paused && is_active && player_prefab != null)
+        if (!paused && is_active && player_prefab != null && !GetComponent<SecondaryScript>().isDisplayingPopupNotification())
         {
             int closest_seat = getClosestSeat();
             if (closest_seat >= 0) //can sit
@@ -764,7 +720,7 @@ public abstract class PrimaryScript : MonoBehaviour
                         GetComponent<SecondaryScript>().updatePowerConsumption(temp_info);
                     }
 
-                    //---------------------------------------------------HANDLE IK----------------------------------------------------------
+                    //---------------------------------------------------HANDLE IK--------------------------------------------------------------
                     updateIK();
 
                     //---------------------------------------------------HANDLE INPUTS----------------------------------------------------------

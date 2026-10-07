@@ -288,7 +288,7 @@ public class ScenarioManager : NetworkBehaviour
     //called by generatePathLocation() and PilotingSystem.CalculatePoint()
     public static Vector2 getBoundaryPointFromAngle(float ang)
     {
-        Vector2 return_point = new Vector2(0.0f, 0.0f);
+        Vector2 return_point = Vector2.zero;
         float path_slope = Mathf.Tan(Mathf.Deg2Rad * ang);
         return_point.x = ((BOUNDARY_SIZE * 0.5f) * (BOUNDARY_SIZE * 0.5f)) / (1.0f + (path_slope * path_slope));
         return_point.x = Mathf.Sqrt(return_point.x);

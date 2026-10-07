@@ -6,7 +6,7 @@
     - Handles shifting while seated
     - Enables collisions/rigidbody/gravity on the player character
     Contributor(s): John Aylward, Jake Schott
-    Last Updated: 9/5/2026
+    Last Updated: 10/2/2026
 */
 
 using System.Collections;
@@ -38,7 +38,7 @@ public class PlayerMove : NetworkBehaviour
 
     private void Start()
     {
-        if (SceneManager.GetActiveScene().name.CompareTo("IntroSequence") != 0)
+        if (SceneManager.GetActiveScene().name.CompareTo("TrainingEnvironment") != 0 && SceneManager.GetActiveScene().name.CompareTo("IntroSequence") != 0)
         {
             DontDestroyOnLoad(gameObject);
         }

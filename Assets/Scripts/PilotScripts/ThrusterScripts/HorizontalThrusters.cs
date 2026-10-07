@@ -3,7 +3,7 @@
     - Handles inputs for horizontal thrusters
     - Extends ThrusterControl.cs
     Contributor(s): Jake Schott
-    Last Updated: 8/25/2026
+    Last Updated: 10/5/2026
 */
 
 using System.Collections;
@@ -82,11 +82,6 @@ public class HorizontalThrusters : ThrusterControl, IControllable, IPowerable, I
         return lerp_speed;
     }
 
-    public float getVerticalThrusterState()
-    {
-        return (thruster_percentage[1] - thruster_percentage[0]);
-    }
-
     public float getHorizontalThrusterState()
     {
         return (thruster_percentage[0] - thruster_percentage[1]);
@@ -133,11 +128,7 @@ public class HorizontalThrusters : ThrusterControl, IControllable, IPowerable, I
         //update diamond
         GameObject diamond = thruster_display.transform.GetChild(0).gameObject;
         float diamond_location = (thrust_direction + 1.0f) / 2.0f;
-
-        diamond.transform.localPosition =
-            new Vector3(Mathf.Lerp(0.055f, -0.055f, diamond_location),
-                        diamond.transform.localPosition.y,
-                        diamond.transform.localPosition.z);
+        thruster_display.transform.GetChild(0).transform.localPosition = new Vector3(Mathf.Lerp(0.055f, -0.055f, diamond_location), 0.0f, 0.0f);
     }
 
     public void powerOn(int position)
@@ -157,17 +148,6 @@ public class HorizontalThrusters : ThrusterControl, IControllable, IPowerable, I
         hud_info.setPowerConsumption(0.0f);
     }
 
-    [Rpc(SendTo.Everyone)]
-    private void transmitHorizontalThrusterRPC(float left_thrust, float right_thrust, float left_button, float right_button)
-    {
-        thruster_percentage[0] = left_thrust;
-        thruster_percentage[1] = right_thrust;
-        button_push_percentage[0] = left_button;
-        button_push_percentage[1] = right_button;
-        updateThrust();
-        displayAdjustment();
-    }
-
     public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)
     {
         keys_down = inputs;
@@ -182,5 +162,16 @@ public class HorizontalThrusters : ThrusterControl, IControllable, IPowerable, I
                 }
             }
         }
+    }
+
+    [Rpc(SendTo.Everyone)]
+    private void transmitHorizontalThrusterRPC(float left_thrust, float right_thrust, float left_button, float right_button)
+    {
+        thruster_percentage[0] = left_thrust;
+        thruster_percentage[1] = right_thrust;
+        button_push_percentage[0] = left_button;
+        button_push_percentage[1] = right_button;
+        updateThrust();
+        displayAdjustment();
     }
 }

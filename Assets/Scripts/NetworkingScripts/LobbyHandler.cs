@@ -3,7 +3,7 @@
     - Handles RPCs that pertain to lobby functions, ex. load initiation, difficulty handling
     - Keeps track of who is actually in and connected in the lobby
     Contributor(s): Jake Schott
-    Last Updated: 8/19/2026
+    Last Updated: 10/5/2026
 */
 
 using UnityEngine;
@@ -29,15 +29,17 @@ public class LobbyHandler : NetworkBehaviour
     private void Awake()
     {
         gameObject.name = "LobbyHandler";
-        if (NetworkManager.Singleton.IsHost == true)
+        if (NetworkManager.Singleton.IsHost == true || SceneManager.GetActiveScene().name.CompareTo("TrainingEnvironment") == 0)
         {
             player_steam_ids[0] = SteamClient.SteamId;
             player_client_ids.Add(0, SteamClient.SteamId);
             player_names[0] = SteamClient.Name;
             player_connecteds[0] = false;
-            SteamMatchmaking.OnLobbyMemberJoined += onSteamLobbyJoined;
-            SteamMatchmaking.OnLobbyMemberLeave += onSteamLobbyLeft;
-            SteamMatchmaking.OnLobbyCreated += onSteamLobbyCreated;
+            if (SceneManager.GetActiveScene().name.CompareTo("TrainingEnvironment") != 0)
+            {
+                SteamMatchmaking.OnLobbyMemberJoined += onSteamLobbyJoined;
+                SteamMatchmaking.OnLobbyMemberLeave += onSteamLobbyLeft;
+            }
         }
         else
         {
@@ -46,24 +48,29 @@ public class LobbyHandler : NetworkBehaviour
             player_connecteds[0] = true;
             heartbeat_coroutines.Add(0, StartCoroutine(heartbeatChecker(0))); //check heartbeats from host
         }
-        heartbeat_coroutines.Add(SteamClient.SteamId, StartCoroutine(heartbeatSender())); //send out heartbeat pings
+        if (SceneManager.GetActiveScene().name.CompareTo("TrainingEnvironment") != 0)
+        {
+            heartbeat_coroutines.Add(SteamClient.SteamId, StartCoroutine(heartbeatSender())); //send out heartbeat pings
+        }
         NetworkManager.Singleton.OnClientConnectedCallback += onClientConnect;
     }
 
     private void OnDisable()
     {
-        if (NetworkManager.Singleton.IsHost == true)
+        if (NetworkManager.Singleton != null)
         {
-            SteamMatchmaking.OnLobbyMemberJoined -= onSteamLobbyJoined;
-            SteamMatchmaking.OnLobbyMemberLeave -= onSteamLobbyLeft;
-            SteamMatchmaking.OnLobbyCreated -= onSteamLobbyCreated;
+            NetworkManager.Singleton.OnClientConnectedCallback -= onClientConnect;
+            if (NetworkManager.Singleton.IsHost == true && SceneManager.GetActiveScene().name.CompareTo("TrainingEnvironment") == 0)
+            {
+                SteamMatchmaking.OnLobbyMemberJoined -= onSteamLobbyJoined;
+                SteamMatchmaking.OnLobbyMemberLeave -= onSteamLobbyLeft;
+            }
         }
-        NetworkManager.Singleton.OnClientConnectedCallback -= onClientConnect;
     }
 
     public override void OnNetworkSpawn()
     {
-        if (NetworkManager.Singleton.IsHost == true)
+        if (NetworkManager.Singleton.IsHost == true && SceneManager.GetActiveScene().name.CompareTo("TrainingEnvironment") != 0)
         {
             DontDestroyOnLoad(gameObject);
         }
@@ -229,19 +236,12 @@ public class LobbyHandler : NetworkBehaviour
         }
     }
 
-    //called when the host's created Steam lobby comes back with a result
-    private void onSteamLobbyCreated(Result r, Lobby l)
+    //called when the host's created Steam lobby is created
+    public void onSteamLobbySuccessfullyCreated()
     {
-        if (r == Result.OK)
-        {
-            player_connecteds[0] = true;
-            rebuildLobbyList();
-            lobbyUpdateRPC(player_steam_ids[1], player_steam_ids[2], player_steam_ids[3], player_connecteds[1], player_connecteds[2], player_connecteds[3]);
-        }
-        else
-        {
-            Debug.Log("Failed to create Steam lobby.");
-        }
+        player_connecteds[0] = true;
+        rebuildLobbyList();
+        lobbyUpdateRPC(player_steam_ids[1], player_steam_ids[2], player_steam_ids[3], player_connecteds[1], player_connecteds[2], player_connecteds[3]);
     }
 
     private void onSteamLobbyJoined(Lobby l, Friend f)
@@ -324,7 +324,7 @@ public class LobbyHandler : NetworkBehaviour
         }
 
         //add to heartbeat coroutines
-        if (heartbeat_coroutines.ContainsKey(client_id) == false)
+        if (heartbeat_coroutines.ContainsKey(client_id) == false && SceneManager.GetActiveScene().name.CompareTo("TrainingEnvironment") != 0)
         {
             heartbeat_coroutines.Add(client_id, StartCoroutine(heartbeatChecker(client_id)));
         }
@@ -376,7 +376,7 @@ public class LobbyHandler : NetworkBehaviour
         }
 
         //trigger visual lobby update if looking at failure screen
-        if (ReferenceAssistor.Instance != null)
+        if (ReferenceAssistor.Instance != null && ReferenceAssistor.Instance.failure_handler != null)
         {
             if (ReferenceAssistor.Instance.failure_handler.failureCamera.activeSelf == true)
             {
@@ -390,7 +390,7 @@ public class LobbyHandler : NetworkBehaviour
             //if host, check for seat occupants
             if (NetworkManager.Singleton.IsHost == true)
             {
-                GameObject.FindGameObjectWithTag("SeatHandler").GetComponent<SeatManager>().checkForMissingSeats();
+                ReferenceAssistor.Instance.seat_manager.checkForMissingSeats();
             }
 
             //update controls that are affected by # of players
@@ -446,6 +446,7 @@ public class LobbyHandler : NetworkBehaviour
     IEnumerator heartbeatChecker(ulong client_id_to_check)
     {
         yield return new WaitForSeconds(GameNetworkManager.HEARTBEAT_LENGTH);
+
         if (client_id_to_check == 0)
         {
             GameObject.Find("LoadHandler").GetComponent<LoadHandler>().displayLostConnection("Connection interrupted.");

@@ -95482,8 +95482,10 @@ MonoBehaviour:
   player_manager: {fileID: 0}
   power_manager: {fileID: 0}
   scenario_manager: {fileID: 0}
+  lights_manager: {fileID: 0}
   seat_manager: {fileID: 0}
   hints_manager: {fileID: 2120449624}
+  training_handler: {fileID: 0}
 --- !u!1 &805232698
 GameObject:
   m_ObjectHideFlags: 0
@@ -206238,8 +206240,8 @@ Light:
   m_Enabled: 1
   serializedVersion: 13
   m_Type: 2
-  m_Color: {r: 0, g: 0.21336477, b: 0.37106913, a: 1}
-  m_Intensity: 20
+  m_Color: {r: 0.68238986, g: 0.8629021, b: 1, a: 1}
+  m_Intensity: 5
   m_Range: 15
   m_SpotAngle: 145
   m_InnerSpotAngle: 0
@@ -280421,7 +280423,7 @@ Rigidbody:
   m_GameObject: {fileID: 5044668462793761330}
   serializedVersion: 5
   m_Mass: 50
-  m_LinearDamping: 100
+  m_LinearDamping: 0
   m_AngularDamping: 20
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}

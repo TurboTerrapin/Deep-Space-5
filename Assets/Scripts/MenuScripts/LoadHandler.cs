@@ -4,7 +4,7 @@
     - Handles displaying disconnection and connecting (...) screens
     - Handles Steam checks
     Contributor(s): Jake Schott, Beata Musial
-    Last Updated: 8/19/2026
+    Last Updated: 10/6/2026
 */
 
 using System.Collections;
@@ -26,7 +26,7 @@ public class LoadHandler : MonoBehaviour
     private GameObject connection_lost;
     private GameObject steam_failure;
     private GameObject dummy_camera;
-    private NetworkManager network_manager;
+    private bool network_manager_linked = false;
 
     private static int last_tip = -1; //index of last tip as to avoid repeats
     private AsyncOperation load_operation = null;
@@ -92,10 +92,29 @@ public class LoadHandler : MonoBehaviour
         {
             yield return null;
         }
-        if (network_manager == null)
+        if (network_manager_linked == false)
         {
-            network_manager = NetworkManager.Singleton;
+            network_manager_linked = true;
             NetworkManager.Singleton.SceneManager.OnLoad += handleSceneLoad;
+            NetworkManager.Singleton.OnClientStopped += handleNetworkManagerDisconnect;
+            NetworkManager.Singleton.OnServerStopped += handleNetworkManagerDisconnect;
+        }
+    }
+
+    private void handleNetworkManagerDisconnect(bool b)
+    {
+        if (network_manager_linked == true)
+        {
+            network_manager_linked = false;
+            if (NetworkManager.Singleton != null)
+            {
+                if (NetworkManager.Singleton.SceneManager != null)
+                {
+                    NetworkManager.Singleton.SceneManager.OnLoad -= handleSceneLoad;
+                }
+                NetworkManager.Singleton.OnClientStopped -= handleNetworkManagerDisconnect;
+                NetworkManager.Singleton.OnServerStopped -= handleNetworkManagerDisconnect;
+            }
         }
     }
 
@@ -242,7 +261,7 @@ public class LoadHandler : MonoBehaviour
         }
         else if (SceneManager.GetActiveScene().name != "TitleScreen") //currently playing in an active session
         {
-            if (ReferenceAssistor.Instance != null && ReferenceAssistor.Instance.failure_handler.failureCamera.activeSelf == true)
+            if (ReferenceAssistor.Instance != null && ReferenceAssistor.Instance.failure_handler != null && ReferenceAssistor.Instance.failure_handler.failureCamera.activeSelf == true)
             {
                 //if in failure state let the failure handler know, then do nothing after
                 ReferenceAssistor.Instance.failure_handler.HandleLobbyChange(true);
@@ -311,7 +330,9 @@ public class LoadHandler : MonoBehaviour
         do
         {
             new_tip_index = Random.Range(0, load_screen.transform.GetChild(3).childCount);
-        } while (new_tip_index == last_tip);
+        } 
+        while (new_tip_index == last_tip);
+        
         for (int i = 0; i < load_screen.transform.GetChild(3).childCount; i++)
         {
             load_screen.transform.GetChild(3).GetChild(i).gameObject.SetActive(i == new_tip_index);
@@ -381,6 +402,7 @@ public class LoadHandler : MonoBehaviour
         GameObject player_prefab = GameObject.Find(player_prefab_name);
         while (player_prefab == null)
         {
+            Debug.Log("Waiting for player");
             player_prefab = GameObject.Find(player_prefab_name);
             yield return null;
         }
@@ -393,11 +415,13 @@ public class LoadHandler : MonoBehaviour
         while (load_operation.isDone == false)
         {
             //spin circles while waiting
+            Debug.Log("Waiting for BE");
             spinRings();
             yield return null;
         }
         load_operation = null;
         ReferenceAssistor.Instance.player_manager.addPlayer(player_prefab, this);
+        Debug.Log("Loaded!");
 
         //wait until PlayerManager interrupts load screen using endLoad()
         while (true)

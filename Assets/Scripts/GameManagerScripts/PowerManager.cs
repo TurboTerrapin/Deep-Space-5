@@ -4,16 +4,14 @@
     - Records changes in power consumption (as called by the individual controls)
     - Handles overconsumption and complete shutdown
     Contributor(s): Jake Schott
-    Last Updated: 8/25/2026
+    Last Updated: 10/2/2026
 */
 
 using System.Collections;
 using System.Collections.Generic;
-using System.Xml;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class PowerManager : NetworkBehaviour, IPowerable
 {

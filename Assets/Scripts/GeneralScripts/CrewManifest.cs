@@ -40,12 +40,12 @@ public class CrewManifest : NetworkBehaviour
                 string display_name = character_name[0] + ". ";
                 display_name += character_name.Substring(character_name.IndexOf(" ") + 1);
                 crew_manifest_display.transform.GetChild(1).GetChild(i).GetComponent<TMP_Text>().SetText("• " + display_name);
-                crew_manifest_display.transform.GetChild(1).GetChild(i).GetComponent<TMP_Text>().color = new Color(0.0f, 0.84f, 1.0f, 1.0f);
+                crew_manifest_display.transform.GetChild(1).GetChild(i).GetComponent<TMP_Text>().alpha = 1.0f;
             }
             else
             {
                 crew_manifest_display.transform.GetChild(1).GetChild(i).GetComponent<TMP_Text>().SetText("• ------------------------");
-                crew_manifest_display.transform.GetChild(1).GetChild(i).GetComponent<TMP_Text>().color = new Color(0.0f, 0.84f, 1.0f, 0.2f);
+                crew_manifest_display.transform.GetChild(1).GetChild(i).GetComponent<TMP_Text>().alpha = 0.2f;
             }
         }
     }

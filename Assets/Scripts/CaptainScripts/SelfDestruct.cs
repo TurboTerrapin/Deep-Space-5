@@ -171,7 +171,15 @@ public class SelfDestruct : NetworkBehaviour, IControllable, IPowerable, IIKTarg
 
         if (NetworkManager.Singleton.IsHost == true)
         {
-            GameObject.FindGameObjectWithTag("ScenarioManager").GetComponent<ScenarioManager>().endScenario(ScenarioManager.EndCondition.SelfDestructed);
+            if (ReferenceAssistor.Instance.scenario_manager != null)
+            {
+                ReferenceAssistor.Instance.scenario_manager.endScenario(ScenarioManager.EndCondition.SelfDestructed);
+            }
+            else
+            {
+                ReferenceAssistor.Instance.training_handler.endTraining(false);
+                transmitDestructSequenceChangeRPC(false);
+            }
         }
     }
 

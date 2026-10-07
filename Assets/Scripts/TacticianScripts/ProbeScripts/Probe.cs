@@ -3,7 +3,7 @@
     - Alerts ProbeController.cs when damaged
     - Handles visual things
     Contributor(s): Jake Schott
-    Last Updated: 6/26/2026
+    Last Updated: 10/2/2026
 */
 
 using System.Collections;
@@ -11,9 +11,6 @@ using UnityEngine;
 
 public class Probe : MonoBehaviour, IDamageable
 {
-    public Material lit_orange;
-    public Material pure_black;
-
     private ProbeController probe_controller;
 
     private Coroutine self_destruct_coroutine = null;
@@ -44,7 +41,7 @@ public class Probe : MonoBehaviour, IDamageable
         {
             for (int i = 1; i < 4; i++)
             {
-                transform.GetChild(i).GetComponent<Renderer>().material = lit_orange;
+                transform.GetChild(i).GetComponent<Renderer>().material = ReferenceAssistor.Instance.lit_orange;
             }
             transform.GetChild(0).gameObject.SetActive(true);
             foreach (Transform light in transform.GetChild(0))
@@ -55,7 +52,7 @@ public class Probe : MonoBehaviour, IDamageable
             
             for (int i = 1; i < 4; i++)
             {
-                transform.GetChild(i).GetComponent<Renderer>().material = pure_black;
+                transform.GetChild(i).GetComponent<Renderer>().material = ReferenceAssistor.Instance.pure_black;
             }
             transform.GetChild(0).gameObject.SetActive(false);
             
