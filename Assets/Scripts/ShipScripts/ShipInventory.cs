@@ -25,19 +25,19 @@ public class ShipInventory : NetworkBehaviour, IPowerable
     private static List<int> TORPEDO_WEIGHTS = new List<int>() { 5000, 3350, 6000, 1100, 500, 8900 };
     private static List<Vector2> TORPEDO_SIZES = new List<Vector2>() { new Vector2(2.1f, 3.5f), new Vector2(2.1f, 3.5f), new Vector2(2.1f, 3.5f), new Vector2(2.1f, 3.5f), new Vector2(2.1f, 3.5f), new Vector2(2.5f, 4.1f) };
 
-    //based on difficulty (easy, medium, hard, expert [0-3]), determines the starting quantities of items/torpedoes at the very start of a run
+    //based on difficulty (easy, medium, hard, expert, training [0-4]), determines the starting quantities of items/torpedoes at the very start of a run
     private static int[][] STARTING_QUANTITIES = new int[][]
     {
-        new int[]{ 3, 2, 2, 1 }, //probe
-        new int[]{ 4, 3, 2, 1 }, //ecape pod
-        new int[]{ 12, 10, 8, 4 }, //shield battery
-        new int[]{ 4, 3, 2, 1 }, //cargo container
-        new int[]{ 8, 6, 4, 2 }, //photon
-        new int[]{ 4, 3, 2, 1 }, //proton
-        new int[]{ 2, 2, 1, 1 }, //ion
-        new int[]{ 2, 1, 0, 0 }, //quantum
-        new int[]{ 2, 1, 0, 0 }, //superluminal
-        new int[]{ 1, 0, 0, 0 }, //chroniton
+        new int[]{ 3, 2, 2, 1, 5 }, //probe
+        new int[]{ 4, 3, 2, 1, 5 }, //ecape pod
+        new int[]{ 12, 10, 8, 4, 20 }, //shield battery
+        new int[]{ 4, 3, 2, 1, 5 }, //cargo container
+        new int[]{ 8, 6, 4, 2, 10 }, //photon
+        new int[]{ 4, 3, 2, 1, 10 }, //proton
+        new int[]{ 2, 2, 1, 1, 10 }, //ion
+        new int[]{ 2, 1, 0, 0, 10 }, //quantum
+        new int[]{ 2, 1, 0, 0, 10 }, //superluminal
+        new int[]{ 1, 0, 0, 0, 10 }, //chroniton
     };
 
     public GameObject inventory_display;
@@ -102,7 +102,11 @@ public class ShipInventory : NetworkBehaviour, IPowerable
             return;
         }
 
-        int game_difficulty = GameObject.FindGameObjectWithTag("ScenarioManager").GetComponent<ScenarioManager>().getDifficulty();
+        int game_difficulty = 4; //training mode
+        if (ReferenceAssistor.Instance.scenario_manager != null)
+        {
+            game_difficulty = ReferenceAssistor.Instance.scenario_manager.getDifficulty();
+        }
         item_serial_nums = new Stack<string>[item_quantities.Count];
         torpedo_serial_nums = new Stack<string>[torpedo_quantities.Count];
 

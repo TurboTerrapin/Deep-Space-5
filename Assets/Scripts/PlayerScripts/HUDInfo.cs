@@ -3,7 +3,7 @@
     - Stores information for the onscreen UI indicator that appears when facing a control
         - Includes control title and button information
     Contributor(s): Jake Schott
-    Last Updated: 3/2/2026
+    Last Updated: 8/9/2026
 */
 
 /*
@@ -36,6 +36,7 @@
 */
 
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class HUDInfo
@@ -52,10 +53,10 @@ public class HUDInfo
         1100f,
         1100f,
         1650f,
-        1700f
+        1800f
     };
 
-    public static float[] FRAME_HEIGHT_OPTIONS = new float[] { 200f, 260f, 360f };
+    public static float[] FRAME_HEIGHT_OPTIONS = new float[] { 200f, 260f, 370f };
 
     public static int[] FRAME_HEIGHT_INDEXES = new int[]
     {
@@ -91,40 +92,40 @@ public class HUDInfo
         new Vector2[] {new Vector2(-294f, -65f), new Vector2(294f, -65f) },
         new Vector2[] {new Vector2(-600f, -65f), new Vector2(0f, -65f), new Vector2(600f, -65f) },
         new Vector2[] {new Vector2(-863f, -65f), new Vector2(-288f, -65f), new Vector2(288f, -65f), new Vector2(863f, -65f) },
-        new Vector2[] {new Vector2(-315f, -10f), new Vector2(315f, -10f), new Vector2(-582f, -105f), new Vector2(-194f, -105f), new Vector2(194f, -105f), new Vector2(582f, -105f)},
+        new Vector2[] {new Vector2(-315f, -10f), new Vector2(315f, -10f), new Vector2(-582f, -120f), new Vector2(-194f, -120f), new Vector2(194f, -120f), new Vector2(582f, -120f)},
         new Vector2[] {new Vector2(-520f, -65f), new Vector2(113f, -65f), new Vector2(601f, -65f)},
         new Vector2[] {new Vector2(0f, -65f)},
         new Vector2[] {new Vector2(-294f, -65f), new Vector2(294f, -65f)},
         new Vector2[] {new Vector2(-748f, -65f), new Vector2(-260f, -65f), new Vector2(260f, -65f), new Vector2(748f, -65f)},
-        new Vector2[] {new Vector2(-798f, -65f), new Vector2(-460f, -65f), new Vector2(0f, -65f), new Vector2(460f, -65f), new Vector2(798f, -65f)}
+        new Vector2[] {new Vector2(-843f, -65f), new Vector2(-475f, -65f), new Vector2(0f, -65f), new Vector2(475f, -65f), new Vector2(843f, -65f)}
     };
 
     public static List<int[]> BUTTON_TEMPLATES = new List<int[]>
     {
         new int[] {0},
-        new int[] {1, 2},
+        new int[] {2, 1},
         new int[] {0, 0, 0},
         new int[] {0, 0, 0, 0},
-        new int[] {0, 0, 1, 3, 3, 2},
-        new int[] {0, 1, 2},
+        new int[] {0, 0, 2, 3, 3, 1},
+        new int[] {0, 2, 1},
         new int[] {0},
-        new int[] {1, 2},
-        new int[] {1, 2, 1, 2},
-        new int[] {1, 2, 0, 1, 2}
+        new int[] {2, 1},
+        new int[] {2, 1, 2, 1},
+        new int[] {2, 1, 0, 2, 1}
     };
 
     public static List<Vector2[]> BUTTON_SIZES = new List<Vector2[]>
     {
-        new Vector2[] {new Vector2(600f, 68f)},
-        new Vector2[] {new Vector2(500f, 68f), new Vector2(500f, 68f) },
-        new Vector2[] {new Vector2(500f, 68f), new Vector2(500f, 68f), new Vector2(500f, 68f) },
-        new Vector2[] {new Vector2(450f, 68f), new Vector2(450f, 68f), new Vector2(450f, 68f), new Vector2(450f, 68f) },
-        new Vector2[] {new Vector2(500f, 68f), new Vector2(500f, 68f), new Vector2(300f, 68f), new Vector2(300f, 68f), new Vector2(300f, 68f), new Vector2(300f, 68f) },
-        new Vector2[] {new Vector2(560f, 68f), new Vector2(400f, 68f), new Vector2(400f, 68f) },
-        new Vector2[] {new Vector2(600f, 68f) },
-        new Vector2[] {new Vector2(500f, 68f), new Vector2(500f, 68f) },
-        new Vector2[] {new Vector2(400f, 68f), new Vector2(400f, 68f), new Vector2(400f, 68f), new Vector2(400f, 68f) },
-        new Vector2[] {new Vector2(250f, 68f), new Vector2(250f, 68f), new Vector2(400f, 68f), new Vector2(250f, 68f), new Vector2(250f, 68f) },
+        new Vector2[] {new Vector2(600f, 75f)},
+        new Vector2[] {new Vector2(500f, 75f), new Vector2(500f, 75f) },
+        new Vector2[] {new Vector2(500f, 75f), new Vector2(500f, 75f), new Vector2(500f, 75f) },
+        new Vector2[] {new Vector2(450f, 75f), new Vector2(450f, 75f), new Vector2(450f, 75f), new Vector2(450f, 75f) },
+        new Vector2[] {new Vector2(500f, 75f), new Vector2(500f, 75f), new Vector2(300f, 75f), new Vector2(300f, 75f), new Vector2(300f, 75f), new Vector2(300f, 75f) },
+        new Vector2[] {new Vector2(560f, 75f), new Vector2(400f, 75f), new Vector2(400f, 75f) },
+        new Vector2[] {new Vector2(600f, 75f) },
+        new Vector2[] {new Vector2(500f, 75f), new Vector2(500f, 75f) },
+        new Vector2[] {new Vector2(400f, 75f), new Vector2(400f, 75f), new Vector2(400f, 75f), new Vector2(400f, 75f) },
+        new Vector2[] {new Vector2(280f, 75f), new Vector2(280f, 75f), new Vector2(400f, 75f), new Vector2(280f, 75f), new Vector2(280f, 75f) },
     };
 
     public static List<Vector2[]> DIVIDER_POSITIONS = new List<Vector2[]>
@@ -133,18 +134,29 @@ public class HUDInfo
         new Vector2[] {new Vector2(0f, -65f)},
         new Vector2[] {},
         new Vector2[] {},
-        new Vector2[] {new Vector2(-388f, -105f), new Vector2(0f, -105f), new Vector2(388f, -105f)},
+        new Vector2[] {new Vector2(-388f, -120f), new Vector2(0f, -120f), new Vector2(388f, -120f)},
         new Vector2[] {new Vector2(357f, -65f)},
         new Vector2[] {},
         new Vector2[] {new Vector2(0f, -65f)},
         new Vector2[] {new Vector2(-504f, -65f), new Vector2(504f, -65f)},
-        new Vector2[] {new Vector2(-629f, -65f), new Vector2(629f, -65f)}
+        new Vector2[] {new Vector2(-659f, -65f), new Vector2(659f, -65f)}
+    };
+
+    public static List<int[]> POWER_CIRCLE_POSITIONS = new List<int[]>
+    {
+        new int[] {0, 0, 0, 0, 0, 0},
+        new int[] {-50, 0, 0, 0, 0, 0},
+        new int[] {-72, -22, 23, 0, 0, 0},
+        new int[] {-95, -45, 0, 45, 0, 0},
+        new int[] {-117, -67, -22, 23, 68, 0},
+        new int[] { -140, -90, -45, 0, 45, 90}
     };
 
     private string control_name; //ex. "IMPULSE THROTTLE"
     private int layout = -1;
     private bool consumes_power = false;
     private float power_consumption = 0.0f;
+    private float maximum_consumption = 0.0f;
     private string info_msg = "";
     private List<Button> buttons = null;
 
@@ -153,17 +165,19 @@ public class HUDInfo
         control_name = title;
     }
 
-    public HUDInfo(string title, bool is_powerable)
+    public HUDInfo(string title, float max_possible_consumption)
     {
         control_name = title;
-        consumes_power = is_powerable;
+        consumes_power = true;
+        maximum_consumption = max_possible_consumption;
     }
 
     public void initializeDefaultFrame(Transform frame)
     {
         float frame_width = 50f + (control_name.Length * 50f);
         float frame_height = FRAME_HEIGHT_OPTIONS[0];
-        float header_offset = -80f;
+        float header_offset = -95f;
+        float extension_offset = 0f;
         float title_size = frame_width;
         int height_index = 0;
 
@@ -171,7 +185,7 @@ public class HUDInfo
         {
             frame_width = HUDInfo.FRAME_WIDTHS[layout];
             frame_height = HUDInfo.FRAME_HEIGHT_OPTIONS[HUDInfo.FRAME_HEIGHT_INDEXES[layout]];
-            header_offset = -70f;
+            header_offset = -80f;
             title_size = TITLE_SIZES[layout];
             height_index = HUDInfo.FRAME_HEIGHT_INDEXES[layout];
 
@@ -180,27 +194,51 @@ public class HUDInfo
             {
                 for (int i = 0; i < HUDInfo.DIVIDER_POSITIONS[layout].Length; i++)
                 {
-                    //copy divider
-                    GameObject divider = UnityEngine.Object.Instantiate(frame.transform.GetChild(3).GetChild(1).gameObject, frame.transform.GetChild(3).transform);
-                    divider.name = "DIVIDER" + i;
+                    //set divider
+                    GameObject divider = frame.transform.GetChild(5).GetChild(i).gameObject;
+                    divider.GetComponent<RectTransform>().anchoredPosition = new Vector2(HUDInfo.DIVIDER_POSITIONS[layout][i].x, HUDInfo.DIVIDER_POSITIONS[layout][i].y);
                     divider.SetActive(true);
-
-                    //position
-                    divider.GetComponent<RectTransform>().anchoredPosition = new Vector3(HUDInfo.DIVIDER_POSITIONS[layout][i].x, HUDInfo.DIVIDER_POSITIONS[layout][i].y, 0f);
                 }
+            }
+        }
+
+        //set title
+        frame.transform.GetChild(3).GetChild(0).GetComponent<TMP_Text>().SetText(control_name);
+
+        //adjust power circles
+        frame.transform.GetChild(3).GetChild(1).gameObject.SetActive(consumes_power);
+        if (consumes_power == true)
+        {
+            if (numOptions() > 0)
+            {
+                header_offset = -25f;
+            }
+            else
+            {
+                header_offset = -45f;
+            }
+
+            extension_offset = 40f;
+            int circles_visible = Mathf.CeilToInt(maximum_consumption * 10.0f);
+            for (int i = 0; i < 6; i++)
+            {
+                frame.transform.GetChild(3).GetChild(1).GetChild(i).gameObject.SetActive(i <= circles_visible);
+                frame.transform.GetChild(3).GetChild(1).GetChild(i).GetComponent<RectTransform>().anchoredPosition = new Vector2(POWER_CIRCLE_POSITIONS[circles_visible][i], 0);
             }
         }
 
         //position frame
         frame.transform.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, -1080f + (frame_height / 2));
-        //resize center and corners
+        //resize background center and corners
+        frame.transform.GetChild(0).GetComponent<RectTransform>().anchoredPosition = new Vector2(0, extension_offset);
         frame.transform.GetChild(0).GetChild(0).GetComponent<RectTransform>().sizeDelta = new Vector2(frame_height, frame_height);
         frame.transform.GetChild(0).GetChild(1).GetComponent<RectTransform>().sizeDelta = new Vector2(frame_width, frame_height);
         frame.transform.GetChild(0).GetChild(2).GetComponent<RectTransform>().sizeDelta = new Vector2(frame_height, frame_height);
-        //position corners
+        //position background corners
         frame.transform.GetChild(0).GetChild(0).GetComponent<RectTransform>().anchoredPosition = new Vector2(-1f * (frame_width / 2 + (frame_height / 2)), 0f);
         frame.transform.GetChild(0).GetChild(2).GetComponent<RectTransform>().anchoredPosition = new Vector2(frame_width / 2 + (frame_height / 2), 0f);
         //handle border
+        frame.transform.GetChild(1).GetComponent<RectTransform>().anchoredPosition = new Vector2(0, extension_offset);
         for (int i = 0; i < 3; i++)
         {
             frame.transform.GetChild(1).GetChild(0).GetChild(i).gameObject.SetActive(i == height_index);
@@ -212,10 +250,19 @@ public class HUDInfo
         frame.transform.GetChild(1).GetChild(1).GetChild(1).GetComponent<RectTransform>().anchoredPosition = new Vector2(55f, 0f);
         frame.transform.GetChild(1).GetChild(1).GetChild(1).GetComponent<RectTransform>().sizeDelta = new Vector2(frame_width - 150f, 10f);
         frame.transform.GetChild(1).GetChild(2).GetChild(height_index).GetComponent<RectTransform>().anchoredPosition = new Vector2((frame_width / 2 + (frame_height / 2)) + 5f, 5f);
+        //handle extension
+        frame.transform.GetChild(2).gameObject.SetActive(consumes_power);
+        if (consumes_power == true)
+        {
+            frame.transform.GetChild(2).GetChild(0).GetComponent<RectTransform>().sizeDelta = new Vector2(frame_width + (frame_height * 2), 50f);
+            frame.transform.GetChild(2).GetChild(1).GetChild(0).GetComponent<RectTransform>().anchoredPosition = new Vector2(-1f * ((frame_width / 2) + frame_height + 5f), -155f);
+            frame.transform.GetChild(2).GetChild(1).GetChild(1).GetComponent<RectTransform>().anchoredPosition = new Vector2((frame_width / 2) + frame_height + 5f, -155f);
+            frame.transform.GetChild(2).GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -1f * ((frame_height - 260f) / 2));
+        }
         //position header
-        frame.transform.GetChild(2).GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, (frame_height / 2) + header_offset);
+        frame.transform.GetChild(3).GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, (frame_height / 2) + header_offset);
         //handle title size
-        frame.transform.GetChild(2).GetChild(0).GetComponent<RectTransform>().sizeDelta = new Vector2(title_size, 80f);
+        frame.transform.GetChild(3).GetChild(0).GetComponent<RectTransform>().sizeDelta = new Vector2(title_size, 80f);
     }
 
     public void setButtons(List<Button> buttons)
@@ -256,6 +303,12 @@ public class HUDInfo
     public void setPowerConsumption(float pwr_consumption)
     {
         power_consumption = pwr_consumption;
+    }
+
+    public void setMaxPowerConsumption(float max_pwr_consumption)
+    {
+        consumes_power = (max_pwr_consumption > 0.0f);
+        maximum_consumption = max_pwr_consumption;
     }
 
     public List<Button> getButtons()

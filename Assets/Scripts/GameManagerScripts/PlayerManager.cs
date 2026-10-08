@@ -57,9 +57,13 @@ public class PlayerManager : NetworkBehaviour
 
         individualBridgeEnvironmentLoadedRPC(SteamClient.SteamId);
 
-        if (NetworkManager.Singleton.IsHost == true)
+        if (NetworkManager.Singleton.IsHost == true && SceneManager.GetActiveScene().name.CompareTo("TrainingEnvironment") != 0)
         {
             StartCoroutine(waitForOthers());
+        }
+        else if (SceneManager.GetActiveScene().name.CompareTo("TrainingEnvironment") == 0)
+        {
+            player_prefabs.Add(SteamClient.SteamId, client_player);
         }
     }
 
@@ -177,16 +181,19 @@ public class PlayerManager : NetworkBehaviour
         {
             startScenarioRPC(ReferenceAssistor.Instance.scenario_manager.getCurrentScenarioIndex());
         }
-        handleShipRepositioning();
     }
 
     //---------------------------------------------------------------------------------------//
     //--------------------------------RESTART/QUIT HANDLING----------------------------------//
     //---------------------------------------------------------------------------------------//
 
-    public static void clearDontDestroyOnLoads()
+    public static void clearDontDestroyOnLoads(bool destroy_event_system)
     {
-        List<string> to_destroy = new List<string>() { "Origin", "EventSystem", "GameManagerScripts", "PlayerUICanvas" };
+        List<string> to_destroy = new List<string>() { "Origin", "GameManagerScripts", "PlayerUICanvas", "Seats", "PlayersHolder" };
+        if (destroy_event_system == true)
+        {
+            to_destroy.Add("EventSystem");
+        }
         foreach (string d in to_destroy)
         {
             GameObject attempt_to_destroy = GameObject.Find(d);
@@ -204,26 +211,27 @@ public class PlayerManager : NetworkBehaviour
         {
             GameObject.Destroy(NetworkManager.Singleton.gameObject);
         }
-        clearDontDestroyOnLoads();
+        clearDontDestroyOnLoads(true);
         SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
         SceneData.targetUI = "MainMenu";
+        CameraMove.HideMainCamera();
         GameObject.Find("LoadHandler").GetComponent<LoadHandler>().startLoad();
     }
 
-    private void freezePlayer(GameObject plr)
+    public static void freezePlayer(GameObject player)
     {
-        plr.transform.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
-        plr.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
-        plr.transform.GetComponent<CapsuleCollider>().excludeLayers = LayerMask.NameToLayer("Everything");
-        plr.transform.GetComponent<Rigidbody>().excludeLayers = LayerMask.NameToLayer("Everything");
-        plr.transform.GetComponent<Rigidbody>().useGravity = false;
+        player.transform.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+        player.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+        player.transform.GetComponent<CapsuleCollider>().excludeLayers = LayerMask.NameToLayer("Everything");
+        player.transform.GetComponent<Rigidbody>().excludeLayers = LayerMask.NameToLayer("Everything");
+        player.transform.GetComponent<Rigidbody>().useGravity = false;
     }
 
-    private void unfreezePlayer(GameObject plr)
+    public static void unfreezePlayer(GameObject player)
     {
-        plr.GetComponent<CapsuleCollider>().excludeLayers = LayerMask.GetMask("None");
-        plr.GetComponent<Rigidbody>().excludeLayers = LayerMask.GetMask("None");
-        plr.GetComponent<Rigidbody>().useGravity = true;
+        player.GetComponent<CapsuleCollider>().excludeLayers = LayerMask.GetMask("None");
+        player.GetComponent<Rigidbody>().excludeLayers = LayerMask.GetMask("None");
+        player.GetComponent<Rigidbody>().useGravity = true;
     }
 
     //called by FailureHandler.cs
@@ -277,20 +285,6 @@ public class PlayerManager : NetworkBehaviour
         scenarioLoadedRPC(SteamClient.SteamId);
     }
 
-    //when paths are generated, ship is relocated into entrance path, thus requiring an update to ship screens
-    public void handleShipRepositioning()
-    {
-        float ship_rotation = ReferenceAssistor.Instance.spaceship.transform.rotation.eulerAngles.y;
-        string current_heading = FlyingInstruments.getRoundedDegreeReading(ship_rotation + 90.0f);
-        string target_heading = ReferenceAssistor.Instance.spaceship.GetComponent<ShipMovement>().GetTargetHeading();
-
-        ReferenceAssistor.Instance.module_handlers[0].GetComponent<FlyingInstruments>().updateAltimeterScreen();
-        ReferenceAssistor.Instance.module_handlers[0].GetComponent<FlyingInstruments>().updateCourseHeadingScreen(ship_rotation, current_heading);
-        ReferenceAssistor.Instance.module_handlers[2].GetComponent<ScenarioMap>().updateAltitude();
-        ReferenceAssistor.Instance.module_handlers[2].GetComponent<ScenarioMap>().updateShipLocation();
-        ReferenceAssistor.Instance.module_handlers[2].GetComponent<ScenarioMap>().updateShipOrientation(ship_rotation, current_heading, target_heading);
-    }
-
     [Rpc(SendTo.Everyone)]
     private void startScenarioRPC(int current_scenario_index)
     {
@@ -312,12 +306,9 @@ public class PlayerManager : NetworkBehaviour
         //reactivate camera
         local_player.transform.GetComponent<CameraMove>().ReactivateCamera();
         
-        //update screens to account for ship's new location/rotation in newly-generated entrance path
-        handleShipRepositioning();
-
         //unmute audio and activate computer voice that was muted/deactivated during scenario transition
         ReferenceAssistor.Instance.audio_manager.ActivateComputerVoice();
-        ReferenceAssistor.Instance.audio_manager.UnmuteAudio();
+        ReferenceAssistor.Instance.audio_manager.UnmuteSFX();
     }
 
     //fired when a client's AsyncOperation for loading a scenario (not BridgeEnvironment) is complete

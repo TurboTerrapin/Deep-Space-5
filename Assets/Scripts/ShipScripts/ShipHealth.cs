@@ -50,6 +50,36 @@ public class ShipHealth : NetworkBehaviour, IPowerable
         shield_strength = ReferenceAssistor.Instance.module_handlers[2].GetComponent<ShieldStrength>();
     }
 
+    public void resetToFullHealth()
+    {
+        if (health_change_coroutine != null)
+        {
+            StopCoroutine(health_change_coroutine);
+            health_change_coroutine = null;
+        }
+        if (dead_ship_coroutine != null)
+        {
+            StopCoroutine(dead_ship_coroutine);
+            dead_ship_coroutine = null;
+        }
+        Color c = getHealthColor(100.0f);
+        for (int i = 0; i < 4; i++)
+        {
+            actual_section_integrities[i] = 100.0f;
+            displayed_section_integrities[i] = 100.0f;
+            hull_integrity_section_percentages_display.transform.GetChild(i).GetComponent<TMP_Text>().SetText("100%");
+            hull_integrity_section_percentages_display.transform.GetChild(i).GetChild(1).GetComponent<UnityEngine.UI.Image>().fillAmount = 1.0f;
+            c.a = 0.2f;
+            ship_health_indicators[i].GetComponent<UnityEngine.UI.RawImage>().color = c;
+            hull_integrity_section_percentages_display.transform.GetChild(i).GetChild(0).GetComponent<UnityEngine.UI.RawImage>().color = c;
+            c.a = 0.08f;
+            hull_integrity_section_percentages_display.transform.GetChild(i).GetChild(3).GetComponent<UnityEngine.UI.RawImage>().color = c;
+            hull_integrity_section_percentages_display.transform.GetChild(i).GetComponent<TMP_Text>().fontSize = 0.035f;
+        }
+        hull_integrity_section_percentages_display.transform.GetChild(4).gameObject.SetActive(false);
+        hull_integrity = 100.0f;
+    }
+
     public float getHullIntegrity()
     {
         return Mathf.Max(0.0f, hull_integrity);
@@ -149,7 +179,14 @@ public class ShipHealth : NetworkBehaviour, IPowerable
     IEnumerator deadDelay()
     {
         yield return new WaitForSeconds(2.0f);
-        scenario_manager.endScenario(ScenarioManager.EndCondition.ShipDestroyed);
+        if (scenario_manager != null)
+        {
+            scenario_manager.endScenario(ScenarioManager.EndCondition.ShipDestroyed);
+        }
+        else
+        {
+            ReferenceAssistor.Instance.training_handler.endTraining(false);
+        }
     }
 
     //compares before and after health of a given section and does damage / 5 for flicker time in that section
@@ -205,13 +242,25 @@ public class ShipHealth : NetworkBehaviour, IPowerable
         return updated_health;
     }
 
+    //returns damage modifier based on difficulty or in training mode
+    private float getDamageModifier()
+    {
+        float damage_modifier = DAMAGE_MODIFIERS[0];
+        if (scenario_manager != null)
+        {
+            damage_modifier = DAMAGE_MODIFIERS[scenario_manager.getDifficulty()];
+        }
+        return damage_modifier;
+    }
+
     public void damageSection(float damage, int section)
     {
         if (NetworkManager.Singleton.IsHost == false || INVINCIBLE_SHIP == true)
         {
             return;
         }
-        damage *= DAMAGE_MODIFIERS[scenario_manager.getDifficulty()];
+
+        damage *= getDamageModifier();
 
         //attempt to use shield battery or check if effect currently active
         if (attemptSectionDamage(damage, section) == true)
@@ -237,7 +286,8 @@ public class ShipHealth : NetworkBehaviour, IPowerable
             return;
         }
 
-        damage *= DAMAGE_MODIFIERS[scenario_manager.getDifficulty()];
+        damage *= getDamageModifier();
+
         float[] temp_health_areas = new float[4];
         for (int i = 0; i < 4; i++)
         {

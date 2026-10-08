@@ -3,7 +3,7 @@
     - Handles inputs for vertical thrusters
     - Extends ThrusterControl.cs
     Contributor(s): Jake Schott
-    Last Updated: 1/31/2026
+    Last Updated: 10/5/2026
 */
 
 using System.Collections;
@@ -15,8 +15,8 @@ public class VerticalThrusters : ThrusterControl, IControllable, IPowerable, IIK
 {
     private string CONTROL_NAME = "VERTICAL THRUSTERS";
     private static string INFO_MESSAGE = "Controls the altitude of the ship through upward and downward movement.";
-    private List<string> CONTROL_DESCS = new List<string>{"DESCEND", "ASCEND"};
-    private List<int> CONTROL_INDEXES = new List<int>(){2, 0};
+    private List<string> CONTROL_DESCS = new List<string> { "DESCEND", "ASCEND" };
+    private List<int> CONTROL_INDEXES = new List<int>() { 2, 0 };
     private List<Button> BUTTONS = new List<Button>();
 
     private List<KeyCode> keys_down = new List<KeyCode>();
@@ -36,7 +36,7 @@ public class VerticalThrusters : ThrusterControl, IControllable, IPowerable, IIK
 
     private void Start()
     {
-        hud_info = new HUDInfo(CONTROL_NAME, true);
+        hud_info = new HUDInfo(CONTROL_NAME, MAX_POWER_CONSUMPTION);
         BUTTONS.Add(new Button(CONTROL_DESCS[0], CONTROL_INDEXES[0], false, false));
         BUTTONS.Add(new Button(CONTROL_DESCS[1], CONTROL_INDEXES[1], false, false));
         hud_info.setButtons(BUTTONS);
@@ -47,35 +47,42 @@ public class VerticalThrusters : ThrusterControl, IControllable, IPowerable, IIK
     {
         return hud_info;
     }
+
     public Transform getIKTarget(GameObject current_target)
     {
         finger_position = 0;
-        for(int i = 0; i < button_push_percentage.Length; i++)
+        for (int i = 0; i < button_push_percentage.Length; i++)
         {
             if (button_push_percentage[i] > 0) finger_position = i + 1;
         }
         return IK_targets[finger_position].transform;
     }
+
     public AnimatorHandler.HandInteractionType getHandInteractionType()
     {
         return hand_interaction_type;
     }
+
     public float getHandPose()
     {
         return hand_pose;
     }
+
     public bool getRightHandFlip()
     {
         return does_right_hand_flip;
     }
+
     public Vector3 getRightHandOffset()
     {
         return right_hand_offset;
     }
+
     public float getLerpSpeed()
     {
         return lerp_speed;
     }
+
     public float getVerticalThrusterState()
     {
         return (thruster_percentage[1] - thruster_percentage[0]);
@@ -113,23 +120,19 @@ public class VerticalThrusters : ThrusterControl, IControllable, IPowerable, IIK
         }
         thruster_coroutine = null;
     }
+
     private void displayAdjustment()
     {
-        //adjust thruster sound
-        GetComponent<HorizontalThrusters>().adjustThrusterSound();
+        //adjust thruster sounds
+        adjustThrusterSounds();
 
         //adjust physical buttons
         adjustButton(thruster_buttons[0], 0);
         adjustButton(thruster_buttons[1], 1);
 
         //update diamond
-        GameObject diamond = thruster_display.transform.GetChild(0).gameObject;
         float diamond_location = (thrust_direction + 1.0f) / 2.0f;
-
-        diamond.transform.localPosition =
-            new Vector3(Mathf.Lerp(0.055f, -0.055f, diamond_location),
-                        diamond.transform.localPosition.y,
-                        diamond.transform.localPosition.z);
+        thruster_display.transform.GetChild(0).transform.localPosition = new Vector3(Mathf.Lerp(0.055f, -0.055f, diamond_location), 0.0f, 0.0f);
     }
 
     public void powerOn(int position)
@@ -149,17 +152,6 @@ public class VerticalThrusters : ThrusterControl, IControllable, IPowerable, IIK
         hud_info.setPowerConsumption(0.0f);
     }
 
-    [Rpc(SendTo.Everyone)]
-    private void transmitVerticalThrusterRPC(float down_thrust, float up_thrust, float down_button, float up_button)
-    {
-        thruster_percentage[0] = down_thrust;
-        thruster_percentage[1] = up_thrust;
-        button_push_percentage[0] = down_button;
-        button_push_percentage[1] = up_button;
-        updateThrust();
-        displayAdjustment();
-    }
-
     public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)
     {
         keys_down = inputs;
@@ -174,5 +166,16 @@ public class VerticalThrusters : ThrusterControl, IControllable, IPowerable, IIK
                 }
             }
         }
+    }
+
+    [Rpc(SendTo.Everyone)]
+    private void transmitVerticalThrusterRPC(float down_thrust, float up_thrust, float down_button, float up_button)
+    {
+        thruster_percentage[0] = down_thrust;
+        thruster_percentage[1] = up_thrust;
+        button_push_percentage[0] = down_button;
+        button_push_percentage[1] = up_button;
+        updateThrust();
+        displayAdjustment();
     }
 }

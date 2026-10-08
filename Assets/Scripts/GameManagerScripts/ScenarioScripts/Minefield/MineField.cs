@@ -1,7 +1,7 @@
 /*
     Minefield.cs
     Contributor(s): Henryk Musial
-    Last Updated: 7/1/2026
+    Last Updated: 8/11/2026
 */
 
 using System.Collections;
@@ -21,7 +21,7 @@ public class Minefield : NetworkBehaviour, IScenario, IEmissionSusceptible, IBro
     private static int[] WARNING_SIGNAL_INDEXES = new int[8] { 10, 10, 10, 10, 10, 10, 10, 10 };
     private static bool[] WARNING_SIGNAL_IS_NUMERIC = new bool[8] { false, false, false, false, false, false, false, false };
     private static int[] WARNING_SIGNAL_COLORS = new int[8] { 2, 4, 2, 4, 2, 4, 2, 4 };
-    private static string DEATH_MESSAGE = "Stolen ship SEACC-3002 was found adrift within a field of mines. Crew was unable to maneuver around or disable the mines and sustained extensive hull damage. No survivors were found.";
+    private static string DEATH_MESSAGE = "Stolen ship SCC-3002 was found adrift within a field of mines. Crew was unable to maneuver around or disable the mines and sustained extensive hull damage. No survivors were found.";
 
     public GameObject normalMine;
     public GameObject seekerMine;
@@ -65,7 +65,7 @@ public class Minefield : NetworkBehaviour, IScenario, IEmissionSusceptible, IBro
         List<Vector3> positions =
             ReferenceAssistor.Instance.scenario_manager.generateSpawnLocations(minDistance, MINE_QUANTITY, null);
 
-        Transform world_root = GameObject.FindGameObjectWithTag("WorldRoot").transform;
+        Transform world_root = ReferenceAssistor.Instance.world_root.transform;
 
         for (int i = 0; i < MINE_QUANTITY; i++)
         {
@@ -94,6 +94,15 @@ public class Minefield : NetworkBehaviour, IScenario, IEmissionSusceptible, IBro
 
     public void initiateScenario()
     {
+        // Enable light layer two
+        ReferenceAssistor.Instance.light_layer_two.gameObject.SetActive(true);
+        foreach (Transform t in ReferenceAssistor.Instance.light_layer_two.transform)
+        {
+            Light l = t.GetComponent<Light>();
+            l.intensity = 0.03f;
+            l.color = Color.white;
+        }
+
         if (NetworkManager.Singleton.IsHost == false)
         {
             return;

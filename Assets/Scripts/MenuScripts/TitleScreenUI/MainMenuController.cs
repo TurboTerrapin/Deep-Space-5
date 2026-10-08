@@ -1,6 +1,7 @@
 using Steamworks;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class MainMenuController : MonoBehaviour
 {
@@ -37,6 +38,18 @@ public class MainMenuController : MonoBehaviour
     public void HandleSettingsButtonClick()
     {
         SwitchTo(SettingsMenu);
+    }
+
+    public void HandleIntroButtonClick()
+    {
+        GameObject.Find("LoadHandler").GetComponent<LoadHandler>().startLoad();
+        SceneManager.LoadScene("IntroSequence");
+    }
+
+    public void HandleTrainingButtonClick()
+    {
+        GameObject.Find("LoadHandler").GetComponent<LoadHandler>().startLoad();
+        SceneManager.LoadScene("TrainingEnvironment");
     }
 
     public void HandleQuitButtonClick()

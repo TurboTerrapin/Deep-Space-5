@@ -9,7 +9,7 @@
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
-//using static UnityEditor.PlayerSettings;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Animator))]
 public class AnimatorHandler : NetworkBehaviour
@@ -164,11 +164,10 @@ public class AnimatorHandler : NetworkBehaviour
 
     public void onSitAnimationEnd()
     {
-        if (transform.parent.GetComponent<NetworkObject>().IsOwner == true)
+        if (SceneManager.GetActiveScene().name.CompareTo("IntroSequence") == 0 || transform.parent.GetComponent<NetworkObject>().IsOwner == true)
         {
-            PrimaryScript.Instance.assumePosition();
+            PrimaryScript.Instance.onSitDownAnimationCompleted();
         }
-
     }
 
     public void setCharacterRotationUp(float rot)
@@ -182,9 +181,9 @@ public class AnimatorHandler : NetworkBehaviour
     //called on last frame of get up animations
     public void onGetUpAnimationEnd()
     {
-        if (transform.parent.GetComponent<NetworkObject>().IsOwner == true)
+        if (SceneManager.GetActiveScene().name.CompareTo("IntroSequence") == 0 || transform.parent.GetComponent<NetworkObject>().IsOwner == true)
         {
-            if (myAnimator.GetInteger("Seat") == 3)
+            if (myAnimator.GetBool("IsCaptain") == true)
             {
                 transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
             }
@@ -209,14 +208,14 @@ public class AnimatorHandler : NetworkBehaviour
         {
             anim_time = Mathf.Max(0.0f, anim_time - Time.deltaTime);
 
-            transform.localPosition = Vector3.Lerp(new Vector3(0.0f, 0.0f, 0.0f), this_pos, anim_time / 0.1f);
+            transform.localPosition = Vector3.Lerp(Vector3.zero, this_pos, anim_time / 0.1f);
             
             yield return null;
         }
 
         myAnimator.SetBool("GettingUp", false);
         myAnimator.SetBool("SittingDown", false);
-        PrimaryScript.Instance.relinquishPosition();
+        PrimaryScript.Instance.onGetUpAnimationCompleted();
     }
 
     public float totallookat = 1;

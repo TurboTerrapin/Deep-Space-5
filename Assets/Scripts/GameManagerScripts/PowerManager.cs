@@ -4,7 +4,7 @@
     - Records changes in power consumption (as called by the individual controls)
     - Handles overconsumption and complete shutdown
     Contributor(s): Jake Schott
-    Last Updated: 7/23/2026
+    Last Updated: 10/2/2026
 */
 
 using System.Collections;
@@ -43,9 +43,9 @@ public class PowerManager : NetworkBehaviour, IPowerable
     private bool ship_has_power = true;
 
     //these three lists correspond to 0-3 pilot, tactician, engineer, captain
+    private UnityEngine.UI.RawImage[,,] power_icons = new UnityEngine.UI.RawImage[4, 2, 10];
     private List<Component>[] positional_modules = new List<Component>[] { null, null, null, null }; //the powerable components
-    private List<float>[] power_distributions = new List<float>[] { new List<float>(), new List<float>(), new List<float>(), new List<float>() };
-    private List<string>[] associated_controls = new List<string>[] { new List<string>(), new List<string>(), new List<string>(), new List<string>() };
+    private Dictionary<string, float>[] power_distributions = new Dictionary<string, float>[] { new Dictionary<string, float>(), new Dictionary<string, float>(), new Dictionary<string, float>(), new Dictionary<string, float>() };
 
     private bool[] powered_positions = new bool[] { false, false, false, false }; //corresponds to pilot, tactician, engineer, captain
     private float[] power_consumptions = new float[] { 0.0f, 0.0f, 0.0f, 0.0f }; //corresponds to pilot, tactician, engineer, captain
@@ -67,6 +67,15 @@ public class PowerManager : NetworkBehaviour, IPowerable
         addCaptainModules(); //positional_modules[3]
 
         linkPowerDistributions();
+
+        for (int i = 0; i < 4; i++)
+        {
+            for (int p = 0; p < 10; p++)
+            {
+                power_icons[i, 0, p] = position_power_displays[i].transform.GetChild(p + 1).GetComponent<UnityEngine.UI.RawImage>();
+                power_icons[i, 1, p] = engineer_power_displays[i].transform.GetChild(p + 1).GetComponent<UnityEngine.UI.RawImage>();
+            }
+        }
 
         power_updater_coroutine = StartCoroutine(powerUpdater());
         power_allocation.resetToDefaultAllocation(DEFAULT_POWER_ALLOCATIONS);
@@ -141,25 +150,13 @@ public class PowerManager : NetworkBehaviour, IPowerable
             for (int m = 0; m < positional_modules[i].Count; m++)
             {
                 IControllable control_test = positional_modules[i][m] as IControllable;
-                if (control_test != null)
-                {
-                    string control_name = positional_modules[i][m].GetType().Name;
-
-                    if (associated_controls[i].Contains(control_name) == false)
+                IPowerable power_test = positional_modules[i][m] as IPowerable;
+                if (control_test != null || power_test != null)
+                {   
+                    if (power_distributions[i].ContainsKey(positional_modules[i][m].GetType().Name) == false)
                     {
-                        power_distributions[i].Add(0.0f);
-                        associated_controls[i].Add(control_name);
+                        power_distributions[i].Add(positional_modules[i][m].GetType().Name, 0.0f);
                     }
-                }
-                if (i == 1) //tactician exception for TransmissionHandler since it's not a "control" per se
-                {
-                    power_distributions[1].Add(0.0f);
-                    associated_controls[1].Add("TransmissionHandler");
-                }
-                else if (i == 3) //captain exception for ManualOnOff since it's not covered by IPowerable
-                {
-                    power_distributions[3].Add(0.0f);
-                    associated_controls[3].Add("ManualOnOff");
                 }
             }
         }
@@ -182,9 +179,9 @@ public class PowerManager : NetworkBehaviour, IPowerable
     private float getPowerConsumption(int position)
     {
         float total_power = 0.0f;
-        for (int p = 0; p < power_distributions[position].Count; p++)
+        foreach (KeyValuePair<string, float> kvp in power_distributions[position])
         {
-            total_power += power_distributions[position][p];
+            total_power += kvp.Value;
         }
         return Mathf.Min(1.05f, total_power);
     }
@@ -222,15 +219,18 @@ public class PowerManager : NetworkBehaviour, IPowerable
         power_change_coroutines[position] = null;
     }
 
-    //called by IControllables attached to ControlHandler
+    //called by IControllables attached to module handlers
     public void controlPowerChange(int position, string control_name, float power_level)
     {
-        if (associated_controls[position].Contains(control_name) == false)
+        if (power_distributions[position].ContainsKey(control_name) == false)
         {
-            return;
+            power_distributions[position].Add(control_name, power_level);
+        }
+        else
+        {
+            power_distributions[position][control_name] = power_level;
         }
 
-        power_distributions[position][associated_controls[position].IndexOf(control_name)] = power_level;
         powerConsumptionChangeRPC(position, getPowerConsumption(position));
     }
 
@@ -277,13 +277,15 @@ public class PowerManager : NetworkBehaviour, IPowerable
             power_change_coroutines[position] = null;
         }
         powered_positions[position] = false;
-        
-        for (int i = 0; i < power_distributions[position].Count; i++)
+
+        List<string> keys = new List<string>(power_distributions[position].Keys);
+        foreach (string key in keys)
         {
-            power_distributions[position][i] = 0.0f;
+            power_distributions[position][key] = 0.0f;
         }
+
         power_consumptions[position] = getPowerConsumption(position);
-        checkForOverConsumption(position, power_consumptions[position]);
+        checkForOverconsumption(position, power_consumptions[position]);
 
         List<Component> to_disable = positional_modules[position];
         
@@ -291,21 +293,22 @@ public class PowerManager : NetworkBehaviour, IPowerable
     }
 
     //helper method used to set the color of a power icon, called by powerUpdater() and animationProgressHelper()
-    private void powerIconHelper(GameObject to_change, float a)
+    private void powerIconHelper(int pos, int k, int p, float a)
     {
-        Color icon_color = to_change.GetComponent<UnityEngine.UI.RawImage>().color;
-        to_change.GetComponent<UnityEngine.UI.RawImage>().color = new Color(icon_color.r, icon_color.g, icon_color.b, a);
+        Color icon_color = power_icons[pos, k, p].color;
+        icon_color.a = a;
+        power_icons[pos, k, p].color = icon_color;
     }
 
     //helper method used to set the alphas of each of the green-to-red circles based on a given power level (0-10)
-    private void animationProgressHelper(GameObject display, int power_level, float percent, float min_alpha)
+    private void animationProgressHelper(int pos, int k, int power_level, float animation_progress, float min_alpha)
     {
-        float tmp_prcnt = percent;
+        float tmp_prcnt = animation_progress;
         for (int i = 0; i < power_level; i++)
         {
-            tmp_prcnt = percent - ((1.0f / power_level) * i);
+            tmp_prcnt = animation_progress - ((1.0f / power_level) * i);
             float a = Mathf.Max(min_alpha, tmp_prcnt / (1.0f / power_level));
-            powerIconHelper(display.transform.GetChild(i + 1).gameObject, a);
+            powerIconHelper(pos, k, i, a);
         }
     }
 
@@ -319,13 +322,13 @@ public class PowerManager : NetworkBehaviour, IPowerable
             for (int i = 0; i < 4; i++)
             {
                 power_levels[i] = (int)Mathf.Floor(power_consumptions[i] * 10.0f);
-                for (int k = 1; k <= 10; k++)
+                for (int p = 0; p < 10; p++)
                 {
-                    position_power_displays[i].transform.GetChild(k).GetChild(0).gameObject.SetActive(!(k <= power_levels[i]));
-                    powerIconHelper(position_power_displays[i].transform.GetChild(k).gameObject, 0.2f);
-
-                    engineer_power_displays[i].transform.GetChild(k).GetChild(0).gameObject.SetActive(!(k <= power_levels[i]));
-                    powerIconHelper(engineer_power_displays[i].transform.GetChild(k).gameObject, 0.2f);
+                    for (int k = 0; k < 2; k++)
+                    {
+                        powerIconHelper(i, k, p, 0.2f);
+                        power_icons[i, k, p].transform.GetChild(0).gameObject.SetActive((p + 1) > power_levels[i]);
+                    }
                 }
             }
 
@@ -335,10 +338,11 @@ public class PowerManager : NetworkBehaviour, IPowerable
             {
                 anim_time = Mathf.Max(0.0f, anim_time - Time.deltaTime);
 
+                float animation_progress = 1.0f - (anim_time / POWER_UPDATE_TIME);
                 for (int i = 0; i < 4; i++)
                 {
-                    animationProgressHelper(position_power_displays[i], power_levels[i], 1.0f - (anim_time / POWER_UPDATE_TIME), 0.2f);
-                    animationProgressHelper(engineer_power_displays[i], power_levels[i], 1.0f - (anim_time / POWER_UPDATE_TIME), 0.5f);
+                    animationProgressHelper(i, 0, power_levels[i], animation_progress, 0.2f);
+                    animationProgressHelper(i, 1, power_levels[i], animation_progress, 0.5f);
                 }
 
                 yield return null;
@@ -360,7 +364,7 @@ public class PowerManager : NetworkBehaviour, IPowerable
         int max_allocation = (int)(power_allocation.getPowerAllocation(position) * 10.0f);
 
         //recolor circles from red to their actual color
-        for (int i = 1; i <= 10; i++)
+        for (int i = 1; i < 11; i++)
         {
             //recolor circle
             float circle_alpha = engineer_power_displays[position].transform.GetChild(i).GetComponent<UnityEngine.UI.RawImage>().color.a;
@@ -401,7 +405,7 @@ public class PowerManager : NetworkBehaviour, IPowerable
         engineer_power_displays[index].transform.GetChild(12).GetComponent<TMP_Text>().color = new Color(1.0f, 0.0f, 0.0f, 1.0f);
 
         //change colors of each circle to red
-        for (int i = 1; i <= 10; i++)
+        for (int i = 1; i < 11; i++)
         {
             float a = engineer_power_displays[index].transform.GetChild(i).GetComponent<UnityEngine.UI.RawImage>().color.a;
             engineer_power_displays[index].transform.GetChild(i).GetComponent<UnityEngine.UI.RawImage>().color = new Color(1.0f, 0.0f, 0.0f, a);
@@ -446,6 +450,7 @@ public class PowerManager : NetworkBehaviour, IPowerable
         }
         background_animator.disableAllScreens();
         background_animator.disableEnergyCircles();
+        ReferenceAssistor.Instance.seat_manager.reflectPowerChange();
 
         //stop orange flashing at positions where a player is sitting but power dial is not active
         power_control.updatePlayerNotifiers();
@@ -484,6 +489,7 @@ public class PowerManager : NetworkBehaviour, IPowerable
         ReferenceAssistor.Instance.audio_manager.AddNotification(1, power_notifications[reason]);
         if (auxiliary_power_available == true)
         {
+            ReferenceAssistor.Instance.hints_manager.addHint("USE AUXILIARY POWER", 2);
             ReferenceAssistor.Instance.audio_manager.AddNotification(1, power_notifications[8]);
         }
 
@@ -525,7 +531,7 @@ public class PowerManager : NetworkBehaviour, IPowerable
     }
 
     //calls overconsumptionRPC() or abortOverconsumptionRPC() if applicable
-    private void checkForOverConsumption(int position, float allocation)
+    private void checkForOverconsumption(int position, float allocation)
     {
         if (power_consumptions[position] > allocation && overconsumption_coroutines[position] == null)
         {
@@ -542,7 +548,7 @@ public class PowerManager : NetworkBehaviour, IPowerable
     {
         if (NetworkManager.Singleton.IsHost == true)
         {
-            checkForOverConsumption(position, allocation);
+            checkForOverconsumption(position, allocation);
         }
     }
 
@@ -582,6 +588,9 @@ public class PowerManager : NetworkBehaviour, IPowerable
         //show power enabled on power status screen in engineer position
         GetComponent<PowerRegulator>().displayPowerRestoration();
 
+        //remove hint if applicable
+        ReferenceAssistor.Instance.hints_manager.removeHint("USE AUXILIARY POWER", 2);
+
         yield return new WaitForSeconds(3.0f);
 
         //play power restoration notification
@@ -596,6 +605,7 @@ public class PowerManager : NetworkBehaviour, IPowerable
         ship_beeps_sound.Play();
         background_animator.enableAllScreens(1.5f);
         background_animator.enableEnergyCircles();
+        ReferenceAssistor.Instance.seat_manager.reflectPowerChange();
 
         //start updating power consumption
         if (power_updater_coroutine == null)
@@ -662,10 +672,9 @@ public class PowerManager : NetworkBehaviour, IPowerable
     private void powerConsumptionChangeRPC(int position, float consumption)
     {
         power_consumptions[position] = consumption;
-
         if (NetworkManager.Singleton.IsHost == true)
         {
-            checkForOverConsumption(position, power_allocation.getPowerAllocation(position));
+            checkForOverconsumption(position, power_allocation.getPowerAllocation(position));
         }
     }
 
@@ -709,7 +718,7 @@ public class PowerManager : NetworkBehaviour, IPowerable
         tactician_modules.Add(ReferenceAssistor.Instance.module_handlers[4].GetComponent("StatusIndicators")); //8
         tactician_modules.Add(ReferenceAssistor.Instance.module_handlers[1].GetComponent("UniversalCommunicator")); //9
         tactician_modules.Add(ReferenceAssistor.Instance.module_handlers[1].GetComponent("PhaserIntensities")); //10
-        tactician_modules.Add(ReferenceAssistor.Instance.module_handlers[1].GetComponent("PhaserActivators")); //11
+        tactician_modules.Add(ReferenceAssistor.Instance.module_handlers[1].GetComponent("LifeformScanner")); //11
         tactician_modules.Add(ReferenceAssistor.Instance.module_handlers[1].GetComponent("LongRangeDirection")); //12
         tactician_modules.Add(ReferenceAssistor.Instance.module_handlers[1].GetComponent("ProximityMap")); //13
         tactician_modules.Add(ReferenceAssistor.Instance.module_handlers[1].GetComponent("TorpedoTrigger")); //14

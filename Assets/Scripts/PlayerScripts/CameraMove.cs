@@ -4,14 +4,15 @@
     - Handles looking around
     - Handles camera zoom (using RMB or CTRL)
     - Handles camera shaking
-    - Handles displaying hints if hints enabled (ex. MISSION OBJECTIVE, POWER MONITORING)
+    - Handles displaying hints if hints enabled (station functions)
     Contributor(s): John Aylward, Jake Schott
-    Last Updated: 6/25/2026
+    Last Updated: 9/30/2026
 */
 
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
 public class CameraMove : MonoBehaviour
 {
@@ -27,11 +28,11 @@ public class CameraMove : MonoBehaviour
     private static Vector2 STANDING_CAMERA_VERTICAL_RANGE = new Vector2(-70.0f, 85.0f);
 
     public Transform cameraHolder;
+    public Camera myCamera;
     public Transform headTransform;
+    public AnimatorHandler animatorHandler = null;
     public bool parentRotationLock = false;
-    private Camera myCamera;
     private Rigidbody rb;
-    private AnimatorHandler animatorHandler = null;
 
     private bool cameraLocked = true; //If true, means camera cannot be moved with mouse
     private Vector2 mouseMove = new Vector2(); //Stores the current frames mouse movement (usually a fairly small value)
@@ -51,13 +52,22 @@ public class CameraMove : MonoBehaviour
     [SerializeField]
     private AnimationCurve chestIKLookAtCurveEngineer = new AnimationCurve();
 
+    private void Awake()
+    {
+        myCamera = cameraHolder.transform.GetChild(0).GetComponent<Camera>();
+        animatorHandler = transform.Find("CharacterModel").GetComponent<AnimatorHandler>();
+    }
+
     private void Start()
     {
-        if (transform.gameObject.GetComponent<PlayerMove>().IsOwner == false) //Not owner, kill the camera
+        if (GetComponent<NetworkObject>() != null)
         {
-            Destroy(cameraHolder.transform.GetChild(0).gameObject);
-            Destroy(this);
-            return;
+            if (GetComponent<NetworkObject>().OwnerClientId != NetworkManager.Singleton.LocalClientId) //Not owner, kill the camera
+            {
+                Destroy(cameraHolder.gameObject);
+                Destroy(this);
+                return;
+            }
         }
 
         //Hide eyes, hair
@@ -71,14 +81,6 @@ public class CameraMove : MonoBehaviour
                 }
             }
         }
-
-        myCamera = cameraHolder.transform.GetChild(0).GetComponent<Camera>();
-        if (myCamera != null)
-        {
-            myCamera.gameObject.AddComponent<AudioListener>();
-        }
-
-        animatorHandler = transform.Find("CharacterModel").GetComponent<AnimatorHandler>();
     }
 
     //Runs after scene is loaded
@@ -91,11 +93,25 @@ public class CameraMove : MonoBehaviour
         StartCoroutine(CameraUpdater());
     }
 
+    public static void HideMainCamera()
+    {
+        if (Camera.main != null)
+        {
+            Camera.main.gameObject.SetActive(false);
+        }
+    }
+
+    public GameObject GetCamera()
+    {
+        return myCamera.gameObject;
+    }
+
     public void UnlockCamera(Vector2 initialPos)
     {
         cameraHolder.parent = transform;
         cameraLocked = false;
         prevPos = initialPos;
+        MouseMove();
     }
 
     public void LockCamera()
@@ -250,21 +266,21 @@ public class CameraMove : MonoBehaviour
         }
         
         //If not paused
-        if (Cursor.lockState == CursorLockMode.Locked && cameraLocked == false)
+        if (myCamera.gameObject.activeSelf == true && Cursor.lockState == CursorLockMode.Locked && cameraLocked == false)
         {
             MouseMove();
         }
 
-        //Check for pausing/hints toggling
+        //Check for pausing/station info toggling
         if (!PrimaryScript.Instance.isPaused())
         {
-            //Check for info overlay toggling (hints)
-            if (PrimaryScript.Instance.getHUD() < 2 && PrimaryScript.Instance.infoVisibilityEnabled() && PrimaryScript.Instance.isActive())
+            //Check for station functions toggle
+            if (PrimaryScript.Instance.getHUD() == 0 && PrimaryScript.Instance.isActive())
             {
-                PrimaryScript.Instance.GetComponent<SecondaryScript>().checkInfoOverlayInputs(false);
+                PrimaryScript.Instance.GetComponent<SecondaryScript>().checkStationFunctionsInput(false);
             }
 
-            if (cameraLocked == false)
+            if (cameraLocked == false && myCamera.gameObject.activeSelf == true)
             {
                 //Zoom in
                 if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl) || Input.GetKey(KeyCode.Mouse1))
@@ -311,7 +327,7 @@ public class CameraMove : MonoBehaviour
 
             cameraHolder.localRotation = Quaternion.AngleAxis(prevPos.x, Vector3.up) * Quaternion.AngleAxis(prevPos.y, Vector3.right);
 
-            if(PrimaryScript.Instance.currentSeat() == 3)
+            if (PrimaryScript.Instance.isCaptainMode())
             {
                 animatorHandler.chestlookat = 0;
                 //animatorHandler.chestlookat = -Mathf.Abs(prevPos.x / 180) + 1;

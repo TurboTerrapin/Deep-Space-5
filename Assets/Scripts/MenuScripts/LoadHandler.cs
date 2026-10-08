@@ -4,7 +4,7 @@
     - Handles displaying disconnection and connecting (...) screens
     - Handles Steam checks
     Contributor(s): Jake Schott, Beata Musial
-    Last Updated: 5/24/2026
+    Last Updated: 10/6/2026
 */
 
 using System.Collections;
@@ -26,6 +26,9 @@ public class LoadHandler : MonoBehaviour
     private GameObject connection_lost;
     private GameObject steam_failure;
     private GameObject dummy_camera;
+    private bool network_manager_linked = false;
+
+    private static int last_tip = -1; //index of last tip as to avoid repeats
     private AsyncOperation load_operation = null;
     private Coroutine fade_black_coroutine = null;
     private Coroutine connecting_coroutine = null;
@@ -89,7 +92,30 @@ public class LoadHandler : MonoBehaviour
         {
             yield return null;
         }
-        NetworkManager.Singleton.SceneManager.OnLoad += handleSceneLoad;
+        if (network_manager_linked == false)
+        {
+            network_manager_linked = true;
+            NetworkManager.Singleton.SceneManager.OnLoad += handleSceneLoad;
+            NetworkManager.Singleton.OnClientStopped += handleNetworkManagerDisconnect;
+            NetworkManager.Singleton.OnServerStopped += handleNetworkManagerDisconnect;
+        }
+    }
+
+    private void handleNetworkManagerDisconnect(bool b)
+    {
+        if (network_manager_linked == true)
+        {
+            network_manager_linked = false;
+            if (NetworkManager.Singleton != null)
+            {
+                if (NetworkManager.Singleton.SceneManager != null)
+                {
+                    NetworkManager.Singleton.SceneManager.OnLoad -= handleSceneLoad;
+                }
+                NetworkManager.Singleton.OnClientStopped -= handleNetworkManagerDisconnect;
+                NetworkManager.Singleton.OnServerStopped -= handleNetworkManagerDisconnect;
+            }
+        }
     }
 
     //stops all coroutines
@@ -112,6 +138,15 @@ public class LoadHandler : MonoBehaviour
         load_coroutines.Clear();
     }
 
+    //hides main camera
+    private void enableDummyCameraIfNecessary()
+    {
+        if (Camera.main == null)
+        {
+            dummy_camera.SetActive(true);
+        }
+    }
+
     //only called when NetworkManager.Singleton.SceneManager changes the scene
     private void handleSceneLoad(ulong client_id, string scene_name, LoadSceneMode load_scene_mode, AsyncOperation async_operation)
     {
@@ -131,9 +166,30 @@ public class LoadHandler : MonoBehaviour
     public void startLoad()
     {
         resetAllCoroutines();
-        randomizeColors();
+        randomizeLoadScreen();
+        enableDummyCameraIfNecessary();
         load_coroutines.Add(StartCoroutine(loadLoop()));
         load_screen.SetActive(true);
+    }
+
+    //terminates the loading screen
+    public void endLoad(bool fade)
+    {
+        dummy_camera.SetActive(false);
+        if (load_coroutines.Count == 0)
+        {
+            return;
+        }
+
+        resetAllCoroutines();
+        if (fade == true)
+        {
+            fade_black_coroutine = StartCoroutine(fadeBlackScreen(1.0f));
+        }
+        else
+        {
+            load_screen.SetActive(false);
+        }
     }
 
     //returns true if loading at least one scene/scenario
@@ -184,26 +240,6 @@ public class LoadHandler : MonoBehaviour
         }
     }
 
-    //terminates the loading screen
-    public void endLoad(bool fade)
-    {
-        dummy_camera.SetActive(false);
-        if (load_coroutines.Count == 0)
-        {
-            return;
-        }
-
-        resetAllCoroutines();
-        if (fade == true)
-        {
-            fade_black_coroutine = StartCoroutine(fadeBlackScreen(1.0f));
-        }
-        else
-        {
-            load_screen.SetActive(false);
-        }
-    }
-
     IEnumerator lostConnectionDisplayer(string message)
     {
         while (load_operation != null && load_operation.isDone == false)
@@ -214,7 +250,7 @@ public class LoadHandler : MonoBehaviour
         if (load_coroutines.Count > 0) //if currently loading into BridgeEnvironment, loading a scene, or transitioning between scenes
         {
             GameObject.Destroy(NetworkManager.Singleton.gameObject);
-            PlayerManager.clearDontDestroyOnLoads();
+            PlayerManager.clearDontDestroyOnLoads(true);
             SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
             startLoad();
             while (SceneManager.GetActiveScene().name != "TitleScreen") //get back to TitleScreen
@@ -225,7 +261,7 @@ public class LoadHandler : MonoBehaviour
         }
         else if (SceneManager.GetActiveScene().name != "TitleScreen") //currently playing in an active session
         {
-            if (ReferenceAssistor.Instance != null && ReferenceAssistor.Instance.failure_handler.failureCamera.activeSelf == true)
+            if (ReferenceAssistor.Instance != null && ReferenceAssistor.Instance.failure_handler != null && ReferenceAssistor.Instance.failure_handler.failureCamera.activeSelf == true)
             {
                 //if in failure state let the failure handler know, then do nothing after
                 ReferenceAssistor.Instance.failure_handler.HandleLobbyChange(true);
@@ -233,8 +269,10 @@ public class LoadHandler : MonoBehaviour
             }
             PrimaryScript.Instance.unpause(); //forces unpause
             PrimaryScript.Instance.deactivate(false, true); //stops control interaction
-            ReferenceAssistor.Instance.audio_manager.GetComponent<AudioManager>().MuteAudio(); //mute SFX
-            dummy_camera.SetActive(true);
+            ReferenceAssistor.Instance.audio_manager.GetComponent<AudioManager>().MuteSFX(); //mute SFX
+            PlayerManager.clearDontDestroyOnLoads(false);
+            CameraMove.HideMainCamera();
+            enableDummyCameraIfNecessary();
         }
         hideTitleAndMainMenuElements();
         resetAllCoroutines();
@@ -269,14 +307,16 @@ public class LoadHandler : MonoBehaviour
         }
     }
 
-    //randomizes the colors for the load circle
-    private void randomizeColors()
+    //randomizes the colors for the load circle and the tip at the bottom of the screen
+    private void randomizeLoadScreen()
     {
         //only randomize colors if load screen hasn't been shown yet
         if (load_screen.activeSelf == true)
         {
             return;
         }
+
+        //randomize ring colors
         List<int> possible_colors = new List<int> { 0, 1, 2, 3 };
         for (int i = 0; i < 3; i++)
         {
@@ -284,6 +324,20 @@ public class LoadHandler : MonoBehaviour
             load_ring.transform.GetChild(i).GetComponent<UnityEngine.UI.RawImage>().color = ReferenceAssistor.COLOR_OPTIONS[possible_colors[c]];
             possible_colors.RemoveAt(c);
         }
+
+        //randomize tip
+        int new_tip_index;
+        do
+        {
+            new_tip_index = Random.Range(0, load_screen.transform.GetChild(3).childCount);
+        } 
+        while (new_tip_index == last_tip);
+        
+        for (int i = 0; i < load_screen.transform.GetChild(3).childCount; i++)
+        {
+            load_screen.transform.GetChild(3).GetChild(i).gameObject.SetActive(i == new_tip_index);
+        }
+        last_tip = new_tip_index;
     }
 
     //helper method used to spin the rings on a single frame (yield return null)
@@ -330,6 +384,7 @@ public class LoadHandler : MonoBehaviour
         load_screen.transform.GetChild(0).GetComponent<UnityEngine.UI.RawImage>().color = new Color(0.0f, 0.0f, 0.0f);
         load_screen.transform.GetChild(1).gameObject.SetActive(true);
         load_ring.SetActive(true);
+        load_screen.transform.GetChild(3).gameObject.SetActive(true);
         while (true)
         {
             spinRings();
@@ -339,37 +394,34 @@ public class LoadHandler : MonoBehaviour
 
     IEnumerator loadBridgeEnvironment()
     {
-        dummy_camera.SetActive(true);
+        //ensure only the dummy camera is active to start
+        enableDummyCameraIfNecessary();
 
         //find player
         string player_prefab_name = SteamClient.Name + "_" + SteamClient.SteamId.ToString();
         GameObject player_prefab = GameObject.Find(player_prefab_name);
         while (player_prefab == null)
         {
+            Debug.Log("Waiting for player");
             player_prefab = GameObject.Find(player_prefab_name);
             yield return null;
         }
 
-        //enable load screen
-        randomizeColors();
-        load_screen.SetActive(true);
-
-        //switch cameras
-        if (Camera.main != null)
-        {
-            Camera.main.gameObject.SetActive(false);
-        }
-        player_prefab.transform.GetChild(0).gameObject.SetActive(true);
+        //switch cameras from dummy to player
+        dummy_camera.SetActive(false);
+        player_prefab.GetComponent<CameraMove>().GetCamera().SetActive(true);
 
         //wait for BridgeEnvironment to load
         while (load_operation.isDone == false)
         {
             //spin circles while waiting
+            Debug.Log("Waiting for BE");
             spinRings();
             yield return null;
         }
         load_operation = null;
         ReferenceAssistor.Instance.player_manager.addPlayer(player_prefab, this);
+        Debug.Log("Loaded!");
 
         //wait until PlayerManager interrupts load screen using endLoad()
         while (true)
@@ -409,7 +461,7 @@ public class LoadHandler : MonoBehaviour
             if (transition_canvas.activeSelf == false && switched_to_load_screen == false)
             {
                 switched_to_load_screen = true;
-                randomizeColors();
+                randomizeLoadScreen();
                 load_screen.SetActive(true);
             }
             
@@ -428,6 +480,7 @@ public class LoadHandler : MonoBehaviour
         float anim_time = fade_time;
         load_screen.transform.GetChild(1).gameObject.SetActive(false);
         load_ring.SetActive(false);
+        load_screen.transform.GetChild(3).gameObject.SetActive(false);
 
         while (anim_time > 0.0f)
         {

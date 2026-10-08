@@ -2,7 +2,7 @@
     ScenarioManager.cs
     - Handles loading and transitioning of scenarios
     Contributor(s): John Aylward, Jake Schott, Henryk Musial
-    Last Updated: 7/19/2026
+    Last Updated: 8/10/2026
 */
 
 using System.Collections;
@@ -288,7 +288,7 @@ public class ScenarioManager : NetworkBehaviour
     //called by generatePathLocation() and PilotingSystem.CalculatePoint()
     public static Vector2 getBoundaryPointFromAngle(float ang)
     {
-        Vector2 return_point = new Vector2(0.0f, 0.0f);
+        Vector2 return_point = Vector2.zero;
         float path_slope = Mathf.Tan(Mathf.Deg2Rad * ang);
         return_point.x = ((BOUNDARY_SIZE * 0.5f) * (BOUNDARY_SIZE * 0.5f)) / (1.0f + (path_slope * path_slope));
         return_point.x = Mathf.Sqrt(return_point.x);
@@ -476,6 +476,7 @@ public class ScenarioManager : NetworkBehaviour
             ReferenceAssistor.Instance.module_handlers[1].GetComponent<EncryptionKeys>().initializeEncryptionKeys();
             ReferenceAssistor.Instance.module_handlers[2].GetComponent<EngineCoolantSupply>().initializeEngineTemperatureIncreaser();
             ReferenceAssistor.Instance.module_handlers[2].GetComponent<ComputerRegulator>().initializeComputerRegulator();
+            ReferenceAssistor.Instance.module_handlers[3].GetComponent<ProcedureManual>().initiateProcedureManualHintDelay();
             ReferenceAssistor.Instance.module_handlers[4].GetComponent<PrefixCodeManager>().initiatePrefixCodeManager();
         }
 
@@ -573,20 +574,20 @@ public class ScenarioManager : NetworkBehaviour
         //failure conditions
         if (reason == EndCondition.TimeRanOut)
         {
-            failure_report_message = "Stolen ship designated SEACC-3002 was apprehended and recovered after long-range scanners intercepted its signal at the conclusion of the periodic " + (COUNTDOWN_TIME[getDifficulty()] / 60).ToString() + "-minute reset window.";
+            failure_report_message = "Stolen ship designated SCC-3002 was apprehended and recovered after long-range scanners intercepted its signal at the conclusion of the periodic " + (COUNTDOWN_TIME[getDifficulty()] / 60).ToString() + "-minute reset window.";
         }
         else if (reason == EndCondition.LeftBoundary)
         {
             string[] crew_members = new string[4] { "One crew member was found alive and has been", "Two crew members were found alive and have been",  "Three crew members were found alive and have been", "Four crew members were found alive and have been" };
-            failure_report_message = "Stolen ship designated SEACC-3002 mistakenly left long-range scanner dead zone and was immediately identified and apprehended. " + crew_members[lobby_handler.getNumberOfPlayersInNetworkManagerLobby() - 1] + " arrested.";
+            failure_report_message = "Stolen ship designated SCC-3002 mistakenly left long-range scanner dead zone and was immediately identified and apprehended. " + crew_members[lobby_handler.getNumberOfPlayersInNetworkManagerLobby() - 1] + " arrested.";
         }
         else if (reason == EndCondition.SelfDestructed)
         {
-            failure_report_message = "Debris of stolen ship designated SEACC-3002 was found after apparent self-destruction. No survivors found and ship has been sent to SEACC authority for further investigation.";
+            failure_report_message = "Debris of stolen ship designated SCC-3002 was found after apparent self-destruction. No survivors found and ship has been sent to SCC authority for further investigation.";
         }
         else if (reason == EndCondition.ShipDestroyed)
         {
-            failure_report_message = "Stolen ship designated SEACC-3002 was discovered adrift in space with severe hull damage. No survivors found and ship has been deemed unsalvageable due to irreparable damage.";
+            failure_report_message = "Stolen ship designated SCC-3002 was discovered adrift in space with severe hull damage. No survivors found and ship has been deemed unsalvageable due to irreparable damage.";
 
             IScenario scenario_script = getScenarioScript();
             if (scenario_script != null)
@@ -602,7 +603,7 @@ public class ScenarioManager : NetworkBehaviour
         }
 
         //destroy seats
-        GameObject.FindGameObjectWithTag("SeatHandler").GetComponent<SeatManager>().destroySeats();
+        ReferenceAssistor.Instance.seat_manager.destroySeats();
 
         //turn off power
         ReferenceAssistor.Instance.power_manager.totalShutdown(false);
@@ -654,6 +655,7 @@ public class ScenarioManager : NetworkBehaviour
         ReferenceAssistor.Instance.module_handlers[1].GetComponent<ThreatDetectors>().resetToDefault();
         ReferenceAssistor.Instance.module_handlers[1].GetComponent<ProximityMapOptions>().resetToDefault();
         ReferenceAssistor.Instance.module_handlers[1].GetComponent<LongRangeDirection>().resetToDefault();
+        ReferenceAssistor.Instance.module_handlers[1].GetComponent<LifeformScanner>().resetToDefault();
         ReferenceAssistor.Instance.module_handlers[1].GetComponent<FrequencyAdjuster>().resetFrequencies();
         ReferenceAssistor.Instance.module_handlers[1].GetComponent<TorpedoBaySelector>().resetToDefault();
         ReferenceAssistor.Instance.module_handlers[2].GetComponent<EnergyPattern>().resetToDefault();
@@ -683,8 +685,11 @@ public class ScenarioManager : NetworkBehaviour
 
         //reset and mute audio
         ReferenceAssistor.Instance.audio_manager.DeactivateComputerVoice();
-        ReferenceAssistor.Instance.audio_manager.MuteAudio();
+        ReferenceAssistor.Instance.audio_manager.MuteSFX();
         ReferenceAssistor.Instance.audio_manager.ResetToDefault();
+
+        //reset hints
+        ReferenceAssistor.Instance.hints_manager.resetHints();
 
         //reset scenario light layer
         ReferenceAssistor.Instance.light_layer_two.gameObject.SetActive(false);
@@ -694,7 +699,7 @@ public class ScenarioManager : NetworkBehaviour
         ReferenceAssistor.Instance.player_manager.getLocalPlayer().GetComponent<CameraMove>().ResetCameraEffects();
 
         //show transition
-        scenario_transitioner.GetComponent<TransitionHandler>().ShowTransition(transition_option, OverviewTracker.getStarDate(percent_to_DSF), OverviewTracker.getDistanceToDSF(percent_to_DSF));
+        scenario_transitioner.GetComponent<TransitionHandler>().ShowTransition(transition_option, OverviewTracker.getStardate(percent_to_DSF), OverviewTracker.getDistanceToDSF(percent_to_DSF));
 
         //update overview screen in back of bridge
         ReferenceAssistor.Instance.module_handlers[4].GetComponent<OverviewTracker>().updateOverviewDisplay(percent_to_DSF);
@@ -723,13 +728,13 @@ public class ScenarioManager : NetworkBehaviour
         game_over = true;
 
         //mute audio
-        ReferenceAssistor.Instance.audio_manager.MuteAudio();
+        ReferenceAssistor.Instance.audio_manager.MuteSFX();
 
         //stop checking for controls/seats
         PrimaryScript.Instance.deactivate(false, true);
 
         //display death screen using scenario number sn and death message frm
-        failure_handler.GetComponent<FailureHandler>().displayDeathScreen(lobby_handler.getPlayerNamesInLobby(), lobby_handler.getPlayerSteamIDsInLobby(), OverviewTracker.getStarDate(percent_to_DSF), failure_message, caught);
+        failure_handler.GetComponent<FailureHandler>().displayDeathScreen(lobby_handler.getPlayerNamesInLobby(), lobby_handler.getPlayerSteamIDsInLobby(), OverviewTracker.getStardate(percent_to_DSF), failure_message, caught);
     }
 
     //used to update the boundary expiration timer in engineer position

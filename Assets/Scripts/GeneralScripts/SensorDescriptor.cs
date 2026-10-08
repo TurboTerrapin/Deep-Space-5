@@ -2,7 +2,7 @@
     SensorDescriptor.cs
     - Used to give UI indicators for non-controllable screens
     Contributor(s): Jake Schott
-    Last Updated: 5/17/2026
+    Last Updated: 9/26/2026
 */
 
 using UnityEngine;
@@ -26,7 +26,17 @@ public class SensorDescriptor : MonoBehaviour, IDescribable
         "power_overview",
         "ship_overview",
         "ship_health",
-        "ship_inventory"
+        "ship_inventory",
+        "engine_temperature_information",
+        "hangar_climate_control",
+        "hangar_power_status",
+        "hangar_auxiliary_power",
+        "hangar_drydock_overview",
+        "hangar_space_doors_status",
+        "hangar_inventory",
+        "hangar_life_support",
+        "hangar_umbilical_connection",
+        "hangar_door_access"
     };
 
     //module titles 
@@ -41,11 +51,21 @@ public class SensorDescriptor : MonoBehaviour, IDescribable
         "DETECTION COUNTDOWN",
         "NAVIGATION HEADING",
         "POWER DISTRIBUTION",
-        "PHASER TEMPERATURES",
+        "PHASER HEAT",
         "POWER OVERVIEW",
         "SHIP OVERVIEW",
         "SHIP HEALTH",
-        "SHIP INVENTORY"
+        "SHIP INVENTORY",
+        "ENGINE TEMPERATURE INFORMATION",
+        "HANGAR CLIMATE CONTROL",
+        "HANGAR POWER STATUS",
+        "HANGAR AUXILIARY POWER",
+        "HANGAR DRYDOCK OVERVIEW",
+        "SPACE DOORS STATUS",
+        "HANGAR INVENTORY",
+        "HANGAR LIFE SUPPORT",
+        "HANGAR UMBILICAL CONNECTION",
+        "HANGAR DOOR ACCESS"
     };
 
     //module additional info, or "" if none
@@ -64,7 +84,17 @@ public class SensorDescriptor : MonoBehaviour, IDescribable
         "Describes ship power status according to the 6 corresponding power regulation modules.",
         "",
         "",
-        "Shows ship inventory for probes, escape pods, shield batteries, cargo, and torpedoes."
+        "Shows ship inventory for probes, escape pods, shield batteries, cargo, and torpedoes.",
+        "Shows engine coolant supply flow and current engine temperature. Increased engine temperature causes maximum ship travel speed to be reduced.",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Unlocks when space doors are fully open and clearance code is correct."
     };
 
     private List<HUDInfo> corresponding_infos = new List<HUDInfo>();

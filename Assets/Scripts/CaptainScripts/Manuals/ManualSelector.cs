@@ -2,7 +2,7 @@
     ShipManualSelector.cs
     - Sends inputs to ShipManual and OperatingManual (directional, selection, and back)
     Contributor(s): Jake Schott
-    Last Updated: 6/6/2026
+    Last Updated: 8/12/2026
 */
 
 using Unity.Netcode;
@@ -18,15 +18,13 @@ public class ManualSelector : NetworkBehaviour, IControllable, IIKTargetable
     private static Vector3[] PUSH_DIRECTIONS = { new Vector3(-0.003f, -0.0074f, 0f), new Vector3(0.003f, -0.0074f, 0f) };
 
     private string[] CONTROL_NAMES = new string[] { "PROCEDURE MANUAL", "OPERATING MANUAL" };
-    private List<string> CONTROL_DESCS = new List<string> { "SELECT", "BACK", "UP", "DOWN", "LEFT", "RIGHT" };
+    private List<string> CONTROL_DESCS = new List<string> { "SELECT", "RETURN", "UP", "DOWN", "LEFT", "RIGHT" };
     private List<int> CONTROL_INDEXES = new List<int>() { 6, 12, 0, 2, 1, 3 };
     private List<Button>[] BUTTON_LISTS = new List<Button>[2] { new List<Button>(), new List<Button>() };
 
     public List<GameObject> button_holders;
     public GameObject manual_input_sounds;
     private Component[] manuals = new Component[2];
-
-    private Vector3[] initial_pos = new Vector3[12];
 
     private bool[] is_active = new bool[] { false, false };
     private Coroutine[] manual_input_coroutine = new Coroutine[] { null, null };
@@ -51,28 +49,17 @@ public class ManualSelector : NetworkBehaviour, IControllable, IIKTargetable
         manuals[0] = GetComponent<ProcedureManual>();
         manuals[1] = GetComponent<OperatingManual>();
 
-        hud_info = new HUDInfo(CONTROL_NAMES[0], true);
+        hud_info = new HUDInfo(CONTROL_NAMES[0], ManualOnOff.MAX_POWER_CONSUMPTION / 2.0f);
         for (int i = 0; i < 2; i++)
         {
-            BUTTON_LISTS[i].Add(new Button(CONTROL_DESCS[0], CONTROL_INDEXES[0], false, true));
-            BUTTON_LISTS[i].Add(new Button(CONTROL_DESCS[1], CONTROL_INDEXES[1], false, true));
-            BUTTON_LISTS[i].Add(new Button(CONTROL_DESCS[2], CONTROL_INDEXES[2], false, true));
-            BUTTON_LISTS[i].Add(new Button(CONTROL_DESCS[3], CONTROL_INDEXES[3], false, true));
-            BUTTON_LISTS[i].Add(new Button(CONTROL_DESCS[4], CONTROL_INDEXES[4], false, true));
-            BUTTON_LISTS[i].Add(new Button(CONTROL_DESCS[5], CONTROL_INDEXES[5], false, true));
+            for (int x = 0; x < 6; x++)
+            {
+                BUTTON_LISTS[i].Add(new Button(CONTROL_DESCS[x], CONTROL_INDEXES[x], false, true));
+            }
         }
 
         hud_info.setButtons(BUTTON_LISTS[0], 4);
         hud_info.setInfo(ManualOnOff.INFO_MESSAGES[0]);
-
-        //set initial positions
-        for (int i = 0; i < button_holders.Count; i++)
-        {
-            for (int b = 0; b < button_holders[i].transform.childCount; b++)
-            {
-                initial_pos[b + (i * 6)] = button_holders[i].transform.GetChild(b).localPosition;
-            }
-        }
     }
 
     public HUDInfo getHUDinfo(GameObject current_target)
@@ -81,7 +68,7 @@ public class ManualSelector : NetworkBehaviour, IControllable, IIKTargetable
         hud_info.setTitle(CONTROL_NAMES[index]);
         hud_info.setButtons(BUTTON_LISTS[index], 4);
         hud_info.setInfo(ManualOnOff.INFO_MESSAGES[index]);
-        hud_info.setPowerConsumption(transform.GetComponent<ManualOnOff>().getManualPowerConsumption(index));
+        hud_info.setPowerConsumption(GetComponent<ManualOnOff>().getManualPowerConsumption(index));
 
         return hud_info;
     }
@@ -98,26 +85,32 @@ public class ManualSelector : NetworkBehaviour, IControllable, IIKTargetable
             return IK_targets[6 + button_index].transform;
         }
     }
+
     public AnimatorHandler.HandInteractionType getHandInteractionType()
     {
         return hand_interaction_type;
     }
+
     public float getHandPose()
     {
         return hand_pose;
     }
+
     public bool getRightHandFlip()
     {
         return does_right_hand_flip;
     }
+
     public Vector3 getRightHandOffset()
     {
         return right_hand_offset;
     }
+
     public float getLerpSpeed()
     {
         return lerp_speed;
     }
+
     public void activate(int index)
     {
         is_active[index] = true;
@@ -127,7 +120,7 @@ public class ManualSelector : NetworkBehaviour, IControllable, IIKTargetable
     public void deactivate(int index)
     {
         is_active[index] = false;
-        for (int i = 0; i <= 5; i++)
+        for (int i = 0; i < 6; i++)
         {
             BUTTON_LISTS[index][i].updateInteractable(false);
         }
@@ -137,7 +130,7 @@ public class ManualSelector : NetworkBehaviour, IControllable, IIKTargetable
     {
         Manual curr_manual = (Manual)manuals[index];
         bool[] curr_options = curr_manual.getInteractableOptions();
-        for (int i = 0; i <= 5; i++)
+        for (int i = 0; i < 6; i++)
         {
             BUTTON_LISTS[index][i].untoggle();
             BUTTON_LISTS[index][i].updateInteractable(curr_options[i]);
@@ -152,10 +145,10 @@ public class ManualSelector : NetworkBehaviour, IControllable, IIKTargetable
         //set buttons to initial positions
         for (int b = 0; b < 6; b++)
         {
-            button_holders[manual_index].transform.GetChild(b).localPosition = initial_pos[b + (manual_index * 6)];
+            button_holders[manual_index].transform.GetChild(b).localPosition = Vector3.zero;
         }
 
-        Vector3 final_pos = initial_pos[button + (manual_index * 6)] + PUSH_DIRECTIONS[manual_index];
+        Vector3 final_pos = PUSH_DIRECTIONS[manual_index];
 
         for (int i = 0; i <= 1; i++)
         {
@@ -173,7 +166,7 @@ public class ManualSelector : NetworkBehaviour, IControllable, IIKTargetable
                     push_percentage = (push_time / half_time);
                 }
 
-                button_holders[manual_index].transform.GetChild(button).transform.localPosition = Vector3.Lerp(initial_pos[button + (manual_index * 6)], final_pos, push_percentage);
+                button_holders[manual_index].transform.GetChild(button).transform.localPosition = Vector3.Lerp(Vector3.zero, final_pos, push_percentage);
 
                 yield return null;
             }

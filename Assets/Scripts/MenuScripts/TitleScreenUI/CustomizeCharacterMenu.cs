@@ -267,6 +267,38 @@ public class CustomizeCharacterMenu : MonoBehaviour
         LastNameInput.text = LastNames[Random.Range(0, LastNames.Length)];
     }
 
+    private static CustomizeCharacterData GetCharacterData()
+    {
+        if (PlayerPrefs.HasKey("CustomizeCharacterData"))
+        {
+            //get the JSON string we stored in PlayerPrefs
+            string json = PlayerPrefs.GetString("CustomizeCharacterData");
+            //convert the string back to a CustomizeCharacterData object
+            return JsonUtility.FromJson<CustomizeCharacterData>(json);
+        }
+        return null;
+    }
+
+    public static string GetFirstName()
+    {
+        CustomizeCharacterData ccd = GetCharacterData();
+        if (ccd != null)
+        {
+            return ccd.FirstName.ToUpper();
+        }
+        return "BARRY";
+    }
+
+    public static string GetLastName()
+    {
+        CustomizeCharacterData ccd = GetCharacterData();
+        if (ccd != null)
+        {
+            return ccd.LastName.ToUpper();
+        }
+        return "SANDERS";
+    }
+
     // ------ CHANGE HAIR/CLOTHING OPTIONS ------
 
     private void PreviousClothingOption()

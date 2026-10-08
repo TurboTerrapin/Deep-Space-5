@@ -137,6 +137,8 @@ public class CampaignLobbyController : MonoBehaviour
             return;
         }
 
+        Debug.Log("STEAM LOBBY: " + LobbyHandler.getNumberOfPlayersInSteamLobby() + " == NETWORK MANAGER LOBBY: " + LobbyHandler.getNumberOfPlayersInNetworkManagerLobby());
+
         //Activate/deactive engage button
         if (NetworkManager.Singleton.IsHost == true && LobbyHandler.getNumberOfPlayersInSteamLobby() == LobbyHandler.getNumberOfPlayersInNetworkManagerLobby())
         {

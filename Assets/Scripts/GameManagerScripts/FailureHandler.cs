@@ -399,8 +399,9 @@ public class FailureHandler : NetworkBehaviour
     private void RestartGameRPC()
     {
         // destroys everything except NetworkManager
-        PlayerManager.clearDontDestroyOnLoads();
+        PlayerManager.clearDontDestroyOnLoads(true);
         // begin loading animation
+        CameraMove.HideMainCamera();
         GameObject.Find("LoadHandler").GetComponent<LoadHandler>().startLoad();
         // if host, finish reset of BridgeEnvironment to start the loop from the start
         if (NetworkManager.Singleton.IsHost == true)
@@ -481,7 +482,7 @@ public class FailureHandler : NetworkBehaviour
         Component.Destroy(failureShip.GetComponent<ShipExteriorFeatures>());
 
         // cache materials for light changes
-        int[][] litElementIndices = new int[3][] { new int[] { 0, 6, 8, 9, 10, 13 }, new int[] { 0, 5, 8 }, new int[] { 2, 4, 7, 9 } };
+        int[][] litElementIndices = new int[3][] { new int[] { 0, 6, 8, 9, 10, 12 }, new int[] { 0, 5, 8 }, new int[] { 2, 4, 7, 9 } };
         for (int i = 0; i < 3; i++)
         {
             enabledShipMaterials[i] = failureShip.transform.GetChild(i).GetComponent<MeshRenderer>().materials;

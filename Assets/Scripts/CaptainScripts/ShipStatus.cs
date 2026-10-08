@@ -3,7 +3,7 @@
     - Handles slider
     - Enables/disables red alert
     Contributor(s): Jake Schott
-    Last Updated: 4/24/2026
+    Last Updated: 10/3/2026
 */
 
 using System.Collections;
@@ -14,7 +14,6 @@ using Unity.Netcode;
 public class ShipStatus: NetworkBehaviour, IControllable, IPowerable, IIKTargetable
 {
     //CLASS CONSTANTS
-    private static Color[] COLOR_OPTIONS = new Color[3] { new Color(0.0f, 0.84f, 1.0f), new Color(1.0f, 0.47f, 0.0f), new Color(1.0f, 0.0f, 0.0f)};
     private static float MOVE_TIME = 0.5f;
     private static float MAX_POWER_CONSUMPTION = 0.1f; //equates to 1 circle
     private static Vector3 FINAL_POS = new Vector3(0.0f, 0.025f, 0.0f);
@@ -27,6 +26,7 @@ public class ShipStatus: NetworkBehaviour, IControllable, IPowerable, IIKTargeta
 
     public GameObject selector_stick;
     public LightsManager lights_manager;
+    public Color[] color_options = new Color[3] { new Color(0.0f, 0.84f, 1.0f), new Color(1.0f, 0.47f, 0.0f), new Color(1.0f, 0.0f, 0.0f) };
     private GameObject selector_indicator;
 
     private bool is_powered = false;
@@ -50,7 +50,7 @@ public class ShipStatus: NetworkBehaviour, IControllable, IPowerable, IIKTargeta
     private void Start()
     {
         selector_indicator = selector_stick.transform.GetChild(0).GetChild(1).GetChild(0).gameObject;
-        hud_info = new HUDInfo(CONTROL_NAME, true);
+        hud_info = new HUDInfo(CONTROL_NAME, MAX_POWER_CONSUMPTION);
         BUTTONS.Add(new Button(CONTROL_DESCS[0], CONTROL_INDEXES[0], false, true));
         BUTTONS.Add(new Button(CONTROL_DESCS[1], CONTROL_INDEXES[1], false, true));
         hud_info.setButtons(BUTTONS);
@@ -94,10 +94,10 @@ public class ShipStatus: NetworkBehaviour, IControllable, IPowerable, IIKTargeta
     private void displayAdjustment()
     {
         //update rest of ship
-        ReferenceAssistor.Instance.module_handlers[4].GetComponent<StatusIndicators>().displayShipStatus(COLOR_OPTIONS[curr_status]);
+        ReferenceAssistor.Instance.module_handlers[4].GetComponent<StatusIndicators>().displayShipStatus(color_options[curr_status]);
 
         //update indicator
-        selector_indicator.GetComponent<UnityEngine.UI.RawImage>().color = COLOR_OPTIONS[curr_status];
+        selector_indicator.GetComponent<UnityEngine.UI.RawImage>().color = color_options[curr_status];
 
         //change lights
         if (ReferenceAssistor.Instance.power_manager.getShipHasPower() == true)

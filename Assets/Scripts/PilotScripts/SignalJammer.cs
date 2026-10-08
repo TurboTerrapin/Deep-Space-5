@@ -3,7 +3,7 @@
     - Meant to temporarily jam signals
     - Adds COUNTDOWN_ADJUSTMENT_TIME to detection countdown
     Contributor(s): Jake Schott
-    Last Updated: 6/11/2026
+    Last Updated: 8/25/2026
 */
 
 using System.Collections;
@@ -56,7 +56,7 @@ public class SignalJammer : NetworkBehaviour, IControllable, IPowerable, IIKTarg
     {
         button_initial_pos = signal_jam_button.transform.localPosition;
 
-        hud_info = new HUDInfo(CONTROL_NAME, true);
+        hud_info = new HUDInfo(CONTROL_NAME, MAX_POWER_CONSUMPTION);
         BUTTONS.Add(new Button(CONTROL_DESCS[0], CONTROL_INDEXES[0], false, true));
         hud_info.setButtons(BUTTONS);
         hud_info.setInfo(INFO_MESSAGE);
@@ -329,7 +329,7 @@ public class SignalJammer : NetworkBehaviour, IControllable, IPowerable, IIKTarg
     private void transmitSignalJamRPC()
     {
         //if host, add COUNTDOWN_ADJUSTMENT_TIME to detection countdown
-        if (NetworkManager.Singleton.IsHost == true)
+        if (NetworkManager.Singleton.IsHost == true && ReferenceAssistor.Instance.scenario_manager != null)
         {
             ReferenceAssistor.Instance.scenario_manager.addCountdownTime(COUNTDOWN_ADJUSTMENT_TIME);
         }

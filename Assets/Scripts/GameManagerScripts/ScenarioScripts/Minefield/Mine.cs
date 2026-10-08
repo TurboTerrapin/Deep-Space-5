@@ -90,6 +90,12 @@ public class Mine : NetworkBehaviour, IDamageable, ITorpedoTargetable, IPhaserTa
 
     public void damage(float damage, IDamageable.DamageType damage_type)
     {
+        // Make sure not already destroyed
+        if (GetComponent<NetworkObject>().IsSpawned == false)
+        {
+            return;
+        }
+
         // Check if need to flash shields and abort damage
         if (permanently_disabled == false && mine_field.damageTypeBypassesMineShields(damage_type) == false)
         {
@@ -120,7 +126,11 @@ public class Mine : NetworkBehaviour, IDamageable, ITorpedoTargetable, IPhaserTa
 
     public bool getTorpedoTargetable(IDamageable.DamageType torpedo_type)
     {
-        return (mine_field.torpedoTracksMine(torpedo_type) && !(torpedo_type != IDamageable.DamageType.IonTorpedo && permanently_disabled == true));
+        if (permanently_disabled == true)
+        {
+            return (torpedo_type != IDamageable.DamageType.IonTorpedo);
+        }
+        return mine_field.torpedoTracksMine(torpedo_type);
     }
 
     public bool getPhaserTargetable(IDamageable.DamageType phaser_type)

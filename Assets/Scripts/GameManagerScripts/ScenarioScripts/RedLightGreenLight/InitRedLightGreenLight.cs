@@ -2,7 +2,7 @@
     InitRedLightGreenLight
     - Used for initializing permanent information on RedLightGreenLight (code options)
     Contributor(s): Jake Schott
-    Last Updated: 7/17/2026
+    Last Updated: 8/19/2026
 */
 
 using Unity.Netcode;
@@ -19,7 +19,7 @@ public class InitRedLightGreenLight : NetworkBehaviour, IScenarioInitialization
     private int[] centerColors = new int[8];
 
     public List<UnityEngine.UI.Image> manual_options;
-    public TMP_Text manual_desc_text;
+    public TMP_Text green_light_length_text;
 
     private void Awake()
     {
@@ -28,7 +28,7 @@ public class InitRedLightGreenLight : NetworkBehaviour, IScenarioInitialization
 
     private void Start()
     {
-        manual_desc_text.SetText(manual_desc_text.text + RedLightGreenLight.GREEN_LIGHT_PERIOD_TIMES[GetComponent<ScenarioManager>().getDifficulty()] + " SECONDS");
+        green_light_length_text.SetText(RedLightGreenLight.GREEN_LIGHT_PERIOD_TIMES[GetComponent<ScenarioManager>().getDifficulty()] + " SECONDS");
     }
 
     public void initializeDatabaseInformation()
@@ -75,10 +75,7 @@ public class InitRedLightGreenLight : NetworkBehaviour, IScenarioInitialization
         Color c = ReferenceAssistor.Instance.module_handlers[2].GetComponent<EnergyPattern>().color_options[centerColor];
         manual_options[index].GetComponent<ManualTextureLinker>().setColor(c);
         c.a = 0.2f;
-        manual_options[index].color = c;
-        manual_options[index].transform.GetChild(0).GetComponent<UnityEngine.UI.Image>().color = c;
-        manual_options[index].transform.GetChild(0).GetChild(1).GetComponent<TMP_Text>().color = c;
-        manual_options[index].transform.GetChild(1).GetComponent<UnityEngine.UI.RawImage>().color = c;
+        ManualColorSwitcher.changeColor(manual_options[index].gameObject, c);
 
         int[] ci = DataConverter.stringToArray(stringCodeIndices);
         bool[] cin = new bool[8];

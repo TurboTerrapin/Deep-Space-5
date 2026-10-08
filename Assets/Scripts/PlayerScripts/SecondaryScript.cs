@@ -1,146 +1,108 @@
 /*
     SecondaryScript.cs
     - Helps with secondary info that isn't primary control interactions
+    - Handles displaying pop-up notifications
     Contributor(s): Jake Schott
-    Last Updated: 2/25/2026
+    Last Updated: 10/5/2026
 */
 
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SecondaryScript : MonoBehaviour
 {
     //CLASS CONSTANTS
-    private static KeyCode[][] INFO_OVERLAY_INPUT_OPTIONS = new KeyCode[][] { 
-        new KeyCode[] { KeyCode.Alpha1, KeyCode.Keypad1 } ,                                                                      
-        new KeyCode[] { KeyCode.Alpha2, KeyCode.Keypad2 } ,
-        new KeyCode[] { KeyCode.Alpha3, KeyCode.Keypad3 } ,
-        new KeyCode[] { KeyCode.Alpha4, KeyCode.Keypad4 } ,
-        new KeyCode[] { KeyCode.Alpha5, KeyCode.Keypad5 }
-    };
-    private static Color DEFAULT_BORDER_COLOR = new Color(0.04f, 0.04f, 0.04f);
-    
+    public static Color DEFAULT_BORDER_CORDER = new Color(0.12f, 0.12f, 0.12f, 1.0f);
+
     public GameObject secondary_info;
 
-    private GameObject station_overlay;
-    private GameObject info_overlay;
-    private GameObject left_side;
-    private GameObject right_side;
-    private GameObject intro_graphic_overlay;
-    private GameObject station_indicator;
+    private GameObject permanent_overlay;
+    private GameObject stations_button;
+    private GameObject current_station_indicator;
+    private GameObject station_functions;
+    private GameObject mission_objective;
+    private GameObject sitting_overlay;
+    private GameObject sitting_left_side;
+    private GameObject sitting_right_side;
     private GameObject primary_default_power_circles;
 
+    private List<int> popup_notification_queue = new List<int>();
     private float displayed_power = 0.0f;
-    private Coroutine intro_graphic_display_coroutine = null;
+    private Coroutine popup_notification_animation_coroutine = null;
 
     private void Awake()
     {
-        info_overlay = secondary_info.transform.GetChild(1).gameObject;
-        station_overlay = secondary_info.transform.GetChild(0).gameObject;
-        left_side = station_overlay.transform.GetChild(0).gameObject;
-        right_side = station_overlay.transform.GetChild(1).gameObject;
-        station_indicator = secondary_info.transform.GetChild(2).gameObject;
-        primary_default_power_circles = transform.GetChild(1).GetChild(0).GetChild(2).GetChild(1).gameObject;
+        permanent_overlay = secondary_info.transform.GetChild(0).gameObject;
+        stations_button = permanent_overlay.transform.GetChild(0).gameObject;
+        current_station_indicator = permanent_overlay.transform.GetChild(1).gameObject;
+        station_functions = permanent_overlay.transform.GetChild(2).gameObject;
+        mission_objective = permanent_overlay.transform.GetChild(3).gameObject;
+        sitting_overlay = secondary_info.transform.GetChild(1).gameObject;
+        sitting_left_side = sitting_overlay.transform.GetChild(0).gameObject;
+        sitting_right_side = sitting_overlay.transform.GetChild(1).gameObject;
+        primary_default_power_circles = transform.GetChild(1).GetChild(0).GetChild(1).GetChild(3).GetChild(1).gameObject;
     }
 
-    public void toggleSecondaryInfoVisibility(bool active)
+    public void setSecondaryInfoVisibility(bool active)
     {
         secondary_info.SetActive(active);
     }
 
-    public void toggleInfoOverlaysVisibility(bool active)
+    public void setPermanentOverlayVisibility(bool active)
     {
-        info_overlay.SetActive(active);
+        permanent_overlay.SetActive(active);
     }
 
-    public void toggleStationIndicatorVisibility(bool active)
+    private void setPermanentOverlayTopVisibility(bool active)
     {
-        station_indicator.SetActive(active);
+        stations_button.SetActive(active);
+        current_station_indicator.SetActive(active);
     }
 
-    public void toggleStationOverlayVisibility(bool active)
+    public void setSittingOverlayVisibility(bool active)
     {
-        station_overlay.SetActive(active);
+        sitting_overlay.SetActive(active);
     }
 
-    public void toggleRightSideVisibility(bool active)
+    public void setSittingRightSideVisibility(bool active)
     {
-        right_side.SetActive(active);
+        sitting_right_side.SetActive(active);
     }
 
-    //updates station indicator in top right
-    public void onStationChange(int pos)
+    //updates station indicator in top right as well as colors on top
+    public void onStationChange(Color c, Texture icon)
     {
-        station_indicator.transform.GetChild(2).gameObject.SetActive(pos >= 0);
-        station_indicator.transform.GetChild(3).gameObject.SetActive(pos < 0);
-        Color c = DEFAULT_BORDER_COLOR;
-        if (pos >= 0)
+        //handle station functions top left indicator and station icon top right indicator
+        if (SceneManager.GetActiveScene().name.CompareTo("IntroSequence") != 0)
         {
-            c = ReferenceAssistor.COLOR_OPTIONS[pos];
-            c.a = 1.0f;
-            station_indicator.transform.GetChild(2).GetComponent<UnityEngine.UI.RawImage>().texture = ReferenceAssistor.Instance.position_icons[pos];
-        }
-
-        //update left side color
-        foreach (Transform t in info_overlay.transform.GetChild(0).GetChild(1))
-        {
-            t.GetComponent<UnityEngine.UI.RawImage>().color = c;
-        }
-        Color bc = c;
-        bc.a = info_overlay.transform.GetChild(0).GetChild(2).GetComponent<UnityEngine.UI.RawImage>().color.a;
-        info_overlay.transform.GetChild(0).GetChild(2).GetComponent<UnityEngine.UI.RawImage>().color = bc;
-        station_indicator.transform.GetChild(2).GetComponent<UnityEngine.UI.RawImage>().color = c;
-        foreach (Transform t in info_overlay.transform.GetChild(0).GetChild(3))
-        {
-            foreach (Transform b in t.GetChild(0))
+            //update station icon
+            current_station_indicator.transform.GetChild(2).gameObject.SetActive(icon != null);
+            current_station_indicator.transform.GetChild(3).gameObject.SetActive(icon == null);
+            current_station_indicator.transform.GetChild(2).GetComponent<UnityEngine.UI.RawImage>().texture = icon;
+            current_station_indicator.transform.GetChild(2).GetComponent<UnityEngine.UI.RawImage>().color = c;
+            foreach (Transform t in current_station_indicator.transform.GetChild(1))
             {
-                bc = c;
-                bc.a = t.GetChild(1).GetComponent<TMP_Text>().color.a;
-                if (pos < 0)
-                {
-                    bc.a = 1.0f;
-                }
-                b.GetComponent<UnityEngine.UI.RawImage>().color = bc;
+                t.GetComponent<UnityEngine.UI.RawImage>().color = c;
+            }
+
+            //update station buttons
+            foreach (Transform t in stations_button.transform.GetChild(1))
+            {
+                t.GetComponent<UnityEngine.UI.RawImage>().color = c;
             }
         }
 
-        //update right side color
-        foreach (Transform t in station_indicator.transform.GetChild(1))
+        //stop updating if default because default will never be used for sitting overlay
+        if (c == DEFAULT_BORDER_CORDER)
         {
-            t.GetComponent<UnityEngine.UI.RawImage>().color = c;
+            return;
         }
 
-        //update info overlay borders and circles and dividers
-        foreach (Transform t in info_overlay.transform.GetChild(1))
-        {
-            foreach (Transform b in t.GetChild(1))
-            {
-                b.GetComponent<UnityEngine.UI.RawImage>().color = c;
-            }
-            for (int i = 0; i < 5; i++)
-            {
-                bc = c;
-                bc.a = 1.0f;
-                if (pos >= 0 && t.GetChild(2).GetChild(0).GetChild(i).childCount > 0)
-                {
-                    bc.a = 0.2f;
-                }
-                t.GetChild(2).GetChild(0).GetChild(i).GetComponent<UnityEngine.UI.RawImage>().color = bc;
-            }
-            foreach (Transform d in t.GetChild(3))
-            {
-                d.GetComponent<UnityEngine.UI.RawImage>().color = c;
-            }
-            foreach (Transform b in t.GetChild(t.transform.childCount - 1).GetChild(0))
-            {
-                b.GetComponent<UnityEngine.UI.RawImage>().color = c;
-            }
-        }
-
-        //update default UI items
-        foreach (Transform t in transform.GetChild(1).GetChild(0).GetChild(1))
+        //update sitting overlay if sitting
+        foreach (Transform t in transform.GetChild(1).GetChild(0).GetChild(1).GetChild(1))
         {
             foreach (Transform b in t)
             {
@@ -157,14 +119,18 @@ public class SecondaryScript : MonoBehaviour
                 }
             }
         }
-        foreach (Transform t in left_side.transform)
+        foreach (Transform t in transform.GetChild(1).GetChild(0).GetChild(1).GetChild(2).GetChild(1))
+        {
+            t.GetComponent<UnityEngine.UI.Image>().color = c;
+        }
+        foreach (Transform t in sitting_left_side.transform)
         {
             foreach (Transform b in t.GetChild(1))
             {
                 b.GetComponent<UnityEngine.UI.RawImage>().color = c;
             }
         }
-        foreach (Transform t in right_side.transform)
+        foreach (Transform t in sitting_right_side.transform)
         {
             foreach (Transform b in t.GetChild(1))
             {
@@ -186,21 +152,32 @@ public class SecondaryScript : MonoBehaviour
     //shows/hides the information on the right side on tab press
     public void toggleControlInformationVisibility(HUDInfo temp_info)
     {
-        bool currently_visible = right_side.transform.GetChild(1).gameObject.activeSelf;
-        right_side.transform.GetChild(0).GetChild(2).gameObject.SetActive(currently_visible);
-        right_side.transform.GetChild(0).GetChild(3).gameObject.SetActive(!currently_visible);
-        right_side.transform.GetChild(1).gameObject.SetActive(!currently_visible);
+        bool currently_visible = sitting_right_side.transform.GetChild(1).gameObject.activeSelf;
+        float a = 1.0f;
+        if (currently_visible == false)
+        {
+            a = 0.1f;
+        }
+        sitting_right_side.transform.GetChild(0).GetChild(2).gameObject.SetActive(currently_visible);
+        sitting_right_side.transform.GetChild(0).GetChild(3).gameObject.SetActive(!currently_visible);
+        sitting_right_side.transform.GetChild(0).GetChild(4).GetComponent<CanvasGroup>().alpha = a;
+        sitting_right_side.transform.GetChild(1).gameObject.SetActive(!currently_visible);
     }
 
     //updates shift direction UI indicator and get up indicator
-    public void updateShiftIndicators(bool is_shifting, int curr_pos, SeatManager seat_manager)
+    public void updateShiftIndicators(bool is_shifting, bool shiftable_position, bool can_shift_left, bool can_shift_right)
     {
-        left_side.transform.GetChild(1).GetChild(2).GetChild(0).gameObject.SetActive(!is_shifting);
-        left_side.transform.GetChild(1).GetChild(3).GetChild(0).gameObject.SetActive(!is_shifting);
-        left_side.transform.GetChild(2).gameObject.SetActive(curr_pos != 3);
-        left_side.transform.GetChild(2).GetChild(2).GetChild(0).gameObject.SetActive(seat_manager.canShiftLeft(curr_pos) && !is_shifting);
-        left_side.transform.GetChild(2).GetChild(3).GetChild(0).gameObject.SetActive(seat_manager.canShiftRight(curr_pos) && !is_shifting);
-        left_side.transform.GetChild(2).GetChild(4).GetChild(0).gameObject.SetActive(!is_shifting);
+        float a = 1.0f;
+        if (is_shifting == true)
+        {
+            a = 0.1f;
+        }
+        sitting_left_side.transform.GetChild(1).GetChild(2).GetChild(0).gameObject.SetActive(!is_shifting);
+        sitting_left_side.transform.GetChild(1).GetChild(3).GetComponent<CanvasGroup>().alpha = a;
+        sitting_left_side.transform.GetChild(2).gameObject.SetActive(shiftable_position);
+        sitting_left_side.transform.GetChild(2).GetChild(2).GetChild(0).gameObject.SetActive(can_shift_left && !is_shifting);
+        sitting_left_side.transform.GetChild(2).GetChild(3).GetChild(0).gameObject.SetActive(can_shift_right && !is_shifting);
+        sitting_left_side.transform.GetChild(2).GetChild(4).GetComponent<CanvasGroup>().alpha = a;
     }
 
     //helper method that estimates the length of a control description based on the length of the description of that control's description
@@ -213,15 +190,15 @@ public class SecondaryScript : MonoBehaviour
     public void updateSecondaryControlInformation(HUDInfo temp_info)
     {
         //determine whether to show or hide right side
-        right_side.SetActive(temp_info.hasInfo());
+        sitting_right_side.SetActive(temp_info.hasInfo());
 
         //set info frame title and description
-        right_side.transform.GetChild(1).GetChild(2).GetComponent<TMP_Text>().SetText(temp_info.getName());
-        right_side.transform.GetChild(1).GetChild(3).GetComponent<TMP_Text>().SetText(temp_info.getInfo());
+        sitting_right_side.transform.GetChild(1).GetChild(2).GetComponent<TMP_Text>().SetText(temp_info.getName());
+        sitting_right_side.transform.GetChild(1).GetChild(3).GetComponent<TMP_Text>().SetText(temp_info.getInfo());
         
         //resize based on length of control description
         int offset = getControlInfoOffset(temp_info);
-        Transform control_info_frame = right_side.transform.GetChild(1);
+        Transform control_info_frame = sitting_right_side.transform.GetChild(1);
 
         //background
         control_info_frame.GetChild(0).GetChild(0).GetComponent<RectTransform>().anchoredPosition = new Vector2(-285f, -360f + offset);
@@ -245,328 +222,160 @@ public class SecondaryScript : MonoBehaviour
     //updates the four blue dots in bottom right corner
     public void updatePowerConsumption(HUDInfo temp_info)
     {
-        if (temp_info.getPowerConsumption() == displayed_power)
+        float power_consumption = temp_info.getPowerConsumption();
+        if (power_consumption == displayed_power)
         {
             return;
         }
 
-        float tmp_pwr = (temp_info.getPowerConsumption() * 2.0f);
-        for (int i = 0; i <= 4; i++)
+        //make power icon blue if consuming any power
+        primary_default_power_circles.transform.GetChild(0).GetChild(0).gameObject.SetActive(power_consumption > 0.0f);
+
+        //adjust circles
+        float tmp_pwr = (power_consumption * 2.0f);
+        for (int i = 0; i < 5; i++)
         {
-            tmp_pwr = (temp_info.getPowerConsumption() * 2.0f) - (0.2f * i);
+            tmp_pwr = (power_consumption* 2.0f) - (0.2f * i);
             float a = tmp_pwr / 0.2f;
-            primary_default_power_circles.transform.GetChild(i).GetChild(0).GetComponent<UnityEngine.UI.Image>().fillAmount = a;
+            primary_default_power_circles.transform.GetChild(i + 1).GetChild(0).GetComponent<UnityEngine.UI.Image>().fillAmount = a;
         }
-        displayed_power = temp_info.getPowerConsumption();
+        displayed_power = power_consumption;
     }
 
     public void updateInfoOverlayOffset(float offset)
     {
-        info_overlay.transform.GetChild(1).localPosition = new Vector3(0.0f, offset, 0.0f);
+        station_functions.transform.localPosition = new Vector3(0.0f, offset, 0.0f);
     }
 
-    public void checkInfoOverlayInputs(bool force_hide)
+    public void checkStationFunctionsInput(bool force_hide)
     {
-        bool inputted = false;
-        int input = -1;
-        while (inputted == false && input < 4)
-        {
-            input++;
-            foreach (KeyCode kc in INFO_OVERLAY_INPUT_OPTIONS[input])
-            {
-                if (Input.GetKeyDown(kc) == true)
-                {
-                    inputted = true;
-                    break;
-                }
-            }
-        }
+        bool inputted = PrimaryScript.checkInputIndexDown(15);
 
-        if (inputted == false && force_hide == false)
+        if ((SceneManager.GetActiveScene().name.CompareTo("IntroSequence") == 0) || (inputted == false && force_hide == false))
         {
             return;
         }
 
-        Color c = info_overlay.transform.GetChild(0).GetChild(2).GetComponent<UnityEngine.UI.RawImage>().color;
-        if (GetComponent<PrimaryScript>().currentSeat() >= 0)
+        bool hide = station_functions.activeSelf;
+        station_functions.SetActive(!hide && !force_hide);
+        float a = 1.0f;
+        if (!hide && !force_hide)
         {
-            c.a = 0.1f;
+            a = 0.1f;
         }
-        bool hide = info_overlay.transform.GetChild(1).GetChild(input).gameObject.activeSelf;
-        for (int i = 0; i < 5; i++)
-        {
-            info_overlay.transform.GetChild(1).GetChild(i).gameObject.SetActive(false);
-            foreach (Transform t in info_overlay.transform.GetChild(0).GetChild(3).GetChild(i).GetChild(0))
-            {
-                t.GetComponent<UnityEngine.UI.RawImage>().color = c;
-            }
-            info_overlay.transform.GetChild(0).GetChild(3).GetChild(i).GetChild(1).GetComponent<TMP_Text>().color = new Color(1.0f, 1.0f, 1.0f, 0.1f);
-        }
-
-        info_overlay.transform.GetChild(1).GetChild(input).gameObject.SetActive(!hide && !force_hide);
+        stations_button.transform.GetChild(2).gameObject.SetActive(hide || force_hide);
+        stations_button.transform.GetChild(3).gameObject.SetActive(!hide && !force_hide);
+        stations_button.transform.GetChild(4).GetComponent<CanvasGroup>().alpha = a;
         GetComponent<PrimaryScript>().setCursorVisibility(hide && !force_hide);
-        if (hide == false && force_hide == false)
+    }
+
+
+    public void displayPopupNotification(int popup_index)
+    {
+        if (popup_notification_queue.Count == 0 && isDisplayingPopupNotification() == false)
         {
-            c.a = 1.0f;
-            info_overlay.transform.GetChild(0).GetChild(3).GetChild(input).GetChild(1).GetComponent<TMP_Text>().color = Color.white;
-            info_overlay.transform.GetChild(0).GetChild(2).GetComponent<UnityEngine.UI.RawImage>().color = c;
+            popup_notification_animation_coroutine = StartCoroutine(popupNotificationAnimation(popup_index));
         }
-        foreach (Transform t in info_overlay.transform.GetChild(0).GetChild(3).GetChild(input).GetChild(0))
+        else
         {
-            t.GetComponent<UnityEngine.UI.RawImage>().color = c;
+            popup_notification_queue.Add(popup_index);
         }
     }
 
-    public void displayIntroGraphic(float delay)
+    public bool isDisplayingPopupNotification()
     {
-        if (intro_graphic_display_coroutine != null)
+        for (int i = 3; i < permanent_overlay.transform.childCount; i++)
         {
-            StopCoroutine(intro_graphic_display_coroutine);
+            if (permanent_overlay.transform.GetChild(i).gameObject.activeSelf == true)
+            {
+                return true;
+            }
         }
-
-        intro_graphic_display_coroutine = StartCoroutine(introGraphicReveal(delay));
+        return false;
     }
 
-    public bool isDisplayingIntroGraphic()
+    public bool isAnimatingPopupNotification()
     {
-        return (intro_graphic_display_coroutine != null);
+        return (popup_notification_animation_coroutine != null);
     }
 
-    public void endIntroGraphicReveal()
+    public bool hasPopupNotificationsInQueue()
     {
-        //show info buttons
-        info_overlay.transform.GetChild(0).gameObject.SetActive(true);
+        return (popup_notification_queue.Count > 0);
+    }
 
-        //end intro and delete cloned graphic
-        if (intro_graphic_display_coroutine != null)
+    private void clearPopupNotifications()
+    {
+        //show stations button and current station indicator
+        setPermanentOverlayTopVisibility(true);
+
+        //clear pop-up queue
+        popup_notification_queue.Clear();
+
+        //hide all pop-up notifications
+        for (int i = 3; i < permanent_overlay.transform.childCount; i++)
         {
-            StopCoroutine(intro_graphic_display_coroutine);
-            intro_graphic_display_coroutine = null;
-        }
-        if (intro_graphic_overlay != null)
-        {
-            GameObject.Destroy(intro_graphic_overlay);
+            permanent_overlay.transform.GetChild(i).gameObject.SetActive(false);
         }
     }
 
-    IEnumerator introGraphicReveal(float delay)
+    private void checkForPopupNotificationToDisplay()
     {
-        //hide info buttons
-        info_overlay.transform.GetChild(0).gameObject.SetActive(false);
-
-        //component assignment and transparency setting to 0
-        intro_graphic_overlay = GameObject.Instantiate(info_overlay.transform.GetChild(1).GetChild(1).gameObject, info_overlay.transform.GetChild(1));
-        intro_graphic_overlay.name = "Temporary";
-        intro_graphic_overlay.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
-        intro_graphic_overlay.transform.GetChild(12).gameObject.SetActive(false); //hide (2) indicator
-        List<UnityEngine.UI.RawImage> background_elements = new List<UnityEngine.UI.RawImage>();
-        foreach (Transform t in intro_graphic_overlay.transform.GetChild(0))
+        if (popup_notification_animation_coroutine == null && popup_notification_queue.Count > 0)
         {
-            background_elements.Add(t.GetComponent<UnityEngine.UI.RawImage>());
-            Color c = t.GetComponent<UnityEngine.UI.RawImage>().color;
-            c.a = 0.0f;
-            t.GetComponent<UnityEngine.UI.RawImage>().color = c;
+            popup_notification_animation_coroutine = StartCoroutine(popupNotificationAnimation(popup_notification_queue[0]));
         }
+    }
 
-        List<UnityEngine.UI.RawImage> borders = new List<UnityEngine.UI.RawImage>();
-        foreach (Transform t in intro_graphic_overlay.transform.GetChild(1))
+    IEnumerator popupNotificationAnimation(int popup_index)
+    {
+        GameObject popup_notification = permanent_overlay.transform.GetChild(3 + popup_index).gameObject;
+        PrimaryScript.Instance.deactivate(true, false);
+        setSecondaryInfoVisibility(true);
+        setPermanentOverlayVisibility(true);
+        setPermanentOverlayTopVisibility(false);
+
+        foreach (Transform t in popup_notification.transform)
         {
-            borders.Add(t.GetComponent<UnityEngine.UI.RawImage>());
-            Color c = t.GetComponent<UnityEngine.UI.RawImage>().color;
-            c.a = 0.0f;
-            t.GetComponent<UnityEngine.UI.RawImage>().color = c;
+            t.GetComponent<CanvasGroup>().alpha = 0.0f;
         }
+        popup_notification.gameObject.SetActive(true);
 
-        List<UnityEngine.UI.RawImage> order_circles = new List<UnityEngine.UI.RawImage>();
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < popup_notification.transform.childCount; i++)
         {
-            order_circles.Add(intro_graphic_overlay.transform.GetChild(2).GetChild(0).GetChild(i).GetComponent<UnityEngine.UI.RawImage>());
-            Color c = order_circles[i].color;
-            c.a = 0.0f;
-            if (i > 0)
-            {
-                order_circles[i].transform.GetChild(0).GetComponent<UnityEngine.UI.RawImage>().color = new Color(0.0f, 0.0f, 0.0f, 0.0f);
-            }
-            order_circles[i].color = c;
-        }
-
-        List<UnityEngine.UI.RawImage> position_circles = new List<UnityEngine.UI.RawImage>();
-        for (int i = 0; i < 4; i++)
-        {
-            position_circles.Add(intro_graphic_overlay.transform.GetChild(2).GetChild(1).GetChild(i).GetComponent<UnityEngine.UI.RawImage>());
-            Color c = position_circles[i].color;
-            c.a = 0.0f;
-            position_circles[i].color = c;
-        }
-
-        List<UnityEngine.UI.RawImage> divider_elements = new List<UnityEngine.UI.RawImage>();
-        for (int i = 0; i < 3; i++)
-        {
-            divider_elements.Add(intro_graphic_overlay.transform.GetChild(3).GetChild(i).GetComponent<UnityEngine.UI.RawImage>());
-            Color c = divider_elements[i].color;
-            c.a = 0.0f;
-            divider_elements[i].color = c;
-        }
-
-        TMP_Text mission_objective_text = intro_graphic_overlay.transform.GetChild(4).GetComponent<TMP_Text>();
-        mission_objective_text.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
-
-        List<TMP_Text> bullet_points = new List<TMP_Text>();
-        for (int i = 0; i < 4; i++)
-        {
-            bullet_points.Add(intro_graphic_overlay.transform.GetChild(5 + i).GetComponent<TMP_Text>());
-            Color c = bullet_points[i].color;
-            c.a = 0.0f;
-            bullet_points[i].color = c;
-        }
-
-        List<UnityEngine.UI.RawImage> position_icons = new List<UnityEngine.UI.RawImage>();
-        for (int i = 0; i < 4; i++)
-        {
-            position_icons.Add(intro_graphic_overlay.transform.GetChild(9).GetChild(i).GetComponent<UnityEngine.UI.RawImage>());
-            Color c = position_icons[i].color;
-            c.a = 0.0f;
-            position_icons[i].color = c;
-            position_icons[i].transform.GetChild(0).GetComponent<TMP_Text>().color = c;
-        }
-
-        TMP_Text station_controls_text = intro_graphic_overlay.transform.GetChild(10).GetComponent<TMP_Text>();
-        station_controls_text.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
-
-        UnityEngine.UI.RawImage exit_button = intro_graphic_overlay.transform.GetChild(11).GetComponent<UnityEngine.UI.RawImage>();
-        exit_button.gameObject.SetActive(false);
-
-        yield return new WaitForSeconds(delay);
-
-        intro_graphic_overlay.SetActive(true);
-
-        //background, border, dividers, circles, and "MISSION OBJECTIVE"
-        float anim_time = 1.0f;
-        while (anim_time > 0.0f)
-        {
-            anim_time = Mathf.Max(0.0f, anim_time - Time.deltaTime);
-
-            float background_a = Mathf.Lerp(0.9f, 0.0f, anim_time / 1.0f);
-            float divider_a = Mathf.Lerp(1.0f, 0.0f, anim_time / 1.0f);
-            float border_a = Mathf.Lerp(1.0f, 0.0f, anim_time / 1.0f);
-            float pos_circle_a = Mathf.Lerp(1.0f, 0.0f, anim_time / 1.0f);
-            float order_circle_a = Mathf.Lerp(1.0f, 0.0f, anim_time / 1.0f);
-
-            foreach (UnityEngine.UI.RawImage component in background_elements)
-            {
-                component.color = new Color(0.0f, 0.0f, 0.0f, background_a);
-            }
-
-            foreach (UnityEngine.UI.RawImage divider in divider_elements)
-            {
-                Color c = divider.color;
-                c.a = divider_a;
-                divider.color = c;
-            }
-
-            foreach (UnityEngine.UI.RawImage pos_circle in position_circles)
-            {
-                Color c = pos_circle.color;
-                c.a = pos_circle_a;
-                pos_circle.color = c;
-            }
-
-            for (int i = 0; i < 5; i++)
-            {
-                Color c = order_circles[i].color;
-                c.a = pos_circle_a;
-                if (i > 0)
-                {
-                    c.a = order_circle_a;
-                    order_circles[i].transform.GetChild(0).GetComponent<UnityEngine.UI.RawImage>().color = new Color(0.0f, 0.0f, 0.0f, pos_circle_a);
-                }
-                order_circles[i].color = c;
-            }
-
-            foreach (UnityEngine.UI.RawImage border in borders)
-            {
-                Color c = border.color;
-                c.a = border_a;
-                border.color = c;
-            }
-
-            mission_objective_text.color = new Color(1.0f, 1.0f, 1.0f, Mathf.Lerp(1.0f, 0.0f, anim_time / 1.0f));
-
-            yield return null;
-        }
-
-        yield return new WaitForSeconds(0.5f);
-
-        //bullet points
-        for (int i = 0; i < 4; i++)
-        {
-            anim_time = 0.5f;
-            while (anim_time > 0.0f)
+            CanvasGroup cg = popup_notification.transform.GetChild(i).GetComponent<CanvasGroup>();
+            float anim_time = 1.0f;
+            while (anim_time > 0.0f && PrimaryScript.Instance.isPaused() == false)
             {
                 anim_time = Mathf.Max(0.0f, anim_time - Time.deltaTime);
 
-                Color c = bullet_points[i].color;
-                c.a = Mathf.Lerp(1.0f, 0.0f, anim_time / 0.5f);
-                bullet_points[i].color = c;
+                cg.alpha = 1.0f - anim_time;
 
                 yield return null;
             }
-        }
-
-        //position icons
-        for (int i = 0; i < 4; i++)
-        {
-            anim_time = 0.5f;
-            while (anim_time > 0.0f)
+            if (PrimaryScript.Instance.isPaused() == true)
             {
-                anim_time = Mathf.Max(0.0f, anim_time - Time.deltaTime);
-
-                Color c = position_icons[i].color;
-                c.a = Mathf.Lerp(1.0f, 0.0f, anim_time / 0.5f);
-                position_icons[i].color = c;
-                position_icons[i].transform.GetChild(0).GetComponent<TMP_Text>().color = c;
-
-                yield return null;
+                break;
             }
         }
 
-        //"USE STATION CONTROLS..."
-        anim_time = 1.0f;
-        while (anim_time > 0.0f)
+        while (PrimaryScript.checkInputIndexDown(13) == false && PrimaryScript.Instance.isPaused() == false)
         {
-            anim_time = Mathf.Max(0.0f, anim_time - Time.deltaTime);
-
-            station_controls_text.color = new Color(1.0f, 1.0f, 1.0f, Mathf.Lerp(1.0f, 0.0f, anim_time / 1.0f));
-
             yield return null;
         }
 
-        //exit button
-        exit_button.gameObject.SetActive(true);
-        anim_time = 0.5f;
-        while (anim_time > 0.0f)
+        popup_notification_queue.Remove(popup_index);
+        popup_notification.gameObject.SetActive(false);
+        if (PrimaryScript.Instance.isPaused() == true)
         {
-            anim_time = Mathf.Max(0.0f, anim_time - Time.deltaTime);
-
-            Color c = new Color(0.0f, 0.0f, 0.0f, Mathf.Lerp(0.9f, 0.0f, anim_time / 0.5f));
-            exit_button.GetComponent<UnityEngine.UI.RawImage>().color = c;
-            exit_button.transform.GetChild(0).GetComponent<UnityEngine.UI.RawImage>().color = c;
-            exit_button.transform.GetChild(1).GetComponent<UnityEngine.UI.RawImage>().color = c;
-
-            float border_a = Mathf.Lerp(1.0f, 0.0f, anim_time / 0.5f);
-            foreach (Transform t in exit_button.transform.GetChild(2))
-            {
-                Color b = t.GetComponent<UnityEngine.UI.RawImage>().color;
-                b.a = border_a;
-                t.GetComponent<UnityEngine.UI.RawImage>().color = b;
-            }
-
-            exit_button.transform.GetChild(3).GetComponent<UnityEngine.UI.RawImage>().color = new Color(1.0f, 1.0f, 1.0f, Mathf.Lerp(1.0f, 0.0f, anim_time / 0.5f));
-            exit_button.transform.GetChild(4).GetComponent<TMP_Text>().color = new Color(1.0f, 1.0f, 1.0f, Mathf.Lerp(1.0f, 0.0f, anim_time / 0.5f));
-
-            yield return null;
+            clearPopupNotifications();
         }
 
-        intro_graphic_display_coroutine = null;
+        yield return null;
+
+        PrimaryScript.Instance.activate();
+        setPermanentOverlayTopVisibility(true);
+        popup_notification_animation_coroutine = null;
+        checkForPopupNotificationToDisplay();
     }
 }

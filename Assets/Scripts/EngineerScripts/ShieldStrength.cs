@@ -3,7 +3,7 @@
     - Handles allocating shield battery to each of the four ship sections
     - Flips the switches
     Contributor(s): Jake Schott
-    Last Updated: 5/15/2026
+    Last Updated: 8/25/2026
 */
 
 using System.Collections;
@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
-using static AnimatorHandler;
 
 public class ShieldStrength : NetworkBehaviour, IControllable, IPowerable, IIKTargetable
 {
@@ -64,10 +63,13 @@ public class ShieldStrength : NetworkBehaviour, IControllable, IPowerable, IIKTa
             shield_strength_serial_nums[i] = new Stack<string>();
         }
 
-        ship_inventory = GameObject.FindGameObjectWithTag("Spaceship").GetComponent<ShipInventory>();
-        scenario_manager = GameObject.FindGameObjectWithTag("ScenarioManager").GetComponent<ScenarioManager>();
+        ship_inventory = ReferenceAssistor.Instance.spaceship.GetComponent<ShipInventory>();
+        if (ReferenceAssistor.Instance.scenario_manager != null)
+        {
+            scenario_manager = ReferenceAssistor.Instance.scenario_manager.GetComponent<ScenarioManager>();
+        }
 
-        hud_info = new HUDInfo(CONTROL_NAMES[0] + " SHIELD STRENGTH", true);
+        hud_info = new HUDInfo(CONTROL_NAMES[0] + " SHIELD STRENGTH", MAX_POWER_CONSUMPTION / 4.0f);
         hud_info.setButtons(BUTTON_LISTS[0], 7);
         hud_info.setInfo(INFO_MESSAGE);
     }
@@ -130,7 +132,7 @@ public class ShieldStrength : NetworkBehaviour, IControllable, IPowerable, IIKTa
         }
 
         shield_strength_display.transform.GetChild(1).GetComponent<TMP_Text>().color = new Color(0.0f, 0.84f, 1.0f, a);
-        shield_strength_display.transform.GetChild(2).GetComponent<TMP_Text>().color = new Color(0.0f, 0.84f, 1.0f, a);
+        shield_strength_display.transform.GetChild(2).GetChild(1).GetComponent<TMP_Text>().color = new Color(0.0f, 0.84f, 1.0f, a);
         string s_available_batteries = available_batteries.ToString();
         if (available_batteries < 10)
         {
@@ -140,11 +142,8 @@ public class ShieldStrength : NetworkBehaviour, IControllable, IPowerable, IIKTa
         {
             s_available_batteries = "99";
         }
-        shield_strength_display.transform.GetChild(2).GetComponent<TMP_Text>().SetText(s_available_batteries);
-        for (int i = 0; i < 4; i++)
-        {
-            shield_strength_display.transform.GetChild(2).GetChild(i + 1).GetComponent<UnityEngine.UI.RawImage>().color = new Color(0.0f, 0.84f, 1.0f, a);
-        }
+        shield_strength_display.transform.GetChild(2).GetChild(1).GetComponent<TMP_Text>().SetText(s_available_batteries);
+        shield_strength_display.transform.GetChild(2).GetComponent<UnityEngine.UI.RawImage>().color = new Color(0.0f, 0.84f, 1.0f, a);
     }
 
     public int getShieldStrength(int location)
@@ -219,7 +218,12 @@ public class ShieldStrength : NetworkBehaviour, IControllable, IPowerable, IIKTa
             float fill_amount = 0.0f;
             if (shield_effect_times[i] > 0.0f)
             {
-                fill_amount = shield_effect_times[i] / SHIELD_EFFECT_TIMES[scenario_manager.getDifficulty()];
+                float shield_effect_time = SHIELD_EFFECT_TIMES[0];
+                if (scenario_manager != null)
+                {
+                    shield_effect_time = SHIELD_EFFECT_TIMES[scenario_manager.getDifficulty()];
+                }
+                fill_amount = shield_effect_times[i] / shield_effect_time;
             }
             else if (shield_strengths[i] > 0)
             {
@@ -398,7 +402,11 @@ public class ShieldStrength : NetworkBehaviour, IControllable, IPowerable, IIKTa
     {
         shield_strengths[index] = new_allocation;
 
-        shield_effect_times[index] = SHIELD_EFFECT_TIMES[scenario_manager.getDifficulty()];
+        shield_effect_times[index] = SHIELD_EFFECT_TIMES[0];
+        if (ReferenceAssistor.Instance.scenario_manager != null)
+        {
+            shield_effect_times[index] = SHIELD_EFFECT_TIMES[scenario_manager.getDifficulty()];
+        }
 
         if (shield_effect_coroutine == null)
         {
