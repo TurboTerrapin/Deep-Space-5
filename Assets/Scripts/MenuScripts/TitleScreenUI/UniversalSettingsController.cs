@@ -53,6 +53,10 @@ public class UniversalSettingsController : MonoBehaviour
     public Image VoiceVolumeFillBar;
     public TMP_Text ActualVoiceVolumeLabel;
 
+    public TMP_Dropdown VoiceOptionDropdown;
+    //public Button PushToTalkButton;
+    public TMP_Text PushToTalkLabel;
+
     // Camera Sensitivity
     public Slider CameraSensitivitySlider;
     public Image CameraSensitivityFillBar;
@@ -296,7 +300,7 @@ public class UniversalSettingsController : MonoBehaviour
 
     public void HandleMasterVolumeDragged(float volume)
     {
-        MasterMixer.SetFloat("MasterVolume", Mathf.Log10(volume) * 20);
+        MasterMixer.SetFloat("Master", Mathf.Log10(volume) * 20);
 
         // Updates volume text
         int percent = Mathf.RoundToInt(volume * 100);
@@ -311,7 +315,7 @@ public class UniversalSettingsController : MonoBehaviour
 
     public void HandleMusicVolumeDragged(float volume)
     {
-        MasterMixer.SetFloat("MusicVolume", 20 * Mathf.Log10(Mathf.Max(volume, 0.0001f)));
+        MasterMixer.SetFloat("Music", 20 * Mathf.Log10(Mathf.Max(volume, 0.0001f)));
 
         // Updates volume text
         int percent = Mathf.RoundToInt(volume * 100);
@@ -333,7 +337,7 @@ public class UniversalSettingsController : MonoBehaviour
     {
         if (PrimaryScript.Instance == null || ReferenceAssistor.Instance.audio_manager.GetCurrentlyMuted() == false)
         {
-            MasterMixer.SetFloat("SFXVolume", 20 * Mathf.Log10(Mathf.Max(volume, 0.0001f)));
+            MasterMixer.SetFloat("SFX", 20 * Mathf.Log10(Mathf.Max(volume, 0.0001f)));
         }
 
         // Updates volume text
@@ -360,6 +364,60 @@ public class UniversalSettingsController : MonoBehaviour
 
         // Writes to disk
         PlayerPrefs.Save();
+    }
+
+    public void HandleVoiceDropdownClicked(int index)
+    {
+        if (VoiceChat.Instance != null && index == 0)
+        {
+            // Sends the index to PrimaryScript
+            VoiceChat.Instance.setVoiceActivated(true);
+        }
+
+        // Saves player preferences
+        PlayerPrefs.SetInt("VoiceChatOptions", index);
+
+        // Writes changes to disk
+        PlayerPrefs.Save();
+
+
+
+        //PushToTalkButton.updateInteractable(index == 1);
+        //HintsLabel.alpha = index < 2 ? 1f : 0.2f;
+        //HintsGroup.alpha = index < 2 ? 1f : 0.2f;
+    }
+    public void HandlePushToTalkClicked()
+    {
+        KeyCode key = KeyCode.None;
+        bool keySet = false;
+        //Crashes
+        //while(!keySet)
+        //{
+        //    if (Input.anyKey)
+        //    {
+        //        key = Event.current.keyCode;
+        //        keySet = true;
+        //    }
+        //}
+        
+        PushToTalkLabel.text = key.ToString();
+        
+        if (VoiceChat.Instance != null)
+        {
+            // Sends the index to PrimaryScript
+            VoiceChat.Instance.setPushToTalkKey(key);
+        }
+
+        // Saves player preferences
+        PlayerPrefs.SetString("PushToTalkButton", key.ToString());
+
+        // Writes changes to disk
+        PlayerPrefs.Save();
+    }
+
+    public int GetVoiceDropDown()
+    {
+        return 0;
     }
 
     public float GetSFXVolume()

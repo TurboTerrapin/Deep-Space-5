@@ -58,24 +58,28 @@ public class AnimatorHandler : NetworkBehaviour
     public void setIKActive(bool value)
     {
         ikActive = value;
+        if (!IsClient) return;
         setIKActiveRPC(value);
     }
 
     public void setIKHead(bool value)
     {
         ikHead = value;
+        if (!IsClient) return;
         setIKHeadRPC(value);
     }
 
     public void setIKRightArm(bool value)
     {
         ikRightArm = value;
+        if (!IsClient) return;
         setIKRightArmRPC(value);
     }
 
     public void setIKLeftArm(bool value)
     {
         ikLeftArm = value;
+        if (!IsClient) return;
         setIKLeftArmRPC(value);
     }
 

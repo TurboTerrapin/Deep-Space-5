@@ -17,8 +17,13 @@ using UnityEngine;
 
 public class VoiceChat : NetworkBehaviour
 {
+
+    public static VoiceChat Instance { get; protected set; }
+
     public AudioSource AudioSource;
     public bool recording = false;
+    private bool voiceActivated = false;
+    private KeyCode pushToTalkKey;
 
     private MemoryStream uncompressedStream;
     private MemoryStream voiceStream;
@@ -31,6 +36,15 @@ public class VoiceChat : NetworkBehaviour
     private int playbackBuffer;
     private int dataPosition;
     private int dataReceived;
+
+    void Awake()
+    {
+        if (Instance != null)
+        {
+            Destroy(this);
+        }
+        Instance = this;
+    }
 
     void Start()
     {
@@ -78,7 +92,7 @@ public class VoiceChat : NetworkBehaviour
         //Recording from mic and sending to server
         if (IsClient)
         {
-            if (SteamUser.HasVoiceData)
+            if ((SteamUser.HasVoiceData && voiceActivated) || (!voiceActivated && Input.GetKey(pushToTalkKey)))
             {
                 int compressedRead = SteamUser.ReadVoiceData(voiceStream);
                 voiceStream.Position = 0;
@@ -137,6 +151,16 @@ public class VoiceChat : NetworkBehaviour
         // TODO here you should only call clientrpc on clients other than clientId
         PlayVoice(compressed, length);
     }
+
+    public void setVoiceActivated(bool value)
+    {
+        voiceActivated = value;
+    }
+    public void setPushToTalkKey(KeyCode key)
+    {
+        pushToTalkKey = key;
+    }
+
 
     public override void OnDestroy()
     {
