@@ -1,9 +1,12 @@
 // Universal Settings Controller
 
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class UniversalSettingsController : MonoBehaviour
@@ -54,7 +57,7 @@ public class UniversalSettingsController : MonoBehaviour
     public TMP_Text ActualVoiceVolumeLabel;
 
     public TMP_Dropdown VoiceOptionDropdown;
-    //public Button PushToTalkButton;
+    public GameObject PushToTalkButton;
     public TMP_Text PushToTalkLabel;
 
     // Camera Sensitivity
@@ -127,6 +130,13 @@ public class UniversalSettingsController : MonoBehaviour
         VoiceVolumeSlider.value = voiceVolume;
         HandleVoiceVolumeDragged(voiceVolume);
 
+        int voiceIndex = PlayerPrefs.GetInt("VoiceChatOptions");
+        VoiceOptionDropdown.value = voiceIndex;
+        HandleVoiceDropdownClicked(voiceIndex);
+        
+        KeyCode pushToTalkKey = (KeyCode)Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("PushToTalkButton"));
+        SetPushToTalkKey(pushToTalkKey);
+
         // Loads player VSync preference (default is true if nothing is saved)
         bool isVSyncOn = PlayerPrefs.GetInt("VSync", 0) == 1;
         VSyncToggle.isOn = isVSyncOn;
@@ -172,6 +182,7 @@ public class UniversalSettingsController : MonoBehaviour
         MusicVolumeSlider.onValueChanged.AddListener(HandleMusicVolumeDragged);
         SFXVolumeSlider.onValueChanged.AddListener(HandleSFXVolumeDragged);
         VoiceVolumeSlider.onValueChanged.AddListener(HandleVoiceVolumeDragged);
+        VoiceOptionDropdown.onValueChanged.AddListener(HandleVoiceDropdownClicked);
         CameraSensitivitySlider.onValueChanged.AddListener(HandleCameraSensitivityDragged);
         HUDVisibilityDropdown.onValueChanged.AddListener(HandleHUDDropdownClicked);
         HintsToggle.onValueChanged.AddListener(HandleHintsToggleClicked);
@@ -368,43 +379,38 @@ public class UniversalSettingsController : MonoBehaviour
 
     public void HandleVoiceDropdownClicked(int index)
     {
-        if (VoiceChat.Instance != null && index == 0)
+        if (VoiceChat.Instance != null)
         {
-            // Sends the index to PrimaryScript
-            VoiceChat.Instance.setVoiceActivated(true);
+            VoiceChat.Instance.setUseVoice(true);
+            if (index == 0)
+            {
+                VoiceChat.Instance.setVoiceActivated(true);
+            }
+            else if (index == 2)
+            {
+                VoiceChat.Instance.setUseVoice(false);
+            }
         }
-
         // Saves player preferences
         PlayerPrefs.SetInt("VoiceChatOptions", index);
 
         // Writes changes to disk
         PlayerPrefs.Save();
 
-
-
-        //PushToTalkButton.updateInteractable(index == 1);
-        //HintsLabel.alpha = index < 2 ? 1f : 0.2f;
-        //HintsGroup.alpha = index < 2 ? 1f : 0.2f;
+        PushToTalkButton.GetComponent<UnityEngine.UI.Button>().interactable = (index == 1);
+        PushToTalkButton.SetActive(index == 1);
+        PushToTalkLabel.gameObject.SetActive(index == 1);
     }
     public void HandlePushToTalkClicked()
     {
-        KeyCode key = KeyCode.None;
-        bool keySet = false;
-        //Crashes
-        //while(!keySet)
-        //{
-        //    if (Input.anyKey)
-        //    {
-        //        key = Event.current.keyCode;
-        //        keySet = true;
-        //    }
-        //}
-        
+        waitingForInput = true;
+    }
+    public void SetPushToTalkKey(KeyCode key)
+    {
         PushToTalkLabel.text = key.ToString();
         
         if (VoiceChat.Instance != null)
         {
-            // Sends the index to PrimaryScript
             VoiceChat.Instance.setPushToTalkKey(key);
         }
 
@@ -413,6 +419,23 @@ public class UniversalSettingsController : MonoBehaviour
 
         // Writes changes to disk
         PlayerPrefs.Save();
+    }
+
+
+    //Dont like having this here
+    bool waitingForInput = false;
+    void OnGUI()
+    {
+        if (waitingForInput)
+        {
+            if (Input.anyKey)
+            {
+                KeyCode key = Event.current.keyCode;
+                SetPushToTalkKey(key);
+                waitingForInput = false;
+
+            }
+        }
     }
 
     public int GetVoiceDropDown()

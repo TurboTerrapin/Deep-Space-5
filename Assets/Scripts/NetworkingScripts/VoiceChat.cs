@@ -9,6 +9,7 @@
 
 
 using Steamworks;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,8 +23,9 @@ public class VoiceChat : NetworkBehaviour
 
     public AudioSource AudioSource;
     public bool recording = false;
-    private bool voiceActivated = false;
-    private KeyCode pushToTalkKey;
+    public bool voiceActivated = false;
+    public bool useVoice = false;
+    public KeyCode pushToTalkKey;
 
     private MemoryStream uncompressedStream;
     private MemoryStream voiceStream;
@@ -44,6 +46,20 @@ public class VoiceChat : NetworkBehaviour
             Destroy(this);
         }
         Instance = this;
+
+        int voiceIndex = PlayerPrefs.GetInt("VoiceChatOptions");
+        useVoice = true;
+        if (voiceIndex == 0)
+        {
+            voiceActivated = true;
+        }
+        else if (voiceIndex == 2)
+        {
+            useVoice = false;
+        }
+
+        KeyCode temp = (KeyCode)Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("PushToTalkButton"));
+        pushToTalkKey = temp;
     }
 
     void Start()
@@ -87,12 +103,16 @@ public class VoiceChat : NetworkBehaviour
 
     internal void Update()
     {
-        SteamUser.VoiceRecord = true;
+        SteamUser.VoiceRecord = useVoice && (voiceActivated || Input.GetKey(pushToTalkKey));
+
+
+
+
         recording = SteamUser.VoiceRecord;
         //Recording from mic and sending to server
         if (IsClient)
         {
-            if ((SteamUser.HasVoiceData && voiceActivated) || (!voiceActivated && Input.GetKey(pushToTalkKey)))
+            if (SteamUser.HasVoiceData)
             {
                 int compressedRead = SteamUser.ReadVoiceData(voiceStream);
                 voiceStream.Position = 0;
@@ -155,6 +175,10 @@ public class VoiceChat : NetworkBehaviour
     public void setVoiceActivated(bool value)
     {
         voiceActivated = value;
+    }
+    public void setUseVoice(bool value)
+    {
+        useVoice = value;
     }
     public void setPushToTalkKey(KeyCode key)
     {
