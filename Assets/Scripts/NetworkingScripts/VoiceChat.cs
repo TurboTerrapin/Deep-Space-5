@@ -9,6 +9,7 @@
 
 
 using Steamworks;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -19,6 +20,9 @@ public class VoiceChat : NetworkBehaviour
 {
     public AudioSource AudioSource;
     public bool recording = false;
+    public bool voiceActivated = false;
+    public bool useVoice = false;
+    public KeyCode pushToTalkKey;
 
     private MemoryStream uncompressedStream;
     private MemoryStream voiceStream;
@@ -31,6 +35,29 @@ public class VoiceChat : NetworkBehaviour
     private int playbackBuffer;
     private int dataPosition;
     private int dataReceived;
+
+    void Awake()
+    {
+        if (Instance != null)
+        {
+            Destroy(this.GetComponent<VoiceChat>());
+        }
+        Instance = this;
+
+        int voiceIndex = PlayerPrefs.GetInt("VoiceChatOptions");
+        useVoice = true;
+        if (voiceIndex == 0)
+        {
+            voiceActivated = true;
+        }
+        else if (voiceIndex == 2)
+        {
+            useVoice = false;
+        }
+
+        KeyCode temp = (KeyCode)Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("PushToTalkButton"));
+        pushToTalkKey = temp;
+    }
 
     void Start()
     {
@@ -73,7 +100,11 @@ public class VoiceChat : NetworkBehaviour
 
     internal void Update()
     {
-        SteamUser.VoiceRecord = true;
+        SteamUser.VoiceRecord = useVoice && (voiceActivated || Input.GetKey(pushToTalkKey));
+
+
+
+
         recording = SteamUser.VoiceRecord;
         //Recording from mic and sending to server
         if (IsClient)
@@ -137,6 +168,20 @@ public class VoiceChat : NetworkBehaviour
         // TODO here you should only call clientrpc on clients other than clientId
         PlayVoice(compressed, length);
     }
+
+    public void setVoiceActivated(bool value)
+    {
+        voiceActivated = value;
+    }
+    public void setUseVoice(bool value)
+    {
+        useVoice = value;
+    }
+    public void setPushToTalkKey(KeyCode key)
+    {
+        pushToTalkKey = key;
+    }
+
 
     public override void OnDestroy()
     {

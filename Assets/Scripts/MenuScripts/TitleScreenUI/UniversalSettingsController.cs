@@ -1,9 +1,12 @@
 // Universal Settings Controller
 
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class UniversalSettingsController : MonoBehaviour
@@ -52,6 +55,10 @@ public class UniversalSettingsController : MonoBehaviour
     public Slider VoiceVolumeSlider;
     public Image VoiceVolumeFillBar;
     public TMP_Text ActualVoiceVolumeLabel;
+
+    public TMP_Dropdown VoiceOptionDropdown;
+    public GameObject PushToTalkButton;
+    public TMP_Text PushToTalkLabel;
 
     // Camera Sensitivity
     public Slider CameraSensitivitySlider;
@@ -123,6 +130,13 @@ public class UniversalSettingsController : MonoBehaviour
         VoiceVolumeSlider.value = voiceVolume;
         HandleVoiceVolumeDragged(voiceVolume);
 
+        int voiceIndex = PlayerPrefs.GetInt("VoiceChatOptions");
+        VoiceOptionDropdown.value = voiceIndex;
+        HandleVoiceDropdownClicked(voiceIndex);
+        
+        KeyCode pushToTalkKey = (KeyCode)Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("PushToTalkButton"));
+        SetPushToTalkKey(pushToTalkKey);
+
         // Loads player VSync preference (default is true if nothing is saved)
         bool isVSyncOn = PlayerPrefs.GetInt("VSync", 0) == 1;
         VSyncToggle.isOn = isVSyncOn;
@@ -168,6 +182,7 @@ public class UniversalSettingsController : MonoBehaviour
         MusicVolumeSlider.onValueChanged.AddListener(HandleMusicVolumeDragged);
         SFXVolumeSlider.onValueChanged.AddListener(HandleSFXVolumeDragged);
         VoiceVolumeSlider.onValueChanged.AddListener(HandleVoiceVolumeDragged);
+        VoiceOptionDropdown.onValueChanged.AddListener(HandleVoiceDropdownClicked);
         CameraSensitivitySlider.onValueChanged.AddListener(HandleCameraSensitivityDragged);
         HUDVisibilityDropdown.onValueChanged.AddListener(HandleHUDDropdownClicked);
         HintsToggle.onValueChanged.AddListener(HandleHintsToggleClicked);
@@ -360,6 +375,72 @@ public class UniversalSettingsController : MonoBehaviour
 
         // Writes to disk
         PlayerPrefs.Save();
+    }
+
+    public void HandleVoiceDropdownClicked(int index)
+    {
+        if (VoiceChat.Instance != null)
+        {
+            VoiceChat.Instance.setUseVoice(true);
+            if (index == 0)
+            {
+                VoiceChat.Instance.setVoiceActivated(true);
+            }
+            else if (index == 2)
+            {
+                VoiceChat.Instance.setUseVoice(false);
+            }
+        }
+        // Saves player preferences
+        PlayerPrefs.SetInt("VoiceChatOptions", index);
+
+        // Writes changes to disk
+        PlayerPrefs.Save();
+
+        PushToTalkButton.GetComponent<UnityEngine.UI.Button>().interactable = (index == 1);
+        PushToTalkButton.SetActive(index == 1);
+        PushToTalkLabel.gameObject.SetActive(index == 1);
+    }
+    public void HandlePushToTalkClicked()
+    {
+        waitingForInput = true;
+    }
+    public void SetPushToTalkKey(KeyCode key)
+    {
+        PushToTalkLabel.text = key.ToString();
+        
+        if (VoiceChat.Instance != null)
+        {
+            VoiceChat.Instance.setPushToTalkKey(key);
+        }
+
+        // Saves player preferences
+        PlayerPrefs.SetString("PushToTalkButton", key.ToString());
+
+        // Writes changes to disk
+        PlayerPrefs.Save();
+    }
+
+
+    //Dont like having this here
+    bool waitingForInput = false;
+    void OnGUI()
+    {
+        if (waitingForInput)
+        {
+            if (Input.anyKey)
+            {
+                KeyCode key = Event.current.keyCode;
+                SetPushToTalkKey(key);
+                waitingForInput = false;
+
+            }
+        }
+    }
+
+    public int GetVoiceDropDown()
+    {
+        return 0;
     }
 
     public float GetSFXVolume()
