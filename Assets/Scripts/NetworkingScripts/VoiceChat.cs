@@ -43,7 +43,7 @@ public class VoiceChat : NetworkBehaviour
     {
         if (Instance != null)
         {
-            Destroy(this);
+            Destroy(this.GetComponent<VoiceChat>());
         }
         Instance = this;
 

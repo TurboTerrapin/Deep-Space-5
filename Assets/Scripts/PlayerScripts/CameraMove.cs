@@ -64,7 +64,7 @@ public class CameraMove : MonoBehaviour
         {
             if (GetComponent<NetworkObject>().OwnerClientId != NetworkManager.Singleton.LocalClientId) //Not owner, kill the camera
             {
-                Destroy(cameraHolder.gameObject);
+                Destroy(cameraHolder.transform.GetChild(0).gameObject);
                 Destroy(this);
                 return;
             }
