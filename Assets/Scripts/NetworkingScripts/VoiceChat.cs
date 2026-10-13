@@ -21,7 +21,7 @@ public class VoiceChat : NetworkBehaviour
 
 
 
-    public static VoiceChat Instance { get; private set; } = null;
+    //public static VoiceChat Instance { get; private set; } = null;
 
     public AudioSource AudioSource;
     public bool recording = false;
@@ -43,11 +43,11 @@ public class VoiceChat : NetworkBehaviour
 
     void Awake()
     {
-        if (Instance != null)
-        {
-            Destroy(this.GetComponent<VoiceChat>());
-        }
-        Instance = this;
+        //if (Instance != null)
+        //{
+        //    Destroy(this.GetComponent<VoiceChat>());
+        //}
+        //Instance = this;
 
         int voiceIndex = PlayerPrefs.GetInt("VoiceChatOptions");
         useVoice = true;

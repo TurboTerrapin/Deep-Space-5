@@ -377,19 +377,38 @@ public class UniversalSettingsController : MonoBehaviour
         PlayerPrefs.Save();
     }
 
+    public VoiceChat myVoiceChat = null;
     public void HandleVoiceDropdownClicked(int index)
     {
-        if (VoiceChat.Instance != null)
+
+        if (myVoiceChat == null)
         {
-            VoiceChat.Instance.setUseVoice(true);
+            //Debug.Log("Setting New Voice Chat");
+            VoiceChat[] voiceChats = GameObject.FindObjectsByType<VoiceChat>();
+            myVoiceChat = null;
+
+            foreach (VoiceChat voiceChat in voiceChats)
+            {
+                if (voiceChat.IsOwner)
+                {
+                    myVoiceChat = voiceChat;
+                    break;
+                }
+            }
+        }
+        if (myVoiceChat != null)
+        {
+            myVoiceChat.setUseVoice(true);
+            myVoiceChat.setVoiceActivated(false);
             if (index == 0)
             {
-                VoiceChat.Instance.setVoiceActivated(true);
+                myVoiceChat.setVoiceActivated(true);
             }
             else if (index == 2)
             {
-                VoiceChat.Instance.setUseVoice(false);
+                myVoiceChat.setUseVoice(false);
             }
+
         }
         // Saves player preferences
         PlayerPrefs.SetInt("VoiceChatOptions", index);
@@ -408,10 +427,25 @@ public class UniversalSettingsController : MonoBehaviour
     public void SetPushToTalkKey(KeyCode key)
     {
         PushToTalkLabel.text = key.ToString();
-        
-        if (VoiceChat.Instance != null)
+
+        if (myVoiceChat == null)
         {
-            VoiceChat.Instance.setPushToTalkKey(key);
+            //Debug.Log("Setting New Voice Chat");
+            VoiceChat[] voiceChats = GameObject.FindObjectsByType<VoiceChat>();
+            myVoiceChat = null;
+
+            foreach (VoiceChat voiceChat in voiceChats)
+            {
+                if (voiceChat.IsOwner)
+                {
+                    myVoiceChat = voiceChat;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            myVoiceChat.setPushToTalkKey(key);
         }
 
         // Saves player preferences
@@ -428,6 +462,7 @@ public class UniversalSettingsController : MonoBehaviour
     {
         if (waitingForInput)
         {
+            //Debug.Log("Waiting for key input");
             if (Input.anyKey)
             {
                 KeyCode key = Event.current.keyCode;
