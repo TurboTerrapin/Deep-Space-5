@@ -36177,6 +36177,37 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!1 &383136404
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 383136405}
+  m_Layer: 3
+  m_Name: RightArmAdjustedTransform
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &383136405
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 383136404}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.347, y: 1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7832574623016122927}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &383290016
 GameObject:
   m_ObjectHideFlags: 0
@@ -289227,7 +289258,7 @@ MonoBehaviour:
   totallookat: 1
   headlookat: 1
   chestlookat: 0.4
-  rightArmAdjusted: {fileID: 0}
+  rightArmAdjusted: {fileID: 383136405}
 --- !u!33 &4952449944083091746
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -298962,6 +298993,7 @@ Transform:
   - {fileID: 6880954646406960241}
   - {fileID: 4865660403714949250}
   - {fileID: 6638620727951293857}
+  - {fileID: 383136405}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &7833989314553290782

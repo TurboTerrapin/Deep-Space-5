@@ -18,6 +18,11 @@ using UnityEngine;
 
 public class VoiceChat : NetworkBehaviour
 {
+
+
+
+    public static VoiceChat Instance { get; private set; } = null;
+
     public AudioSource AudioSource;
     public bool recording = false;
     public bool voiceActivated = false;
