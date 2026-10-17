@@ -52742,17 +52742,29 @@ MonoBehaviour:
   LeftClothingButton: {fileID: 1788119045}
   RightClothingButton: {fileID: 670332825}
   shirtOptions:
-  - {fileID: -8021555830810559811, guid: 5e3ca7565bf25b443a401aea50550e7c, type: 3}
   - {fileID: 3942876848423782620, guid: 42b8e8b4d7ac39549b40c7bb4e8509dd, type: 3}
+  - {fileID: 3942876848423782620, guid: 42b8e8b4d7ac39549b40c7bb4e8509dd, type: 3}
+  - {fileID: 3942876848423782620, guid: 42b8e8b4d7ac39549b40c7bb4e8509dd, type: 3}
+  - {fileID: 3942876848423782620, guid: 42b8e8b4d7ac39549b40c7bb4e8509dd, type: 3}
+  - {fileID: -8021555830810559811, guid: 5e3ca7565bf25b443a401aea50550e7c, type: 3}
   shirtMaterials:
-  - {fileID: -876546973899608171, guid: 5e3ca7565bf25b443a401aea50550e7c, type: 3}
   - {fileID: 2100000, guid: b4bd21e714cf54148adac786f2de5c9a, type: 2}
+  - {fileID: 2100000, guid: a9d5cc12ab40ffb4e9c140255cd757ad, type: 2}
+  - {fileID: 2100000, guid: 735beabe3ca14454e935147e3caa6a71, type: 2}
+  - {fileID: 2100000, guid: e20d86d05894a324eab7361bda3d1f7e, type: 2}
+  - {fileID: -876546973899608171, guid: 5e3ca7565bf25b443a401aea50550e7c, type: 3}
   pantsOptions:
-  - {fileID: -5536740108886989625, guid: b49636fadec42f4439fff0967ef8db42, type: 3}
   - {fileID: -5536740108886989625, guid: fdbcf3a59e1c8254cb2fb237a331a2ed, type: 3}
+  - {fileID: -5536740108886989625, guid: fdbcf3a59e1c8254cb2fb237a331a2ed, type: 3}
+  - {fileID: -5536740108886989625, guid: fdbcf3a59e1c8254cb2fb237a331a2ed, type: 3}
+  - {fileID: -5536740108886989625, guid: fdbcf3a59e1c8254cb2fb237a331a2ed, type: 3}
+  - {fileID: -5536740108886989625, guid: b49636fadec42f4439fff0967ef8db42, type: 3}
   pantsMaterials:
-  - {fileID: -6478536213147159724, guid: b49636fadec42f4439fff0967ef8db42, type: 3}
   - {fileID: 2100000, guid: 1f16ea9e32e548b42bd5fc717e7599b1, type: 2}
+  - {fileID: 2100000, guid: 1f16ea9e32e548b42bd5fc717e7599b1, type: 2}
+  - {fileID: 2100000, guid: 1f16ea9e32e548b42bd5fc717e7599b1, type: 2}
+  - {fileID: 2100000, guid: 1f16ea9e32e548b42bd5fc717e7599b1, type: 2}
+  - {fileID: -6478536213147159724, guid: b49636fadec42f4439fff0967ef8db42, type: 3}
   ClothingOptions:
   - Blue Uniform
   - Purple Uniform
@@ -144302,6 +144314,7 @@ MonoBehaviour:
   HintsToggle: {fileID: 1485576994}
   HintsLabel: {fileID: 714541376}
   HintsGroup: {fileID: 1485576992}
+  myVoiceChat: {fileID: 0}
 --- !u!114 &1872094235
 MonoBehaviour:
   m_ObjectHideFlags: 0

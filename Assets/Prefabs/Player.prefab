@@ -312,7 +312,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1266531769
+  GlobalObjectIdHash: 2290305919
   InScenePlacedSourceGlobalObjectIdHash: 2049436854
   DeferredDespawnTick: 0
   Ownership: 1
@@ -365,18 +365,30 @@ MonoBehaviour:
   hair: 0
   shirtObject: {fileID: 5406028627457909774}
   shirtModels:
-  - {fileID: 5919100220734724927, guid: 5e3ca7565bf25b443a401aea50550e7c, type: 3}
   - {fileID: -260613626914459891, guid: 42b8e8b4d7ac39549b40c7bb4e8509dd, type: 3}
+  - {fileID: -260613626914459891, guid: 42b8e8b4d7ac39549b40c7bb4e8509dd, type: 3}
+  - {fileID: -260613626914459891, guid: 42b8e8b4d7ac39549b40c7bb4e8509dd, type: 3}
+  - {fileID: -260613626914459891, guid: 42b8e8b4d7ac39549b40c7bb4e8509dd, type: 3}
+  - {fileID: 5919100220734724927, guid: 5e3ca7565bf25b443a401aea50550e7c, type: 3}
   shirtMaterials:
+  - {fileID: 2100000, guid: b4bd21e714cf54148adac786f2de5c9a, type: 2}
+  - {fileID: 2100000, guid: a9d5cc12ab40ffb4e9c140255cd757ad, type: 2}
+  - {fileID: 2100000, guid: 735beabe3ca14454e935147e3caa6a71, type: 2}
+  - {fileID: 2100000, guid: e20d86d05894a324eab7361bda3d1f7e, type: 2}
   - {fileID: -876546973899608171, guid: 5e3ca7565bf25b443a401aea50550e7c, type: 3}
-  - {fileID: -2571066135233467577, guid: 42b8e8b4d7ac39549b40c7bb4e8509dd, type: 3}
   pantsObject: {fileID: 7530628980056537716}
   pantsModels:
-  - {fileID: -5291407736170811975, guid: b49636fadec42f4439fff0967ef8db42, type: 3}
   - {fileID: -5291407736170811975, guid: fdbcf3a59e1c8254cb2fb237a331a2ed, type: 3}
+  - {fileID: -5291407736170811975, guid: fdbcf3a59e1c8254cb2fb237a331a2ed, type: 3}
+  - {fileID: -5291407736170811975, guid: fdbcf3a59e1c8254cb2fb237a331a2ed, type: 3}
+  - {fileID: -5291407736170811975, guid: fdbcf3a59e1c8254cb2fb237a331a2ed, type: 3}
+  - {fileID: -5291407736170811975, guid: b49636fadec42f4439fff0967ef8db42, type: 3}
   pantsMaterials:
-  - {fileID: -6478536213147159724, guid: b49636fadec42f4439fff0967ef8db42, type: 3}
   - {fileID: 8766343988393363296, guid: fdbcf3a59e1c8254cb2fb237a331a2ed, type: 3}
+  - {fileID: 8766343988393363296, guid: fdbcf3a59e1c8254cb2fb237a331a2ed, type: 3}
+  - {fileID: 8766343988393363296, guid: fdbcf3a59e1c8254cb2fb237a331a2ed, type: 3}
+  - {fileID: 8766343988393363296, guid: fdbcf3a59e1c8254cb2fb237a331a2ed, type: 3}
+  - {fileID: -6478536213147159724, guid: b49636fadec42f4439fff0967ef8db42, type: 3}
   clothing: 0
   HairColor: {r: 1, g: 1, b: 1, a: 1}
   EyeColor: {r: 1, g: 1, b: 1, a: 1}

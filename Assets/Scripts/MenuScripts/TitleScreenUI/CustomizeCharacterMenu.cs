@@ -81,7 +81,7 @@ public class CustomizeCharacterMenu : MonoBehaviour
 
     void Start()
     {
-        DeleteCharacterSaveData();
+        //DeleteCharacterSaveData();
         // Input checks
         HairHexInput.characterLimit = 6;
         HairHexInput.onValidateInput = CheckHexValue;
