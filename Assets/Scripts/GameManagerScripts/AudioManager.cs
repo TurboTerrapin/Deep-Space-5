@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -65,13 +64,13 @@ public class AudioManager : MonoBehaviour
     public void SetMasterVolume(float volume)
     {
         float dB = Mathf.Log10(volume) * 20;
-        masterMixer.SetFloat("MasterVolume", dB);
+        masterMixer.SetFloat("Master", dB);
     }
 
     public void MuteSFX()
     {
         currentlyMuted = true;
-        masterMixer.SetFloat("SFXVolume", -80.0f);
+        masterMixer.SetFloat("SFX", -80.0f);
     }
 
     public void UnmuteSFX()

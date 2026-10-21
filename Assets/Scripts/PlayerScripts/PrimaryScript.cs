@@ -547,7 +547,17 @@ public abstract class PrimaryScript : MonoBehaviour
                 my_animation_controller.setLerpSpeed(target_IK.getLerpSpeed());
 
                 //set the animation type
-                my_animation_controller.setHandInteractionType(target_IK.getHandInteractionType());
+                if (target_IK.getHandInteractionType() != AnimatorHandler.HandInteractionType.None)
+                {
+                    my_animation_controller.setHandInteractionType(target_IK.getHandInteractionType());
+                }
+                else
+                {
+                    //set to none, abort
+                    my_animation_controller.setIKRightArm(false);
+                    my_animation_controller.setIKLeftArm(false);
+                    return;
+                }
 
                 if (looking_left == true)
                 {

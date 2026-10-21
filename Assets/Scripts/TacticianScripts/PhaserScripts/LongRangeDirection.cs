@@ -2,11 +2,10 @@
     LongRangeDirection.cs
     - Handles inputs for long-range phaser direction
     Contributor(s): Jake Schott
-    Last Updated: 8/10/2026
+    Last Updated: 10/21/2026
 */
 
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
@@ -35,7 +34,6 @@ public class LongRangeDirection : NetworkBehaviour, IControllable, IPowerable, I
     [Header("IK Targetable Details")]
     public List<GameObject> IK_targets = null;
     public List<GameObject> hand_placements = null;
-    public AnimatorHandler myAnimatorHandler = null;
     public AnimatorHandler.HandInteractionType hand_interaction_type = AnimatorHandler.HandInteractionType.Pinch;
     public float hand_pose = 0;
     public bool has_right_arm_IK_targets = false;
@@ -58,15 +56,15 @@ public class LongRangeDirection : NetworkBehaviour, IControllable, IPowerable, I
     {
         return hud_info;
     }
+
     public void setRightHandSpecificTargets(bool value)
     {
         if (!has_right_arm_IK_targets) return;
         right_arm_IK_targets_active |= value;
     }
+
     public Transform getIKTarget(GameObject current_target)
     {
-        //int index = ray_targets.IndexOf(current_target.name);
-
         float shortestDistance;
         int shortestIndex = 0;
         shortestDistance = Vector3.Distance(hand_placements[0].transform.position, IK_targets[shortestIndex].transform.position);

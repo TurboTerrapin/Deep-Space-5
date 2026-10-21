@@ -37,7 +37,7 @@ public class PowerAllocation : NetworkBehaviour, IControllable, IPowerable, IIKT
 
     private bool is_powered = false;
     private int available_units = MAX_ALLOCATION_UNITS;
-    private int[] allocated_units = new int[4] { 0, 0, 0, 0 };
+    private int[] allocated_units = new int[4] { 8, 6, 5, 5 };
     private Coroutine[] allocation_adjustment_coroutines = new Coroutine[4] { null, null, null, null };
 
     private List<string> ray_targets = new List<string> { "power_allocation_pilot", "power_allocation_tactician", "power_allocation_engineer", "power_allocation_captain" };
@@ -68,6 +68,8 @@ public class PowerAllocation : NetworkBehaviour, IControllable, IPowerable, IIKT
         hud_info = new HUDInfo(CONTROL_NAMES[0] + " POWER ALLOCATION");
         hud_info.setButtons(BUTTON_LISTS[0], 7);
         hud_info.setInfo(INFO_MESSAGE);
+
+        resetToDefaultAllocation();
     }
 
     public HUDInfo getHUDinfo(GameObject current_target)
@@ -134,31 +136,9 @@ public class PowerAllocation : NetworkBehaviour, IControllable, IPowerable, IIKT
     }
 
     //called by ScenarioManager.controlResetHelper()
-    public void resetToDefaultAllocation(int[] allocation_values)
+    public void resetToDefaultAllocation()
     {
-        if (allocation_values.Length != 4)
-        {
-            return;
-        }
-
-        int total_units = 0;
-        for (int i = 0; i < 4; i++)
-        {
-            if (allocation_values[i] < 0 || allocation_values[i] > 10)
-            {
-                Debug.Log("ATTEMPTED TO ASSIGN MORE THAN 10 UNITS OR LESS THAN 0 TO A POSITION");
-                return;
-            }
-            total_units += allocation_values[i];
-        }
-
-        if (total_units > 24)
-        {
-            Debug.Log("ATTEMPTED TO ASSIGN MORE THAN AVAILABLE UNITS!");
-            return;
-        }
-
-        available_units = 24 - total_units;
+        available_units = 0;
 
         //display new values
         for (int i = 0; i < 4; i++)
@@ -171,9 +151,9 @@ public class PowerAllocation : NetworkBehaviour, IControllable, IPowerable, IIKT
             }
 
             //display new value
-            allocated_units[i] = allocation_values[i];
+            allocated_units[i] = PowerManager.DEFAULT_POWER_ALLOCATIONS[i];
             allocation_dials[i].transform.localRotation =
-                Quaternion.Euler(-54.0f, -45.0f, 359.9f * (allocation_values[i] / 10.0f));
+                Quaternion.Euler(-54.0f, -45.0f, 359.9f * (PowerManager.DEFAULT_POWER_ALLOCATIONS[i] / 10.0f));
             displayAdjustment(i);
         }
     }
