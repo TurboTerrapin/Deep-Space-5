@@ -330,9 +330,9 @@ public class LoadHandler : MonoBehaviour
         do
         {
             new_tip_index = Random.Range(0, load_screen.transform.GetChild(3).childCount);
-        } 
+        }
         while (new_tip_index == last_tip);
-        
+
         for (int i = 0; i < load_screen.transform.GetChild(3).childCount; i++)
         {
             load_screen.transform.GetChild(3).GetChild(i).gameObject.SetActive(i == new_tip_index);
@@ -402,7 +402,6 @@ public class LoadHandler : MonoBehaviour
         GameObject player_prefab = GameObject.Find(player_prefab_name);
         while (player_prefab == null)
         {
-            Debug.Log("Waiting for player");
             player_prefab = GameObject.Find(player_prefab_name);
             yield return null;
         }
@@ -415,13 +414,11 @@ public class LoadHandler : MonoBehaviour
         while (load_operation.isDone == false)
         {
             //spin circles while waiting
-            Debug.Log("Waiting for BE");
             spinRings();
             yield return null;
         }
         load_operation = null;
         ReferenceAssistor.Instance.player_manager.addPlayer(player_prefab, this);
-        Debug.Log("Loaded!");
 
         //wait until PlayerManager interrupts load screen using endLoad()
         while (true)
@@ -464,7 +461,7 @@ public class LoadHandler : MonoBehaviour
                 randomizeLoadScreen();
                 load_screen.SetActive(true);
             }
-            
+
             //spin rings if on load screen instead of transition screen
             if (switched_to_load_screen == true)
             {

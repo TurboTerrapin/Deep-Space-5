@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
-using TMPro;
 
 public class CharacterCustomization : NetworkBehaviour
 {
@@ -44,9 +42,6 @@ public class CharacterCustomization : NetworkBehaviour
     private Color EyeColor = Color.white;
     [SerializeField]
     private Color SkinColor = Color.white;
-
-
-    //float timer = 0;
 
     void Start()
     {
@@ -115,8 +110,6 @@ public class CharacterCustomization : NetworkBehaviour
         }
     }
 
-
-
     public void ChangeHairType(int newHair)
     {
         hair = newHair;
@@ -129,6 +122,7 @@ public class CharacterCustomization : NetworkBehaviour
 
         hairObject.GetComponent<MeshFilter>().mesh = hairModels[hair - 1].GetComponent<MeshFilter>().sharedMesh;
     }
+
     public void ChangeClothingType(int newClothing)
     {
         clothing = newClothing;
@@ -139,29 +133,14 @@ public class CharacterCustomization : NetworkBehaviour
         pantsObject.GetComponent<SkinnedMeshRenderer>().material = pantsMaterials[clothing];
     }
 
-    /*
-    // Update is called once per frame
-    void Update()
-    {
-        timer += Time.deltaTime;
-        if (timer > 2)
-        {
-            
-            timer = 0;
-            ChangeHairType(Random.Range(0, hairModels.Count + 1));
-
-        }
-
-
-
-    }*/
-
+    //called when every client needs to send their customization packages
     [Rpc(SendTo.Owner)]
     public void SyncAllCustomizationsRPC()
     {
         SyncCustomizationRPC(HairColor, EyeColor, SkinColor, hair, clothing);
     }
 
+    //tells other clients this client's customization package
     [Rpc(SendTo.NotMe)]
     public void SyncCustomizationRPC(Color hairColor, Color eyeColor, Color skinColor, int hairType, int clothingType)
     {
@@ -177,6 +156,4 @@ public class CharacterCustomization : NetworkBehaviour
         ChangeHairType(hair);
         ChangeClothingType(clothing);
     }
-
-
 }

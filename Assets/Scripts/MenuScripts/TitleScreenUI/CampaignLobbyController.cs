@@ -137,8 +137,6 @@ public class CampaignLobbyController : MonoBehaviour
             return;
         }
 
-        Debug.Log("STEAM LOBBY: " + LobbyHandler.getNumberOfPlayersInSteamLobby() + " == NETWORK MANAGER LOBBY: " + LobbyHandler.getNumberOfPlayersInNetworkManagerLobby());
-
         //Activate/deactive engage button
         if (NetworkManager.Singleton.IsHost == true && LobbyHandler.getNumberOfPlayersInSteamLobby() == LobbyHandler.getNumberOfPlayersInNetworkManagerLobby())
         {
@@ -252,10 +250,10 @@ public class CampaignLobbyController : MonoBehaviour
         GameNetworkManager.Instance.currentLobby.Value.SetInvisible();
         GameNetworkManager.Instance.currentLobby.Value.SetJoinable(false);
         LobbyHandler.startLoadForAllPlayers();
-        CharacterCustomization[] players = GameObject.FindObjectsByType<CharacterCustomization>(FindObjectsSortMode.InstanceID);
-        foreach (CharacterCustomization c in players)
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject plr in players)
         {
-            c.SyncAllCustomizationsRPC();
+            plr.GetComponent<CharacterCustomization>().SyncAllCustomizationsRPC();
         }
 
         NetworkManager.Singleton.SceneManager.LoadScene("BridgeEnvironment", LoadSceneMode.Single);

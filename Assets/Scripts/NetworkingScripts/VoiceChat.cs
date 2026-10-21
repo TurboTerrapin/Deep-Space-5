@@ -47,7 +47,7 @@ public class VoiceChat : NetworkBehaviour
         }
         Instance = this;
 
-        int voiceIndex = PlayerPrefs.GetInt("VoiceChatOptions");
+        int voiceIndex = PlayerPrefs.GetInt("VoiceChatOptions", 0);
         useVoice = true;
         if (voiceIndex == 0)
         {
@@ -58,7 +58,7 @@ public class VoiceChat : NetworkBehaviour
             useVoice = false;
         }
 
-        KeyCode temp = (KeyCode)Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("PushToTalkButton"));
+        KeyCode temp = (KeyCode)Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("PushToTalkButton", "U"));
         pushToTalkKey = temp;
     }
 
@@ -185,10 +185,9 @@ public class VoiceChat : NetworkBehaviour
         pushToTalkKey = key;
     }
 
-
     public override void OnDestroy()
     {
-        SteamUser.VoiceRecord = false;
+        //SteamUser.VoiceRecord = false;
         base.OnDestroy();
     }
 
@@ -200,7 +199,4 @@ public class VoiceChat : NetworkBehaviour
         public byte[] Buffer { get; set; }
         public int Size { get; set; }
     }
-
-
 }
-

@@ -130,11 +130,11 @@ public class UniversalSettingsController : MonoBehaviour
         VoiceVolumeSlider.value = voiceVolume;
         HandleVoiceVolumeDragged(voiceVolume);
 
-        int voiceIndex = PlayerPrefs.GetInt("VoiceChatOptions");
+        int voiceIndex = PlayerPrefs.GetInt("VoiceChatOptions", 0);
         VoiceOptionDropdown.value = voiceIndex;
         HandleVoiceDropdownClicked(voiceIndex);
-        
-        KeyCode pushToTalkKey = (KeyCode)Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("PushToTalkButton"));
+
+        KeyCode pushToTalkKey = (KeyCode)Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("PushToTalkButton", "U"));
         SetPushToTalkKey(pushToTalkKey);
 
         // Loads player VSync preference (default is true if nothing is saved)
@@ -401,10 +401,12 @@ public class UniversalSettingsController : MonoBehaviour
         PushToTalkButton.SetActive(index == 1);
         PushToTalkLabel.gameObject.SetActive(index == 1);
     }
+
     public void HandlePushToTalkClicked()
     {
         waitingForInput = true;
     }
+
     public void SetPushToTalkKey(KeyCode key)
     {
         PushToTalkLabel.text = key.ToString();

@@ -227,6 +227,7 @@ public class IntroSequenceManager : MonoBehaviour
         player.GetComponent<CameraMove>().GetCamera().SetActive(true);
         player.GetComponent<CameraMove>().UnlockCamera(Vector2.zero);
         PrimaryScript.Instance.activate();
+        PlayerManager.unfreezePlayer(player);
         if (PrimaryScript.Instance.hintsEnabled() == true)
         {
             while (PrimaryScript.Instance.isPaused() == true)
