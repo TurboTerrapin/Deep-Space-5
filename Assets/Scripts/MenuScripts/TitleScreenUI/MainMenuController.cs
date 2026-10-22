@@ -2,6 +2,7 @@ using Steamworks;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 using UnityEditor;
 using System.IO;
 using System.Net.Http.Headers;
@@ -13,12 +14,14 @@ public class MainMenuController : MonoBehaviour
     public GameObject LogsMenu;
     public GameObject CustomizationMenu;
     public GameObject SettingsMenu;
+    public CanvasGroup MainMenuContents;
+    public GameObject BrightnessOverlay;
 
     public UnityEngine.UI.Button CampaignButton;
     public TMP_Text CampaignText;
     public RawImage CampaignBorder;
 
-    public GameObject TutorialNotif;
+    public GameObject CompleteCampaignNotif;
 
     private const string HasBeatenTutorialKey = "HasBeatenTutorial";
 
@@ -30,7 +33,14 @@ public class MainMenuController : MonoBehaviour
             LoadHandler.GetComponent<LoadHandler>().endLoad(false);
         }
 
+        BeatTutorial();
         LoadTutorialData();
+
+        BrightnessOverlay.SetActive(true);
+
+        MainMenuContents.alpha = 0f;
+        StartCoroutine(FadeTo(MainMenuContents, 1f, 1f));
+
     }
 
     public void LoadTutorialData()
@@ -45,7 +55,7 @@ public class MainMenuController : MonoBehaviour
         {
             Debug.Log("HasBeatenTutorial: " + HasBeatenTutorial);
 
-            TutorialNotif.SetActive(false);
+            CompleteCampaignNotif.SetActive(false);
         }
         else
         {
@@ -55,13 +65,29 @@ public class MainMenuController : MonoBehaviour
 
             CampaignBorder.color = new Color(0f, 0.58f, 0.62f, 0.8f);
 
-            TutorialNotif.SetActive(true);
+            CompleteCampaignNotif.SetActive(true);
         }
+    }
+
+    IEnumerator FadeTo(CanvasGroup canvasGroup, float targetAlpha, float duration)
+    {
+        float startAlpha = canvasGroup.alpha;
+        float time = 0f;
+
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            canvasGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, time / duration);
+
+            yield return null;
+        }
+
+        canvasGroup.alpha = targetAlpha;
     }
 
     public void BeatTutorial()
     {
-        PlayerPrefs.SetInt(HasBeatenTutorialKey , 0);
+        PlayerPrefs.SetInt(HasBeatenTutorialKey , 1);
         PlayerPrefs.Save();
         
     }

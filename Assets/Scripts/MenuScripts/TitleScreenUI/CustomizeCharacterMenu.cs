@@ -56,6 +56,10 @@ public class CustomizeCharacterMenu : MonoBehaviour
     private int CurrentClothingOptionIndex = 0;
 
     [SerializeField]
+    private string[] ClothingOptions;
+    private List<int> UnlockedClothingOptions = new List<int> {0, 1, 2, 3,};
+
+    [SerializeField]
     private List<GameObject> shirtOptions = new List<GameObject>();
     [SerializeField]
     private List<Material> shirtMaterials = new List<Material>();
@@ -63,10 +67,6 @@ public class CustomizeCharacterMenu : MonoBehaviour
     private List<GameObject> pantsOptions = new List<GameObject>();
     [SerializeField]
     private List<Material> pantsMaterials = new List<Material>();
-
-    [SerializeField]
-    private string[] ClothingOptions = { "Blue Uniform", "Purple Uniform", "Orange Uniform", "Green Uniform" };
-    private int UnlockedClothingOptions = 4;
 
     public TMP_Text HairOptionText;
     public UIButton LeftHairButton;
@@ -87,7 +87,10 @@ public class CustomizeCharacterMenu : MonoBehaviour
     void Start()
     {
         //UnlockSecretClothingOptions(true, true);
-        DeleteCharacterSaveData();
+        //UnlockSecretClothingOptions(true, false);
+        //UnlockSecretClothingOptions(false, true);
+        //DeleteCharacterSaveData();
+
         // Input checks
         HairHexInput.characterLimit = 6;
         HairHexInput.onValidateInput = CheckHexValue;
@@ -302,37 +305,50 @@ public class CustomizeCharacterMenu : MonoBehaviour
 
     private void PreviousClothingOption()
     {
-        CurrentClothingOptionIndex--;
-        if (CurrentClothingOptionIndex < 0)
+        int CurrentPosition= UnlockedClothingOptions.IndexOf(CurrentClothingOptionIndex);
+        CurrentPosition--;
+        if (CurrentPosition < 0)
         {
             // wrap around
-            CurrentClothingOptionIndex = ClothingOptions.Length - 1;
-            //CurrentClothingOptionIndex = UnlockedClothingOptions - 1;
+            //CurrentClothingOptionIndex = ClothingOptions.Length - 1;
+            CurrentClothingOptionIndex = UnlockedClothingOptions.Count - 1;
         }
+        CurrentClothingOptionIndex = UnlockedClothingOptions[CurrentPosition];
         UpdateClothingOptionText();
     }
 
     private void NextClothingOption()
     {
-        CurrentClothingOptionIndex++;
-        if (CurrentClothingOptionIndex >= ClothingOptions.Length)
-        //if (CurrentClothingOptionIndex >= UnlockedClothingOptions)
-            {
-            // wrap around
-            CurrentClothingOptionIndex = 0;
+        int CurrentPosition = UnlockedClothingOptions.IndexOf(CurrentClothingOptionIndex);
+        CurrentPosition++;
+        if (CurrentPosition >= UnlockedClothingOptions.Count)
+        {
+
+            CurrentPosition = 0;
         }
+        CurrentClothingOptionIndex = UnlockedClothingOptions[CurrentPosition];
         UpdateClothingOptionText();
+        // CurrentClothingOptionIndex++;
+        //// if (CurrentClothingOptionIndex >= ClothingOptions.Length)
+        // if (CurrentClothingOptionIndex >= UnlockedClothingOptions)
+        //     {
+        //     // wrap around
+        //     CurrentClothingOptionIndex = 0;
+        // }
+        // UpdateClothingOptionText();
     }
 
     private void UnlockSecretClothingOptions(bool HasBeatenGame, bool HasBeatenAllScenarios)
     {
+        UnlockedClothingOptions = new List<int> { 0,1,2,3}; 
+
         if (HasBeatenGame)
         {
-            UnlockedClothingOptions = 5;
+            UnlockedClothingOptions.Add(4);
         }
         if (HasBeatenAllScenarios)
         {
-            UnlockedClothingOptions = 6;
+            UnlockedClothingOptions.Add(5);
         }
     }
 
