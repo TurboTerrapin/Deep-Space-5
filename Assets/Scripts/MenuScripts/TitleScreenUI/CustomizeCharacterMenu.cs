@@ -23,10 +23,14 @@ public class CustomizeCharacterData
 
 public class CustomizeCharacterMenu : MonoBehaviour
 {
+    public Transform Dummy;
+    public float RotationSpeed;
+    public Vector3 LastMousePosition;
+
     public GameObject MainMenu;
     public GameObject CustomizationMenu;
 
-    public TMP_InputField HairHexInput; // HairHexInput
+    public TMP_InputField HairHexInput; 
     public UIButton[] HairSwatchButtons; // All swatches
     public UIButton[] CustomHairSwatchButtons; // Buttons #14-22 (custom swatches).
     private int NextHairSwatchIndex = 0; // Keeps track of which swatch to change next
@@ -52,6 +56,10 @@ public class CustomizeCharacterMenu : MonoBehaviour
     private int CurrentClothingOptionIndex = 0;
 
     [SerializeField]
+    private string[] ClothingOptions;
+    private List<int> UnlockedClothingOptions = new List<int> {0, 1, 2, 3,};
+
+    [SerializeField]
     private List<GameObject> shirtOptions = new List<GameObject>();
     [SerializeField]
     private List<Material> shirtMaterials = new List<Material>();
@@ -59,9 +67,6 @@ public class CustomizeCharacterMenu : MonoBehaviour
     private List<GameObject> pantsOptions = new List<GameObject>();
     [SerializeField]
     private List<Material> pantsMaterials = new List<Material>();
-
-    [SerializeField]
-    private string[] ClothingOptions = { "Blue Uniform", "Purple Uniform", "Orange Uniform", "Green Uniform" };
 
     public TMP_Text HairOptionText;
     public UIButton LeftHairButton;
@@ -81,7 +86,11 @@ public class CustomizeCharacterMenu : MonoBehaviour
 
     void Start()
     {
-        DeleteCharacterSaveData();
+        //UnlockSecretClothingOptions(true, true);
+        //UnlockSecretClothingOptions(true, false);
+        //UnlockSecretClothingOptions(false, true);
+        //DeleteCharacterSaveData();
+
         // Input checks
         HairHexInput.characterLimit = 6;
         HairHexInput.onValidateInput = CheckHexValue;
@@ -149,6 +158,23 @@ public class CustomizeCharacterMenu : MonoBehaviour
         LoadCharacterData();
     }
 
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            LastMousePosition = Input.mousePosition;
+        }
+
+        if (Input.GetMouseButton(0))
+        {
+            Vector3 MouseMovement = Input.mousePosition - LastMousePosition;
+
+            Dummy.Rotate(0f, -MouseMovement.x * RotationSpeed * Time.deltaTime, 0f);
+
+            LastMousePosition = Input.mousePosition;
+        }
+    }
+
     // ------ HANDLE HEX VALUE INPUTS ------
 
     private void OnHairHexSubmitted(string HairHexValue)
@@ -166,11 +192,13 @@ public class CustomizeCharacterMenu : MonoBehaviour
         {
             // Get the image component of the current swatch (button)
             Image img = CustomHairSwatchButtons[NextHairSwatchIndex].GetComponent<Image>();
+            UIButton button = CustomEyeSwatchButtons[NextHairSwatchIndex];
 
             img.color = newColor;
 
             // Set alpha to 255
             newColor.a = 1f;
+            button.interactable = true;
 
             NextHairSwatchIndex++;
 
@@ -197,13 +225,17 @@ public class CustomizeCharacterMenu : MonoBehaviour
         // If the player enters a valid hex #, convert it to a unity color
         if (ColorUtility.TryParseHtmlString(EyeHexValue, out Color newColor))
         {
-            // Get the image component of the current swatch (button)
+
+
+            // Get the image and button component of the current swatch (button)
             Image img = CustomEyeSwatchButtons[NextEyeSwatchIndex].GetComponent<Image>();
+            UIButton button = CustomEyeSwatchButtons[NextEyeSwatchIndex];
 
             img.color = newColor;
 
-            // Set alpha to 255
+            // Set alpha to 255 
             newColor.a = 1f;
+            button.interactable = true;
 
             NextEyeSwatchIndex++;
 
@@ -232,11 +264,13 @@ public class CustomizeCharacterMenu : MonoBehaviour
         {
             // Get the image component of the current swatch (button)
             Image img = CustomSkinToneSwatchButtons[NextSkinToneSwatchIndex].GetComponent<Image>();
+            UIButton button = CustomEyeSwatchButtons[NextSkinToneSwatchIndex];
 
             img.color = newColor;
 
             // Set alpha to 255
             newColor.a = 1f;
+            button.interactable = true;
 
             NextSkinToneSwatchIndex++;
 
@@ -303,24 +337,51 @@ public class CustomizeCharacterMenu : MonoBehaviour
 
     private void PreviousClothingOption()
     {
-        CurrentClothingOptionIndex--;
-        if (CurrentClothingOptionIndex < 0)
+        int CurrentPosition= UnlockedClothingOptions.IndexOf(CurrentClothingOptionIndex);
+        CurrentPosition--;
+        if (CurrentPosition < 0)
         {
             // wrap around
-            CurrentClothingOptionIndex = ClothingOptions.Length - 1;
+            //CurrentClothingOptionIndex = ClothingOptions.Length - 1;
+            CurrentClothingOptionIndex = UnlockedClothingOptions.Count - 1;
         }
+        CurrentClothingOptionIndex = UnlockedClothingOptions[CurrentPosition];
         UpdateClothingOptionText();
     }
 
     private void NextClothingOption()
     {
-        CurrentClothingOptionIndex++;
-        if (CurrentClothingOptionIndex >= ClothingOptions.Length)
+        int CurrentPosition = UnlockedClothingOptions.IndexOf(CurrentClothingOptionIndex);
+        CurrentPosition++;
+        if (CurrentPosition >= UnlockedClothingOptions.Count)
         {
-            // wrap around
-            CurrentClothingOptionIndex = 0;
+
+            CurrentPosition = 0;
         }
+        CurrentClothingOptionIndex = UnlockedClothingOptions[CurrentPosition];
         UpdateClothingOptionText();
+        // CurrentClothingOptionIndex++;
+        //// if (CurrentClothingOptionIndex >= ClothingOptions.Length)
+        // if (CurrentClothingOptionIndex >= UnlockedClothingOptions)
+        //     {
+        //     // wrap around
+        //     CurrentClothingOptionIndex = 0;
+        // }
+        // UpdateClothingOptionText();
+    }
+
+    private void UnlockSecretClothingOptions(bool HasBeatenGame, bool HasBeatenAllScenarios)
+    {
+        UnlockedClothingOptions = new List<int> { 0,1,2,3}; 
+
+        if (HasBeatenGame)
+        {
+            UnlockedClothingOptions.Add(4);
+        }
+        if (HasBeatenAllScenarios)
+        {
+            UnlockedClothingOptions.Add(5);
+        }
     }
 
     private void UpdateClothingOptionText()
@@ -337,7 +398,6 @@ public class CustomizeCharacterMenu : MonoBehaviour
         PantsRenderer.sharedMesh = pantsOptions[CurrentClothingOptionIndex].GetComponent<SkinnedMeshRenderer>().sharedMesh;
         PantsRenderer.material = pantsMaterials[CurrentClothingOptionIndex];
     }
-
 
     private void PreviousHairOption()
     {
@@ -432,6 +492,24 @@ public class CustomizeCharacterMenu : MonoBehaviour
     {
         Material mat = DummyRenderer.material;
         mat.SetColor("_BaseColor", newColor);
+    }
+
+    public void SetDefaultCustomization()
+    {
+        FirstNameInput.text = FirstNames[Random.Range(0, FirstNames.Length)];
+        LastNameInput.text = LastNames[Random.Range(0, LastNames.Length)];
+
+        Color DefaultHairColor = HairSwatchButtons[Random.Range(0, HairSwatchButtons.Length)].image.color;
+        ApplyHairColor(DefaultHairColor);
+
+        Color DefaultEyeColor = EyeSwatchButtons[Random.Range(0, EyeSwatchButtons.Length)].image.color;
+        ApplyEyeColor(DefaultEyeColor);
+
+        Color DefaultSkinTone = SkinToneSwatchButtons[Random.Range(0, SkinToneSwatchButtons.Length)].image.color;
+        ApplySkinTone(DefaultSkinTone);
+
+        CurrentHairOptionIndex = Random.Range(0, HairOptions.Length);
+        UpdateHairOptionText();
     }
 
     // ------ SAVE/LOAD CHARACTER DATA ------
@@ -638,13 +716,14 @@ public class CustomizeCharacterMenu : MonoBehaviour
         }
         else
         {
-            SetDefaultName();
+            SetDefaultCustomization();
         }
     }
 
     public void HandleXButtonClick()
     {
         // Closes settings menu
+        SaveCharacterData();
         CustomizationMenu.SetActive(false);
         MainMenu.SetActive(true);
     }

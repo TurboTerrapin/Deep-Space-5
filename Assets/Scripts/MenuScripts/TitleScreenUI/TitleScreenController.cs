@@ -34,7 +34,7 @@ public class TitleScreenController : MonoBehaviour
     {
         // Set alpha of everything to 0
         SetRingAlpha(0f);
-        JourneyToText.color = new Color(1, 1, 1, 0); // transparent
+        JourneyToText.color = new Color(1, 1, 1, 0);
         DeepSpaceFiveText.color = new Color(1, 1, 1, 0);
         Border.color = new Color(1, 1, 1, 0);
         PressAnyText.alpha = 0f;
@@ -43,7 +43,6 @@ public class TitleScreenController : MonoBehaviour
         StartCoroutine(IntroSequence());
     }
 
-    // Call SwitchCanvas() if any key is pressed
     private void Update()
     {
         spinRings();

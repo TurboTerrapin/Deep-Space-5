@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 using UnityEngine.Audio;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -64,6 +65,13 @@ public class UniversalSettingsController : MonoBehaviour
     public Slider CameraSensitivitySlider;
     public Image CameraSensitivityFillBar;
     public TMP_Text ActualCameraSensitivityLabel;
+
+    // Screen Brightness
+    public Slider BrightnessSlider;
+    public Image BrightnessFillBar;
+    public TMP_Text ActualBrightnessLabel;
+    public Image BrightnessOverlay;
+    public Image TitleBrightnessOverlay;
 
     // HUD Visibility
     public TMP_Dropdown HUDVisibilityDropdown;
@@ -159,6 +167,11 @@ public class UniversalSettingsController : MonoBehaviour
         CameraSensitivitySlider.value = camSensitivity;
         HandleCameraSensitivityDragged(camSensitivity);
 
+        float brightness = PlayerPrefs.GetFloat("Brightness", 0.1f);
+        BrightnessSlider.value = brightness;
+        HandleBrightnessSliderDragged(brightness);
+
+
         // Loads player HUD visbility preference (default is 0 if nothing is saved)
         int HUDIndex = PlayerPrefs.GetInt("HUDVisibility", 0);
         // Sets dropdown UI to display option corresponding to selected index
@@ -184,6 +197,7 @@ public class UniversalSettingsController : MonoBehaviour
         VoiceVolumeSlider.onValueChanged.AddListener(HandleVoiceVolumeDragged);
         VoiceOptionDropdown.onValueChanged.AddListener(HandleVoiceDropdownClicked);
         CameraSensitivitySlider.onValueChanged.AddListener(HandleCameraSensitivityDragged);
+        BrightnessSlider.onValueChanged.AddListener(HandleBrightnessSliderDragged);
         HUDVisibilityDropdown.onValueChanged.AddListener(HandleHUDDropdownClicked);
         HintsToggle.onValueChanged.AddListener(HandleHintsToggleClicked);
     }
@@ -458,6 +472,26 @@ public class UniversalSettingsController : MonoBehaviour
         float actualSensitivity = Mathf.Lerp(0.25f, 3f, mouseSensitivity);
 
         return actualSensitivity;
+    }
+
+    public void HandleBrightnessSliderDragged(float brightness)
+    {
+        Color overlayColor = BrightnessOverlay.color;
+        overlayColor.a = (1f - brightness) * 0.5f;
+        BrightnessOverlay.color = overlayColor;
+
+        if (TitleBrightnessOverlay != null)
+        {
+            Color titleOverlayColor = TitleBrightnessOverlay.color;
+            titleOverlayColor.a = (1f - brightness) * 0.5f;
+            TitleBrightnessOverlay.color = titleOverlayColor;
+        }
+
+        int percent = Mathf.RoundToInt(brightness * 100);
+        ActualBrightnessLabel.text = percent.ToString();
+
+        PlayerPrefs.SetFloat("Brightness", brightness);
+        PlayerPrefs.Save();
     }
 
     public void HandleCameraSensitivityDragged(float mouseSensitivity)
