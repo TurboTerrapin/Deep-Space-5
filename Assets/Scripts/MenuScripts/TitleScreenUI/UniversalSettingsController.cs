@@ -134,7 +134,7 @@ public class UniversalSettingsController : MonoBehaviour
         VoiceOptionDropdown.value = voiceIndex;
         HandleVoiceDropdownClicked(voiceIndex);
         
-        KeyCode pushToTalkKey = (KeyCode)Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("PushToTalkButton"));
+        KeyCode pushToTalkKey = (KeyCode)Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("PushToTalkButton", "T"));
         SetPushToTalkKey(pushToTalkKey);
 
         // Loads player VSync preference (default is true if nothing is saved)
