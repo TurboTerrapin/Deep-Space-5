@@ -2,7 +2,7 @@
     TrainingHandler.cs
     - Handles loading into TrainingEnvironment scene
     Contributor(s): Jake Schott
-    Last Updated: 10/4/2026
+    Last Updated: 10/23/2026
 */
 
 using UnityEngine;
@@ -15,7 +15,7 @@ public class TrainingHandler : MonoBehaviour
 {
     //CLASS CONSTANTS
     private static Vector3 PLAYER_STARTING_POSITION = new Vector3(0.0f, 0.079f, -10.75f);
-    private static float SHIP_SETBACK_DISTANCE = 250.0f; //how far back the ship is at the start
+    private static float SHIP_SETBACK_DISTANCE = 350.0f; //how far back the ship is at the start
 
     public GameObject training_hud_display;
     public GameObject training_obstacles;

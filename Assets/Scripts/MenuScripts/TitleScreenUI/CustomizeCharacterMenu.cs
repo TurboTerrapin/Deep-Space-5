@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using UIButton = UnityEngine.UI.Button;
 
 public class CustomizeCharacterData
@@ -23,16 +22,27 @@ public class CustomizeCharacterData
 
 public class CustomizeCharacterMenu : MonoBehaviour
 {
+    //CLASS CONSTANTS
+    private static string[] CLOTHING_OPTION_NAMES = { "Blue Uniform", "Purple Uniform", "Orange Uniform", "Green Uniform" };
+    private static string[] FIRST_NAMES = { "Morgan", "Charlie", "Taylor", "Cameron", "Alex", "Jamie", "Robin", "Elliott", "Jordan", "Griffin" };
+    private static string[] LAST_NAMES = { "Gregory", "Parsons", "Brannon", "Smith", "Johnson", "Miller", "Anderson", "Kirk", "Chambers", "Allen", "Stewart", "Murphy", "Morgan", "Gehring", "Murray", "Ford", "Simpson", "Porter", "Hansen", "Carroll", "Matthews", "Greene", "Davidson", "Horton", "Meyer", "Morton", "Flowers", "Huffman", "Moon", "McCoy", "Madden", "Raleigh", "Crawford" };
+    private static string[] HAIR_OPTIONS = { "Bald", "Short", "Medium", "Long" };
+    private static string[] BANNED_WORDS = { "anal", "anus", "arsehole", "asshole", "assmunch", "auto erotic", "autoerotic", "bbw", "bdsm", "beaner", "bastard", "bimbos", "bitch", "blowjob", "blow job", "bollocks", "bondage", "boner", "boob", "bukkake", "bulldyke", "bullet vibe", "bung hole", "bunghole", "busty", "buttcheeks", "butthole", "camgirl", "camslut", "camwhore", "chink", "circlejerk", "clit", "clitoris", "cock", "coon", "creampie", "cumming", "cunt", "darkie", "daterape", "deepthroat", "dendrophilia", "dildo", "doggiestyle", "doggystyle", "dolcett", "dommes", "dvda", "ecchi", "erotic", "erotism", "escort", "eunuch", "faggot", "fecal", "felch", "fellatio", "feltch", "femdom", "figging", "fingering", "fisting", "footjob", "frotting", "fuck", "fudgepacker", "futanari", "genitals", "goatse", "gokkun", "goregasm", "grope", "guro", "handjob", "hardcore", "hentai", "honkey", "hooker", "humping", "incest", "intercourse", "jailbait", "jizz", "juggs", "kinbaku", "kinkster", "kinky", "knobbing", "kyke", "lolita", "lovemaking", "masturbate", "milf", "motherfucker", "muffdiving", "nawashi", "neonazi", "nigga", "nigger", "nipple", "nipples", "nympho", "omorashi", "orgasm", "orgy", "paedophile", "panties", "panty", "pedobear", "pedophile", "pegging", "penis", "pissing", "pisspig", "playboy", "ponyplay", "poontang", "punany", "poopchute", "porn", "porno", "pubes", "pussy", "queaf", "queef", "quim", "raping", "rapist", "rectum", "rimjob", "rimming", "sadism", "scat", "schlong", "semen", "sex", "shibari", "shit", "shota", "skeet", "slut", "smut", "snatch", "sodomize", "sodomy", "splooge", "spooge", "spunk", "strapon", "strappado", "suck", "sucks", "swastika", "swinger", "throating", "titties", "titty", "topless", "tosser", "tranny", "tubgirl", "tushy", "twat", "twink", "twinkie", "upskirt", "urophilia", "vagina", "vibrator", "voyeur", "vulva", "wank", "wetback", "xxx", "yaoi", "yuri", "yiffy" };
+    private static Color[] DEFAULT_HAIR_SWATCHES = new Color[13] { new Color(0.953f, 0.898f, 0.671f), new Color(0.631f, 0.525f, 0.435f), new Color(0.294f, 0.212f, 0.129f), new Color(0.231f, 0.184f, 0.184f), new Color(0.71f, 0.322f, 0.224f), new Color(0.502f, 0.502f, 0.502f), new Color(1.0f, 0.188f, 0.188f), new Color(1.0f, 0.412f, 0.706f), new Color(0.608f, 0.188f, 1.0f), new Color(0.227f, 0.373f, 0.804f), new Color(0.235f, 0.702f, 0.443f), new Color(1.0f, 1.0f, 1.0f), new Color(0.0f, 0.0f, 0.0f) };
+    private static Color[] DEFAULT_EYE_SWATCHES = new Color[13] { new Color(0.639f, 0.788f, 0.976f), new Color(0.424f, 0.627f, 0.863f), new Color(0.258f, 0.541f, 0.868f), new Color(0.29f, 0.427f, 0.549f), new Color(0.174f, 0.361f, 0.585f), new Color(0.58f, 0.749f, 0.655f), new Color(0.482f, 0.627f, 0.357f), new Color(0.345f, 0.549f, 0.271f), new Color(0.247f, 0.439f, 0.302f), new Color(0.51f, 0.4f, 0.267f), new Color(0.361f, 0.267f, 0.149f), new Color(0.231f, 0.184f, 0.184f), new Color(0.11f, 0.11f, 0.11f) };
+    private static Color[] DEFAULT_SKIN_TONE_SWATCHES = new Color[13] { new Color(1.0f, 0.878f, 0.741f), new Color(1.0f, 0.804f, 0.58f), new Color(0.918f, 0.753f, 0.525f), new Color(1.0f, 0.678f, 0.471f), new Color(0.82f, 0.639f, 0.486f), new Color(0.776f, 0.525f, 0.259f), new Color(0.659f, 0.459f, 0.282f), new Color(0.553f, 0.333f, 0.141f), new Color(0.482f, 0.29f, 0.184f), new Color(0.42f, 0.267f, 0.137f), new Color(0.361f, 0.227f, 0.129f), new Color(0.294f, 0.196f, 0.125f), new Color(0.231f, 0.184f, 0.184f) };
+    private static float ROTATION_SPEED = 50.0f;
+
     public Transform Dummy;
-    public float RotationSpeed;
-    public Vector3 LastMousePosition;
+    private CharacterCustomization DummyAppearance;
+    private Vector3 LastMousePosition;
 
     public GameObject MainMenu;
     public GameObject CustomizationMenu;
 
     public TMP_InputField HairHexInput; 
     public UIButton[] HairSwatchButtons; // All swatches
-    public UIButton[] CustomHairSwatchButtons; // Buttons #14-22 (custom swatches).
+    public UIButton[] CustomHairSwatchButtons; // Buttons #14-22 (custom swatches)
     private int NextHairSwatchIndex = 0; // Keeps track of which swatch to change next
 
     public TMP_InputField EyeHexInput;
@@ -47,44 +57,20 @@ public class CustomizeCharacterMenu : MonoBehaviour
 
     public TMP_InputField FirstNameInput;
     public TMP_InputField LastNameInput;
-    private string[] FirstNames = { "Morgan", "Charlie", "Taylor", "Cameron" };
-    private string[] LastNames = { "Gregory", "Parsons", "Brannon" };
 
     public TMP_Text ClothingOptionText;
     public UIButton LeftClothingButton;
     public UIButton RightClothingButton;
     private int CurrentClothingOptionIndex = 0;
 
-    [SerializeField]
-    private string[] ClothingOptions;
     private List<int> UnlockedClothingOptions = new List<int> {0, 1, 2, 3,};
-
-    [SerializeField]
-    private List<GameObject> shirtOptions = new List<GameObject>();
-    [SerializeField]
-    private List<Material> shirtMaterials = new List<Material>();
-    [SerializeField]
-    private List<GameObject> pantsOptions = new List<GameObject>();
-    [SerializeField]
-    private List<Material> pantsMaterials = new List<Material>();
 
     public TMP_Text HairOptionText;
     public UIButton LeftHairButton;
     public UIButton RightHairButton;
     private int CurrentHairOptionIndex = 0;
-    private string[] HairOptions = { "Bald", "Short", "Medium", "Long" };
-    [SerializeField]
-    private List<GameObject> hairModels = new List<GameObject>();
 
-    public MeshRenderer HairRenderer;
-    public MeshRenderer LeftEyeRenderer;
-    public MeshRenderer RightEyeRenderer;
-    public SkinnedMeshRenderer DummyRenderer;
-    public SkinnedMeshRenderer ShirtRenderer;
-    public SkinnedMeshRenderer PantsRenderer;
-
-
-    void Start()
+    private void Start()
     {
         //UnlockSecretClothingOptions(true, true);
         //UnlockSecretClothingOptions(true, false);
@@ -113,17 +99,17 @@ public class CustomizeCharacterMenu : MonoBehaviour
         SkinToneHexInput.onSubmit.AddListener(OnSkinToneHexSubmitted);
 
         // Listen for when player clicks off of player name inputs
-        FirstNameInput.onDeselect.AddListener(OnFirstNameDeselected);
-        LastNameInput.onDeselect.AddListener(OnLastNameDeselected);
+        FirstNameInput.onDeselect.AddListener(HandleFirstNameSubmitted);
+        FirstNameInput.onEndEdit.AddListener(HandleFirstNameSubmitted);
+        LastNameInput.onDeselect.AddListener(HandleLastNameSubmitted);
+        LastNameInput.onEndEdit.AddListener(HandleLastNameSubmitted);
 
         // UI to click through different clothing and hair options
         LeftClothingButton.onClick.AddListener(PreviousClothingOption);
         RightClothingButton.onClick.AddListener(NextClothingOption);
-        UpdateClothingOptionText();
 
         LeftHairButton.onClick.AddListener(PreviousHairOption);
         RightHairButton.onClick.AddListener(NextHairOption);
-        UpdateHairOptionText();
 
         foreach (UIButton button in HairSwatchButtons)
         {
@@ -131,7 +117,7 @@ public class CustomizeCharacterMenu : MonoBehaviour
             capturedButton.onClick.AddListener(() =>
             {
                 Color buttonColor = capturedButton.image.color;
-                ApplyHairColor(buttonColor);
+                DummyAppearance.ApplyHairColor(buttonColor);
             });
         }
 
@@ -141,7 +127,7 @@ public class CustomizeCharacterMenu : MonoBehaviour
             capturedButton.onClick.AddListener(() =>
             {
                 Color buttonColor = capturedButton.image.color;
-                ApplyEyeColor(buttonColor);
+                DummyAppearance.ApplyEyeColor(buttonColor);
             });
         }
 
@@ -151,11 +137,14 @@ public class CustomizeCharacterMenu : MonoBehaviour
             capturedButton.onClick.AddListener(() =>
             {
                 Color buttonColor = capturedButton.image.color;
-                ApplySkinTone(buttonColor);
+                DummyAppearance.ApplySkinTone(buttonColor);
             });
         }
 
+        DummyAppearance = Dummy.GetComponent<CharacterCustomization>();
         LoadCharacterData();
+        OnHairUpdate();
+        OnClothingUpdate();
     }
 
     private void Update()
@@ -169,7 +158,7 @@ public class CustomizeCharacterMenu : MonoBehaviour
         {
             Vector3 MouseMovement = Input.mousePosition - LastMousePosition;
 
-            Dummy.Rotate(0f, -MouseMovement.x * RotationSpeed * Time.deltaTime, 0f);
+            Dummy.Rotate(0.0f, -MouseMovement.x * ROTATION_SPEED * Time.deltaTime, 0.0f);
 
             LastMousePosition = Input.mousePosition;
         }
@@ -177,176 +166,130 @@ public class CustomizeCharacterMenu : MonoBehaviour
 
     // ------ HANDLE HEX VALUE INPUTS ------
 
+    // Helper method used to ensure that hex value strings either start with a # or are empty
+    private string EnforcePoundSymbolStart(string HexValue)
+    {
+        if (!string.IsNullOrEmpty(HexValue))
+        {
+            if (!HexValue.StartsWith("#"))
+            {
+                HexValue = "#" + HexValue;
+            }
+            return HexValue;
+        }
+        return "";
+    }
+
+    private Color OnHexSubmitted(string HexValue, UIButton CustomSwatchButton, UIButton[] SwatchButtons, TMP_InputField InputField)
+    {
+        HexValue = EnforcePoundSymbolStart(HexValue);
+        InputField.text = "";
+
+        // If the player enters a valid hex #, convert it to a Unity color
+        if (ColorUtility.TryParseHtmlString(HexValue, out Color newColor))
+        {
+            newColor.a = 1.0f;
+            foreach (UIButton SwatchButton in SwatchButtons)
+            {
+                if (SwatchButton.image.color == newColor)
+                {
+                    // Color already a swatch option
+                    return newColor;
+                }
+            }
+            CustomSwatchButton.image.color = newColor;
+            CustomSwatchButton.interactable = true;
+            return newColor;
+        }
+        return new Color(0.0f, 0.0f, 0.0f, 0.0f);
+    }
+
     private void OnHairHexSubmitted(string HairHexValue)
     {
-        // allows players to type # if they want
-        if (!string.IsNullOrEmpty(HairHexValue))
-        {
-            if (!HairHexValue.StartsWith("#"))
-            {
-                HairHexValue = "#" + HairHexValue;
-            }
-        }
-        // If the player enters a valid hex #, convert it to a unity color
-        if (ColorUtility.TryParseHtmlString(HairHexValue, out Color newColor))
-        {
-            // Get the image component of the current swatch (button)
-            Image img = CustomHairSwatchButtons[NextHairSwatchIndex].GetComponent<Image>();
-            UIButton button = CustomEyeSwatchButtons[NextHairSwatchIndex];
-
-            img.color = newColor;
-
-            // Set alpha to 255
-            newColor.a = 1f;
-            button.interactable = true;
-
-            NextHairSwatchIndex++;
-
-            if (NextHairSwatchIndex >= CustomHairSwatchButtons.Length)
-            {
-                NextHairSwatchIndex = 0;
-            }
-        }
-
-        HairHexInput.text = "";
+        DummyAppearance.ApplyHairColor(OnHexSubmitted(HairHexValue, CustomHairSwatchButtons[NextHairSwatchIndex], HairSwatchButtons, HairHexInput));
+        NextHairSwatchIndex = FindEmptySwatch(CustomHairSwatchButtons);
     }
 
     private void OnEyeHexSubmitted(string EyeHexValue)
     {
-        // allows players to type # if they want
-        if (!string.IsNullOrEmpty(EyeHexValue))
-        {
-            if (!EyeHexValue.StartsWith("#"))
-            {
-                EyeHexValue = "#" + EyeHexValue;
-            }
-        }
-
-        // If the player enters a valid hex #, convert it to a unity color
-        if (ColorUtility.TryParseHtmlString(EyeHexValue, out Color newColor))
-        {
-
-
-            // Get the image and button component of the current swatch (button)
-            Image img = CustomEyeSwatchButtons[NextEyeSwatchIndex].GetComponent<Image>();
-            UIButton button = CustomEyeSwatchButtons[NextEyeSwatchIndex];
-
-            img.color = newColor;
-
-            // Set alpha to 255 
-            newColor.a = 1f;
-            button.interactable = true;
-
-            NextEyeSwatchIndex++;
-
-            if (NextEyeSwatchIndex >= CustomEyeSwatchButtons.Length)
-            {
-                NextEyeSwatchIndex = 0;
-            }
-        }
-
-        EyeHexInput.text = "";
+        DummyAppearance.ApplyEyeColor(OnHexSubmitted(EyeHexValue, CustomEyeSwatchButtons[NextEyeSwatchIndex], EyeSwatchButtons, EyeHexInput));
+        NextEyeSwatchIndex = FindEmptySwatch(CustomEyeSwatchButtons);
     }
 
     private void OnSkinToneHexSubmitted(string SkinToneHexValue)
     {
-
-        if (!string.IsNullOrEmpty(SkinToneHexValue))
-        {
-            if (!SkinToneHexValue.StartsWith("#"))
-            {
-                SkinToneHexValue = "#" + SkinToneHexValue;
-            }
-        }
-
-        // If the player enters a valid hex #, convert it to a unity color
-        if (ColorUtility.TryParseHtmlString(SkinToneHexValue, out Color newColor))
-        {
-            // Get the image component of the current swatch (button)
-            Image img = CustomSkinToneSwatchButtons[NextSkinToneSwatchIndex].GetComponent<Image>();
-            UIButton button = CustomEyeSwatchButtons[NextSkinToneSwatchIndex];
-
-            img.color = newColor;
-
-            // Set alpha to 255
-            newColor.a = 1f;
-            button.interactable = true;
-
-            NextSkinToneSwatchIndex++;
-
-            if (NextSkinToneSwatchIndex >= CustomSkinToneSwatchButtons.Length)
-            {
-                NextSkinToneSwatchIndex = 0;
-            }
-        }
-
-        SkinToneHexInput.text = "";
+        DummyAppearance.ApplySkinTone(OnHexSubmitted(SkinToneHexValue, CustomSkinToneSwatchButtons[NextSkinToneSwatchIndex], SkinToneSwatchButtons, SkinToneHexInput));
+        NextSkinToneSwatchIndex = FindEmptySwatch(CustomSkinToneSwatchButtons);
     }
 
     // ------ CHARACTER FIRST AND LAST NAME ------
 
-    private void OnFirstNameDeselected(string FirstName)
+    private static bool IsBanned(string Name)
     {
-        Debug.Log("Player First Name: " + FirstName);
+        Name = Name.ToLower();
+        foreach (string bannedWord in BANNED_WORDS)
+        {
+            if (Name.Contains(bannedWord))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
-    private void OnLastNameDeselected(string LastName)
+    private void HandleFirstNameSubmitted(string Name)
     {
-        Debug.Log("Player Last Name: " + LastName);
+        if (string.IsNullOrEmpty(Name) || IsBanned(Name))
+        {
+            // Revert to current first name if invalid
+            FirstNameInput.text = GetFirstName(); 
+        }
     }
 
-    private void SetDefaultName()
+    private void HandleLastNameSubmitted(string Name)
     {
-        FirstNameInput.text = FirstNames[Random.Range(0, FirstNames.Length)];
-        LastNameInput.text = LastNames[Random.Range(0, LastNames.Length)];
+        if (string.IsNullOrEmpty(Name) || IsBanned(Name))
+        {
+            // Revert to current last name if invalid
+            LastNameInput.text = GetLastName(); 
+        }
     }
 
-    private static CustomizeCharacterData GetCharacterData()
+    public static CustomizeCharacterData GetCharacterData()
     {
         if (PlayerPrefs.HasKey("CustomizeCharacterData"))
         {
-            //get the JSON string we stored in PlayerPrefs
-            string json = PlayerPrefs.GetString("CustomizeCharacterData");
-            //convert the string back to a CustomizeCharacterData object
-            return JsonUtility.FromJson<CustomizeCharacterData>(json);
+            // Get the JSON string we stored in PlayerPrefs
+            string JSON = PlayerPrefs.GetString("CustomizeCharacterData");
+            // Convert the string back to a CustomizeCharacterData object
+            return JsonUtility.FromJson<CustomizeCharacterData>(JSON);
         }
-        return null;
+        return GenerateDefaultCustomization();
     }
 
     public static string GetFirstName()
     {
-        CustomizeCharacterData ccd = GetCharacterData();
-        if (ccd != null)
-        {
-            return ccd.FirstName.ToUpper();
-        }
-        return "BARRY";
+        return GetCharacterData().FirstName;
     }
 
     public static string GetLastName()
     {
-        CustomizeCharacterData ccd = GetCharacterData();
-        if (ccd != null)
-        {
-            return ccd.LastName.ToUpper();
-        }
-        return "SANDERS";
+        return GetCharacterData().LastName;
     }
 
     // ------ CHANGE HAIR/CLOTHING OPTIONS ------
 
     private void PreviousClothingOption()
     {
-        int CurrentPosition= UnlockedClothingOptions.IndexOf(CurrentClothingOptionIndex);
+        int CurrentPosition = UnlockedClothingOptions.IndexOf(CurrentClothingOptionIndex);
         CurrentPosition--;
         if (CurrentPosition < 0)
         {
-            // wrap around
-            //CurrentClothingOptionIndex = ClothingOptions.Length - 1;
-            CurrentClothingOptionIndex = UnlockedClothingOptions.Count - 1;
+            // Wrap around
+            CurrentPosition = UnlockedClothingOptions.Count - 1;
         }
         CurrentClothingOptionIndex = UnlockedClothingOptions[CurrentPosition];
-        UpdateClothingOptionText();
+        OnClothingUpdate();
     }
 
     private void NextClothingOption()
@@ -355,19 +298,17 @@ public class CustomizeCharacterMenu : MonoBehaviour
         CurrentPosition++;
         if (CurrentPosition >= UnlockedClothingOptions.Count)
         {
-
+            // Wrap around
             CurrentPosition = 0;
         }
         CurrentClothingOptionIndex = UnlockedClothingOptions[CurrentPosition];
-        UpdateClothingOptionText();
-        // CurrentClothingOptionIndex++;
-        //// if (CurrentClothingOptionIndex >= ClothingOptions.Length)
-        // if (CurrentClothingOptionIndex >= UnlockedClothingOptions)
-        //     {
-        //     // wrap around
-        //     CurrentClothingOptionIndex = 0;
-        // }
-        // UpdateClothingOptionText();
+        OnClothingUpdate();
+    }
+
+    private void OnClothingUpdate()
+    {
+        DummyAppearance.ApplyClothingType(CurrentHairOptionIndex);
+        ClothingOptionText.text = CLOTHING_OPTION_NAMES[CurrentClothingOptionIndex];
     }
 
     private void UnlockSecretClothingOptions(bool HasBeatenGame, bool HasBeatenAllScenarios)
@@ -384,55 +325,32 @@ public class CustomizeCharacterMenu : MonoBehaviour
         }
     }
 
-    private void UpdateClothingOptionText()
-    {
-        ClothingOptionText.text = ClothingOptions[CurrentClothingOptionIndex];
-
-
-        //Destroy(ShirtRenderer.transform.GetChild(0).gameObject);
-        //Destroy(PantsRenderer.transform.GetChild(0).gameObject);
-        //ShirtRenderer = Instantiate(shirtOptions[CurrentClothingOptionIndex], ShirtRenderer.transform);
-        //PantsRenderer = Instantiate(pantsOptions[CurrentClothingOptionIndex], PantsRenderer.transform);
-        ShirtRenderer.sharedMesh = shirtOptions[CurrentClothingOptionIndex].GetComponent<SkinnedMeshRenderer>().sharedMesh;
-        ShirtRenderer.material = shirtMaterials[CurrentClothingOptionIndex];
-        PantsRenderer.sharedMesh = pantsOptions[CurrentClothingOptionIndex].GetComponent<SkinnedMeshRenderer>().sharedMesh;
-        PantsRenderer.material = pantsMaterials[CurrentClothingOptionIndex];
-    }
-
     private void PreviousHairOption()
     {
         CurrentHairOptionIndex--;
         if (CurrentHairOptionIndex < 0)
         {
-            // wrap around
-            CurrentHairOptionIndex = HairOptions.Length - 1;
+            // Wrap around
+            CurrentHairOptionIndex = HAIR_OPTIONS.Length - 1;
         }
-        UpdateHairOptionText();
+        OnHairUpdate();
     }
 
     private void NextHairOption()
     {
         CurrentHairOptionIndex++;
-        if (CurrentHairOptionIndex >= HairOptions.Length)
+        if (CurrentHairOptionIndex >= HAIR_OPTIONS.Length)
         {
-            // wrap around
+            // Wrap around
             CurrentHairOptionIndex = 0;
-
         }
-        UpdateHairOptionText();
+        OnHairUpdate();
     }
 
-    private void UpdateHairOptionText()
+    private void OnHairUpdate()
     {
-        HairOptionText.text = HairOptions[CurrentHairOptionIndex];
-        if (CurrentHairOptionIndex == 0)
-        {
-            HairRenderer.gameObject.GetComponent<MeshFilter>().mesh = null;
-        }
-        else
-        {
-            HairRenderer.gameObject.GetComponent<MeshFilter>().mesh = hairModels[CurrentHairOptionIndex - 1].GetComponent<MeshFilter>().sharedMesh;
-        }
+        DummyAppearance.ApplyHairType(CurrentHairOptionIndex);
+        HairOptionText.text = HAIR_OPTIONS[CurrentHairOptionIndex];
     }
 
     // ------ TEXT INPUT LIMITATIONS/CHECKS ------
@@ -441,12 +359,12 @@ public class CustomizeCharacterMenu : MonoBehaviour
     {
         if (char.IsLetter(addedChar))
         {
-            // allow
+            // Allow
             return addedChar;
         }
         else
         {
-            // '\0' tells unity to reject that char
+            // '\0' tells Unity to reject that char
             return '\0';
         }
     }
@@ -456,7 +374,7 @@ public class CustomizeCharacterMenu : MonoBehaviour
         // Allow number inputs
         if (char.IsDigit(addedChar))
         {
-            // allow
+            // Allow
             return addedChar;
         }
 
@@ -465,259 +383,131 @@ public class CustomizeCharacterMenu : MonoBehaviour
 
         if (upperChar >= 'A' && upperChar <= 'F')
         {
-            // allow
+            // Allow
             return addedChar;
         }
 
-        // disallow
+        // Disallow
         return '\0';
     }
 
-    // ------ APPLY COLORS TO CHARACTER ------
-    public void ApplyHairColor(Color newColor)
+    private static CustomizeCharacterData GenerateDefaultCustomization()
     {
-        Material mat = HairRenderer.material;
-        mat.SetColor("_BaseColor", newColor);
+        // New data object, start from scratch
+        CustomizeCharacterData Data = new CustomizeCharacterData();
+
+        Data.FirstName = FIRST_NAMES[Random.Range(0, FIRST_NAMES.Length)];
+        Data.LastName = LAST_NAMES[Random.Range(0, LAST_NAMES.Length)];
+        Data.CurrentHairHexValue = ColorUtility.ToHtmlStringRGBA(DEFAULT_HAIR_SWATCHES[Random.Range(0, DEFAULT_HAIR_SWATCHES.Length)]);
+        Data.CurrentEyeHexValue = ColorUtility.ToHtmlStringRGBA(DEFAULT_EYE_SWATCHES[Random.Range(0, DEFAULT_EYE_SWATCHES.Length)]);
+        Data.CurrentSkinToneHexValue = ColorUtility.ToHtmlStringRGBA(DEFAULT_SKIN_TONE_SWATCHES[Random.Range(0, DEFAULT_SKIN_TONE_SWATCHES.Length)]);
+        Data.SelectedHairOption = Random.Range(0, HAIR_OPTIONS.Length);
+        Data.SelectedClothingOption = 0;
+        Data.CustomHairSwatchHexValues = new string[9];
+        Data.CustomEyeSwatchHexValues = new string[9];
+        Data.CustomSkinToneSwatchHexValues = new string[9];
+
+        // Save new data
+        WriteToPlayerPrefs(Data);
+
+        return Data;
     }
-
-    public void ApplyEyeColor(Color newColor)
-    {
-        Material matLeft = LeftEyeRenderer.material;
-        Material matRight = RightEyeRenderer.material;
-        matLeft.SetColor("_BaseColor", newColor);
-        matRight.SetColor("_BaseColor", newColor);
-    }
-
-    public void ApplySkinTone(Color newColor)
-    {
-        Material mat = DummyRenderer.material;
-        mat.SetColor("_BaseColor", newColor);
-    }
-
-    public void SetDefaultCustomization()
-    {
-        FirstNameInput.text = FirstNames[Random.Range(0, FirstNames.Length)];
-        LastNameInput.text = LastNames[Random.Range(0, LastNames.Length)];
-
-        Color DefaultHairColor = HairSwatchButtons[Random.Range(0, HairSwatchButtons.Length)].image.color;
-        ApplyHairColor(DefaultHairColor);
-
-        Color DefaultEyeColor = EyeSwatchButtons[Random.Range(0, EyeSwatchButtons.Length)].image.color;
-        ApplyEyeColor(DefaultEyeColor);
-
-        Color DefaultSkinTone = SkinToneSwatchButtons[Random.Range(0, SkinToneSwatchButtons.Length)].image.color;
-        ApplySkinTone(DefaultSkinTone);
-
-        CurrentHairOptionIndex = Random.Range(0, HairOptions.Length);
-        UpdateHairOptionText();
-    }
-
-    // ------ SAVE/LOAD CHARACTER DATA ------
-    // How this works:
-    // 1. We collect the data we want to save into a class to act as a container (CustomizeCharacterData)
-    // 2. Then we turn the data into JSON by "string json = JsonUtitlity.ToJson(data);"
-    //    Data is the CustomizeCharacterData object that has all the hex values, names, swatches, etc.
-    //    Then "JsonUtility.ToJson()" basically coverts that object into a single JSON string.
-    // 3. Then we store the JSON string in PlayerPrefs by "PlayerPrefs.SetString("CharacterData", json)"
-    //    "CustomizeCharacterData" acts as a key and json is a string we just created.
-    // 4. When we load everything, by retrieving the key "CustomizeCharacterData", it gives us the JSON string we made previously.
-    //    Then we convert it back into a CustomizeCharacterData object we can use.
-
 
     public void SaveCharacterData()
     {
-        // New data object
-        CustomizeCharacterData data = new CustomizeCharacterData();
+        // New data object, start from scratch
+        CustomizeCharacterData Data = new CustomizeCharacterData();
 
         // Save current player data (hair, eyes, skin tone)
-        Color HairColor = HairRenderer.material.GetColor("_BaseColor");
-        data.CurrentHairHexValue = ColorUtility.ToHtmlStringRGBA(HairColor);
-
-        Color LeftEyeColor = LeftEyeRenderer.material.GetColor("_BaseColor");
-        data.CurrentEyeHexValue = ColorUtility.ToHtmlStringRGBA(LeftEyeColor);
-
-        Color SkinTone = DummyRenderer.material.GetColor("_BaseColor");
-        data.CurrentSkinToneHexValue = ColorUtility.ToHtmlStringRGBA(SkinTone);
+        Data.CurrentHairHexValue = ColorUtility.ToHtmlStringRGBA(DummyAppearance.hairObject.GetComponent<MeshRenderer>().material.GetColor("_BaseColor"));
+        Data.CurrentEyeHexValue = ColorUtility.ToHtmlStringRGBA(DummyAppearance.leftEyeObject.GetComponent<MeshRenderer>().material.GetColor("_BaseColor"));
+        Data.CurrentSkinToneHexValue = ColorUtility.ToHtmlStringRGBA(DummyAppearance.playerObject.GetComponent<SkinnedMeshRenderer>().material.GetColor("_BaseColor"));
 
         // Save custom swatches
-        data.CustomHairSwatchHexValues = new string[CustomHairSwatchButtons.Length];
+        Data.CustomHairSwatchHexValues = new string[CustomHairSwatchButtons.Length];
         for (int i = 0; i < CustomHairSwatchButtons.Length; i++)
         {
-            data.CustomHairSwatchHexValues[i] = ColorUtility.ToHtmlStringRGBA(CustomHairSwatchButtons[i].image.color);
+            Data.CustomHairSwatchHexValues[i] = ColorUtility.ToHtmlStringRGBA(CustomHairSwatchButtons[i].image.color);
         }
-
-        data.CustomEyeSwatchHexValues = new string[CustomEyeSwatchButtons.Length];
+        Data.CustomEyeSwatchHexValues = new string[CustomEyeSwatchButtons.Length];
         for (int i = 0; i < CustomEyeSwatchButtons.Length; i++)
         {
-            data.CustomEyeSwatchHexValues[i] = ColorUtility.ToHtmlStringRGBA(CustomEyeSwatchButtons[i].image.color);
+            Data.CustomEyeSwatchHexValues[i] = ColorUtility.ToHtmlStringRGBA(CustomEyeSwatchButtons[i].image.color);
         }
-
-        data.CustomSkinToneSwatchHexValues = new string[CustomSkinToneSwatchButtons.Length];
+        Data.CustomSkinToneSwatchHexValues = new string[CustomSkinToneSwatchButtons.Length];
         for (int i = 0; i < CustomHairSwatchButtons.Length; i++)
         {
-            data.CustomSkinToneSwatchHexValues[i] = ColorUtility.ToHtmlStringRGBA(CustomSkinToneSwatchButtons[i].image.color);
-        }
-
-        if (string.IsNullOrEmpty(FirstNameInput.text) || string.IsNullOrEmpty(LastNameInput.text))
-        {
-            SetDefaultName();
+            Data.CustomSkinToneSwatchHexValues[i] = ColorUtility.ToHtmlStringRGBA(CustomSkinToneSwatchButtons[i].image.color);
         }
 
         // Save player name
-        data.FirstName = FirstNameInput.text;
-        data.LastName = LastNameInput.text;
+        Data.FirstName = FirstNameInput.text;
+        Data.LastName = LastNameInput.text;
 
         // Save selected hair and clothing options
-        data.SelectedHairOption = CurrentHairOptionIndex;
-        data.SelectedClothingOption = CurrentClothingOptionIndex;
+        Data.SelectedHairOption = CurrentHairOptionIndex;
+        Data.SelectedClothingOption = CurrentClothingOptionIndex;
 
+        WriteToPlayerPrefs(Data);
+    }
+
+    private static void WriteToPlayerPrefs(CustomizeCharacterData Data)
+    {
         // Convert data into a single JSON string
-        string json = JsonUtility.ToJson(data);
+        string JSON = JsonUtility.ToJson(Data);
 
         // Store the string in PlayerPrefs using CustomizeCharacterData as a key
-        PlayerPrefs.SetString("CustomizeCharacterData", json);
-
-        // Save
+        PlayerPrefs.SetString("CustomizeCharacterData", JSON);
         PlayerPrefs.Save();
+    }
+
+    private int FindEmptySwatch(UIButton[] CustomSwatchButtons)
+    {
+        for (int i = 0; i < CustomSwatchButtons.Length; i++)
+        {
+            if (CustomSwatchButtons[i].image.color.a <= 0.01f)
+            {
+                return i;
+            }
+        }
+        return CustomHairSwatchButtons.Length - 1;
+    }
+
+    private void LoadSwatches(string[] SwatchValues, UIButton[] SwatchButtons)
+    {
+        for (int i = 0; i < SwatchValues.Length; i++)
+        {
+            if (ColorUtility.TryParseHtmlString("#" + SwatchValues[i], out Color c))
+            {
+                SwatchButtons[i].image.color = c;
+                SwatchButtons[i].interactable = true;
+            }
+        }
     }
 
     public void LoadCharacterData()
     {
+        // Get data (will create new data if none available)
+        CustomizeCharacterData Data = GetCharacterData();
 
-        Debug.Log("Is there a save? " + PlayerPrefs.HasKey("CustomizeCharacterData"));
+        // Update dummy appearance
+        DummyAppearance.LoadLocalCharacterAppearance(Data);
 
-        if (PlayerPrefs.HasKey("CustomizeCharacterData"))
-        {
-            // Get the JSON string we stored in PlayerPrefs
-            string json = PlayerPrefs.GetString("CustomizeCharacterData");
-            // Convert the string back to a CustomizeCharacterData object
-            CustomizeCharacterData data = JsonUtility.FromJson<CustomizeCharacterData>(json);
+        // Load swatches
+        LoadSwatches(Data.CustomHairSwatchHexValues, CustomHairSwatchButtons);
+        NextHairSwatchIndex = FindEmptySwatch(CustomHairSwatchButtons);
+        LoadSwatches(Data.CustomEyeSwatchHexValues, CustomEyeSwatchButtons);
+        NextEyeSwatchIndex = FindEmptySwatch(CustomEyeSwatchButtons);
+        LoadSwatches(Data.CustomSkinToneSwatchHexValues, CustomSkinToneSwatchButtons);
+        NextSkinToneSwatchIndex = FindEmptySwatch(CustomSkinToneSwatchButtons);
 
-            // Load current hair, eyes, skin tone
-            if (ColorUtility.TryParseHtmlString("#" + data.CurrentHairHexValue, out Color HairColor))
-            {
-                ApplyHairColor(HairColor);
-            }
+        // Load player name
+        FirstNameInput.text = Data.FirstName;
+        LastNameInput.text = Data.LastName;
 
-            if (ColorUtility.TryParseHtmlString("#" + data.CurrentEyeHexValue, out Color EyeColor))
-            {
-                ApplyEyeColor(EyeColor);
-            }
-
-            if (ColorUtility.TryParseHtmlString("#" + data.CurrentSkinToneHexValue, out Color SkinTone))
-            {
-                ApplySkinTone(SkinTone);
-            }
-
-            // Load swatches if theres any
-            if (data.CustomHairSwatchHexValues != null)
-            {
-                for (int i = 0; i < data.CustomHairSwatchHexValues.Length; i++)
-                {
-                    if (ColorUtility.TryParseHtmlString("#" + data.CustomHairSwatchHexValues[i], out Color c))
-                    {
-                        CustomHairSwatchButtons[i].image.color = c;
-                    }
-                }
-
-                NextHairSwatchIndex = 0;
-                bool foundEmptyHairSwatch = false;
-
-                for (int i = 0; i < CustomHairSwatchButtons.Length; i++)
-                {
-                    Color c = CustomHairSwatchButtons[i].image.color;
-
-                    if (c.a <= 0.01f)
-                    {
-                        NextHairSwatchIndex = i;
-                        foundEmptyHairSwatch = true;
-                        break;
-                    }
-                }
-
-                if (!foundEmptyHairSwatch)
-                {
-                    NextHairSwatchIndex = 0;
-                }
-
-            }
-
-            if (data.CustomEyeSwatchHexValues != null)
-            {
-                for (int i = 0; i < data.CustomEyeSwatchHexValues.Length; i++)
-                {
-                    if (ColorUtility.TryParseHtmlString("#" + data.CustomEyeSwatchHexValues[i], out Color c))
-                    {
-                        CustomEyeSwatchButtons[i].image.color = c;
-                    }
-                }
-
-                NextEyeSwatchIndex = 0;
-                bool foundEmptyEyeSwatch = false;
-
-                for (int i = 0; i < CustomEyeSwatchButtons.Length; i++)
-                {
-                    Color c = CustomEyeSwatchButtons[i].image.color;
-
-                    if (c.a <= 0.01f)
-                    {
-                        NextEyeSwatchIndex = i;
-                        foundEmptyEyeSwatch = true;
-                        break;
-                    }
-                }
-
-                if (!foundEmptyEyeSwatch)
-                {
-                    NextEyeSwatchIndex = 0;
-                }
-            }
-
-            if (data.CustomSkinToneSwatchHexValues != null)
-            {
-                for (int i = 0; i < data.CustomSkinToneSwatchHexValues.Length; i++)
-                {
-                    if (ColorUtility.TryParseHtmlString("#" + data.CustomSkinToneSwatchHexValues[i], out Color c))
-                    {
-                        CustomSkinToneSwatchButtons[i].image.color = c;
-                    }
-                }
-
-                NextSkinToneSwatchIndex = 0;
-                bool foundEmptySkinSwatch = false;
-
-                for (int i = 0; i < CustomSkinToneSwatchButtons.Length; i++)
-                {
-                    Color c = CustomSkinToneSwatchButtons[i].image.color;
-
-                    if (c.a <= 0.01f)
-                    {
-                        NextSkinToneSwatchIndex = i;
-                        foundEmptySkinSwatch = true;
-                        break;
-                    }
-                }
-
-                if (!foundEmptySkinSwatch)
-                {
-                    NextSkinToneSwatchIndex = 0;
-                }
-            }
-
-            // Load player name
-            FirstNameInput.text = data.FirstName;
-            LastNameInput.text = data.LastName;
-
-            // Load options selected
-            CurrentHairOptionIndex = data.SelectedHairOption;
-            CurrentClothingOptionIndex = data.SelectedClothingOption;
-            UpdateHairOptionText();
-            UpdateClothingOptionText();
-        }
-        else
-        {
-            SetDefaultCustomization();
-        }
+        // Load selected options
+        CurrentHairOptionIndex = Data.SelectedHairOption;
+        CurrentClothingOptionIndex = Data.SelectedClothingOption;
     }
 
     public void HandleXButtonClick()
@@ -736,5 +526,4 @@ public class CustomizeCharacterMenu : MonoBehaviour
 
         Debug.Log("Character Save Data Deleted");
     }
-
 }

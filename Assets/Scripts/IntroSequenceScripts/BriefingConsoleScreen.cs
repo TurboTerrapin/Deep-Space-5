@@ -2,7 +2,7 @@
     BriefingConsoleScreen.cs
     - Used to give the player the background information for their mission
     Contributor(s): Jake Schott
-    Last Updated: 9/18/2026
+    Last Updated: 10/24/2026
 */
 
 using System.Collections;
@@ -48,10 +48,10 @@ public class BriefingConsoleScreen : MonoBehaviour, IDescribable
         briefing_console_options = GetComponent<BriefingConsoleOptions>();
 
         //set player name to certain things
-        briefing_console_options.briefing_console_facial_recognition_display.transform.GetChild(2).GetChild(1).GetComponent<TMP_Text>().SetText(CustomizeCharacterMenu.GetFirstName() + "\n" + CustomizeCharacterMenu.GetLastName());
-        briefing_console_report_display.transform.GetChild(3).GetChild(0).GetComponent<TMP_Text>().SetText("ENCRYPTED MESSAGE FOR\n" + CustomizeCharacterMenu.GetFirstName() + " " + CustomizeCharacterMenu.GetLastName());
-        PAGE_MESSAGES[0][0] += CustomizeCharacterMenu.GetLastName();
-        PAGE_MESSAGES[6][0] += CustomizeCharacterMenu.GetLastName();
+        briefing_console_options.briefing_console_facial_recognition_display.transform.GetChild(2).GetChild(1).GetComponent<TMP_Text>().SetText(CustomizeCharacterMenu.GetFirstName().ToUpper() + "\n" + CustomizeCharacterMenu.GetLastName().ToUpper());
+        briefing_console_report_display.transform.GetChild(3).GetChild(0).GetComponent<TMP_Text>().SetText("ENCRYPTED MESSAGE FOR\n" + CustomizeCharacterMenu.GetFirstName().ToUpper() + " " + CustomizeCharacterMenu.GetLastName().ToUpper());
+        PAGE_MESSAGES[0][0] += CustomizeCharacterMenu.GetLastName().ToUpper();
+        PAGE_MESSAGES[6][0] += CustomizeCharacterMenu.GetLastName().ToUpper();
         PAGE_MESSAGES[5][3] += ReferenceAssistor.Instance.intro_sequence_manager.getClearanceCode();
 
         hud_info = new HUDInfo(CONTROL_NAME);

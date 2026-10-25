@@ -1,159 +1,93 @@
 using System.Collections.Generic;
-using UnityEngine;
 using Unity.Netcode;
+using UnityEngine;
 
-public class CharacterCustomization : NetworkBehaviour
+public class CharacterCustomization : MonoBehaviour
 {
+    public GameObject leftEyeObject = null; 
+    public GameObject rightEyeObject = null;
+    public GameObject playerObject = null;
 
-    [SerializeField]
-    private GameObject leftEyeObject = null; 
-    [SerializeField]
-    private GameObject rightEyeObject = null;
-    [SerializeField]
-    private GameObject playerObject = null;
+    public List<GameObject> hairModels = new List<GameObject>();
+    public GameObject hairObject = null;
 
-    [SerializeField]
-    private List<GameObject> hairModels = new List<GameObject>();
-    [SerializeField]
-    private GameObject hairObject = null;
-    [SerializeField]
-    private int hair = 0;
+    public GameObject shirtObject = null;
+    public List<Mesh> shirtModels = new List<Mesh>();
+    public List<Material> shirtMaterials = new List<Material>();
 
-    [SerializeField]
-    private GameObject shirtObject = null;
-    [SerializeField]
-    private List<SkinnedMeshRenderer> shirtModels = new List<SkinnedMeshRenderer>();
-    [SerializeField]
-    private List<Material> shirtMaterials = new List<Material>();
+    public GameObject pantsObject = null;
+    public List<Mesh> pantsModels = new List<Mesh>();
+    public List<Material> pantsMaterials = new List<Material>();
 
-    [SerializeField]
-    private GameObject pantsObject = null;
-    [SerializeField]
-    private List<SkinnedMeshRenderer> pantsModels = new List<SkinnedMeshRenderer>();
-    [SerializeField]
-    private List<Material> pantsMaterials = new List<Material>();
-
-    [SerializeField]
-    private int clothing = 0;
-
-    [SerializeField]
-    private Color HairColor = Color.white;
-    [SerializeField]
-    private Color EyeColor = Color.white;
-    [SerializeField]
-    private Color SkinColor = Color.white;
-
-    void Start()
+    private void Start()
     {
-        LoadCharacterData();
+        if (NetworkManager.Singleton == null || !NetworkManager.Singleton.IsListening || GetComponent<NetworkObject>() == null || GetComponent<NetworkObject>().IsOwner)
+        {
+            LoadLocalCharacterAppearance(CustomizeCharacterMenu.GetCharacterData());
+        }
     }
 
-    // ------ APPLY COLORS TO CHARACTER ------
     public void ApplyHairColor(Color newColor)
     {
-        Material mat = hairObject.GetComponent<MeshRenderer>().material;
-        mat.SetColor("_BaseColor", newColor);
-        HairColor = newColor;
+        if (newColor.a > 0.0f)
+        {
+            Material mat = hairObject.GetComponent<MeshRenderer>().material;
+            mat.SetColor("_BaseColor", newColor);
+        }
     }
 
     public void ApplyEyeColor(Color newColor)
     {
-        Material matLeft = leftEyeObject.GetComponent<MeshRenderer>().material;
-        Material matRight = rightEyeObject.GetComponent<MeshRenderer>().material;
-        matLeft.SetColor("_BaseColor", newColor);
-        matRight.SetColor("_BaseColor", newColor);
-        EyeColor = newColor;
+        if (newColor.a > 0.0f)
+        {
+            Material matLeft = leftEyeObject.GetComponent<MeshRenderer>().material;
+            Material matRight = rightEyeObject.GetComponent<MeshRenderer>().material;
+            matLeft.SetColor("_BaseColor", newColor);
+            matRight.SetColor("_BaseColor", newColor);
+        }
     }
 
     public void ApplySkinTone(Color newColor)
     {
-        Material mat = playerObject.GetComponent<SkinnedMeshRenderer>().material;
-        mat.SetColor("_BaseColor", newColor);
-        SkinColor = newColor;
-    }
-
-    // ------ LOAD CUSTOMIZATION DATA FROM FILE ------
-    public void LoadCharacterData()
-    {
-        if (PlayerPrefs.HasKey("CustomizeCharacterData"))
+        if (newColor.a > 0.0f)
         {
-            // Get the JSON string we stored in PlayerPrefs
-            string json = PlayerPrefs.GetString("CustomizeCharacterData");
-            // Convert the string back to a CustomizeCharacterData object
-            CustomizeCharacterData data = JsonUtility.FromJson<CustomizeCharacterData>(json);
-
-            // Load current hair, eyes, skin tone
-            if (ColorUtility.TryParseHtmlString("#" + data.CurrentHairHexValue, out Color HairColor))
-            {
-                ApplyHairColor(HairColor);
-            }
-
-            if (ColorUtility.TryParseHtmlString("#" + data.CurrentEyeHexValue, out Color EyeColor))
-            {
-                ApplyEyeColor(EyeColor);
-            }
-
-            if (ColorUtility.TryParseHtmlString("#" + data.CurrentSkinToneHexValue, out Color SkinTone))
-            {
-                ApplySkinTone(SkinTone);
-            }
-
-            //// Load player name
-            //FirstNameInput.text = data.FirstName;
-            //LastNameInput.text = data.LastName;
-
-            // Load options selected
-            hair = data.SelectedHairOption;
-            ChangeHairType(hair);
-            clothing = data.SelectedClothingOption;
-            ChangeClothingType(clothing);
+            Material mat = playerObject.GetComponent<SkinnedMeshRenderer>().material;
+            mat.SetColor("_BaseColor", newColor);
         }
     }
 
-    public void ChangeHairType(int newHair)
+    public void ApplyHairType(int newHair)
     {
-        hair = newHair;
-
-        if (hair == 0)
+        if (newHair == 0)
         {
             hairObject.GetComponent<MeshFilter>().mesh = null;
             return;
         }
 
-        hairObject.GetComponent<MeshFilter>().mesh = hairModels[hair - 1].GetComponent<MeshFilter>().sharedMesh;
+        hairObject.GetComponent<MeshFilter>().mesh = hairModels[newHair - 1].GetComponent<MeshFilter>().sharedMesh;
     }
 
-    public void ChangeClothingType(int newClothing)
+    public void ApplyClothingType(int newClothing)
     {
-        clothing = newClothing;
-
-        shirtObject.GetComponent<SkinnedMeshRenderer>().sharedMesh = shirtModels[clothing].GetComponent<SkinnedMeshRenderer>().sharedMesh;
-        shirtObject.GetComponent<SkinnedMeshRenderer>().material = shirtMaterials[clothing];
-        pantsObject.GetComponent<SkinnedMeshRenderer>().sharedMesh = pantsModels[clothing].GetComponent<SkinnedMeshRenderer>().sharedMesh;
-        pantsObject.GetComponent<SkinnedMeshRenderer>().material = pantsMaterials[clothing];
+        shirtObject.GetComponent<SkinnedMeshRenderer>().sharedMesh = shirtModels[newClothing];
+        shirtObject.GetComponent<SkinnedMeshRenderer>().material = shirtMaterials[newClothing];
+        pantsObject.GetComponent<SkinnedMeshRenderer>().sharedMesh = pantsModels[newClothing];
+        pantsObject.GetComponent<SkinnedMeshRenderer>().material = pantsMaterials[newClothing];
     }
 
-    //called when every client needs to send their customization packages
-    [Rpc(SendTo.Owner)]
-    public void SyncAllCustomizationsRPC()
+    // ------ LOAD CUSTOMIZATION DATA FROM FILE ------
+    public void LoadLocalCharacterAppearance(CustomizeCharacterData data)
     {
-        SyncCustomizationRPC(HairColor, EyeColor, SkinColor, hair, clothing);
-    }
-
-    //tells other clients this client's customization package
-    [Rpc(SendTo.NotMe)]
-    public void SyncCustomizationRPC(Color hairColor, Color eyeColor, Color skinColor, int hairType, int clothingType)
-    {
-        HairColor = hairColor;
-        EyeColor = eyeColor;
-        SkinColor = skinColor;
-        hair = hairType;
-        clothing = clothingType;
-
+        // Load current hair, eyes, skin tone
+        ColorUtility.TryParseHtmlString("#" + data.CurrentHairHexValue, out Color HairColor);
+        ColorUtility.TryParseHtmlString("#" + data.CurrentEyeHexValue, out Color EyeColor);
+        ColorUtility.TryParseHtmlString("#" + data.CurrentSkinToneHexValue, out Color SkinTone);
         ApplyHairColor(HairColor);
         ApplyEyeColor(EyeColor);
-        ApplySkinTone(SkinColor);
-        ChangeHairType(hair);
-        ChangeClothingType(clothing);
+        ApplySkinTone(SkinTone);
+
+        // Load hair and clothing options
+        ApplyHairType(data.SelectedHairOption);
+        ApplyClothingType(data.SelectedClothingOption);
     }
 }

@@ -147,6 +147,13 @@ public class PlayerManager : NetworkBehaviour
         //inform crew manifest of player name
         ReferenceAssistor.Instance.module_handlers[4].GetComponent<CrewManifest>().reportAsReady();
 
+        //send out player customization info
+        CustomizeCharacterData data = CustomizeCharacterMenu.GetCharacterData();
+        ColorUtility.TryParseHtmlString("#" + data.CurrentHairHexValue, out Color hair_color);
+        ColorUtility.TryParseHtmlString("#" + data.CurrentEyeHexValue, out Color eye_color);
+        ColorUtility.TryParseHtmlString("#" + data.CurrentSkinToneHexValue, out Color skin_color);
+        syncCharacterCustomizationRPC(local_player.GetComponent<NetworkObject>().OwnerClientId, hair_color, eye_color, skin_color, data.SelectedHairOption, data.SelectedClothingOption);
+
         //reset ready player counter to 0 to prepare for scenario load instead of BridgeEnvironment load
         resetReadyPlayers();
         if (NetworkManager.Singleton.IsHost == true)
@@ -156,11 +163,34 @@ public class PlayerManager : NetworkBehaviour
         }
     }
 
-
-    [Rpc(SendTo.Everyone)]
-    private void sendPlayerCustomizationDataRPC(int client_id, int hair_index, int uniform_index, Color hair_color, Color eye_color, Color skin_color)
+    //tells other clients this client's customization package
+    [Rpc(SendTo.NotMe)]
+    public void syncCharacterCustomizationRPC(ulong owner_client_id, Color hair_color, Color eye_color, Color skin_color, int hair_type, int clothing_type)
     {
+        //get corresponding player
+        GameObject corresponding_player = null;
+        foreach (GameObject plr in GameObject.FindGameObjectsWithTag("Player"))
+        {
+            if (plr.GetComponent<NetworkObject>() != null && plr.GetComponent<NetworkObject>().OwnerClientId == owner_client_id)
+            {
+                corresponding_player = plr;
+                break;
+            }
+        }
 
+        //stop if player not found
+        if (corresponding_player == null)
+        {
+            return;
+        }
+
+        //update customization
+        CharacterCustomization cc = corresponding_player.GetComponent<CharacterCustomization>();
+        cc.ApplyHairColor(hair_color);
+        cc.ApplyEyeColor(eye_color);
+        cc.ApplySkinTone(skin_color);
+        cc.ApplyClothingType(clothing_type);
+        cc.ApplyHairType(hair_type);
     }
 
     //called only at the start of the game
@@ -201,6 +231,10 @@ public class PlayerManager : NetworkBehaviour
             {
                 GameObject.Destroy(attempt_to_destroy);
             }
+        }
+        foreach (GameObject plr in GameObject.FindGameObjectsWithTag("Player"))
+        {
+            GameObject.Destroy(plr);
         }
     }
 

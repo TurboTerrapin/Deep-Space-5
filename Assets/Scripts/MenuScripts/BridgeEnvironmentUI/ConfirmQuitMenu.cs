@@ -4,6 +4,7 @@ public class ConfirmQuit : MonoBehaviour
 {
     public GameObject PauseMenu;
     public GameObject ConfirmQuitMenu;
+
     public void HandleYesButtonClick()
     {
         PlayerManager.leaveGame();

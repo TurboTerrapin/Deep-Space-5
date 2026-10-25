@@ -5,9 +5,8 @@ using UnityEngine.UI;
 
 public class TitleScreenController : MonoBehaviour
 {
-    //TitleScreen
+    // TitleScreen
     public TMP_Text PressAnyText;
-    public Image JourneyToText;
     public Image DeepSpaceFiveText;
     public Image Border;
     public TMP_Text VersionLabel;
@@ -15,7 +14,7 @@ public class TitleScreenController : MonoBehaviour
     public GameObject TitleScreenContents;
     private bool PressAnyTextAppears = false;
 
-    //Audio
+    // Audio
     [SerializeField] AudioSource MusicSource;
     public AudioClip TitleScreenAudio;
     public AudioClip SFXTest;
@@ -26,15 +25,14 @@ public class TitleScreenController : MonoBehaviour
     public static float[] SPIN_SPEEDS = new float[3] { 12.5f, 50.0f, 22.5f };
     public SpriteRenderer[] RingSprites;
 
-    //MainMenu
+    // MainMenu
     public GameObject MainMenu;
 
-    //LoadHandler.cs handles hiding/showing TitleScreenContents
+    // LoadHandler.cs handles hiding/showing TitleScreenContents
     private void Start()
     {
         // Set alpha of everything to 0
         SetRingAlpha(0f);
-        JourneyToText.color = new Color(1, 1, 1, 0);
         DeepSpaceFiveText.color = new Color(1, 1, 1, 0);
         Border.color = new Color(1, 1, 1, 0);
         PressAnyText.alpha = 0f;
@@ -56,8 +54,6 @@ public class TitleScreenController : MonoBehaviour
 
     IEnumerator IntroSequence()
     {
-        yield return StartCoroutine(FadeTo(JourneyToText, 1f, 2f));
-
         StartCoroutine(FadeTo(DeepSpaceFiveText, 1f, 2f));
 
         yield return StartCoroutine(FadeRings(1f, 2f));
@@ -69,7 +65,6 @@ public class TitleScreenController : MonoBehaviour
         StartCoroutine(FadePressAnyButtonText(PressAnyText));
 
         PressAnyTextAppears = true;
-
     }
 
     IEnumerator FadePressAnyButtonText(TMP_Text text)
@@ -106,7 +101,6 @@ public class TitleScreenController : MonoBehaviour
         }
 
         SetRingAlpha(targetAlpha);
-
     }
 
     public void SetRingAlpha(float alpha)
@@ -117,9 +111,7 @@ public class TitleScreenController : MonoBehaviour
             color.a = alpha;
             ring.color = color;
         }
-
     }
-
 
     // Both Image and TMP_Text inherit from Graphic
     IEnumerator FadeTo(Graphic graphic, float targetAlpha, float duration)

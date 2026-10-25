@@ -9,14 +9,13 @@ TagManager:
   - SeatHandler
   - WorldRoot
   - ScenarioHandler
-  - ScenarioEndPoint
   - PlayerHolder
   - ScenarioManager
   - Probe
   - PlayerManager
   - CharacterModel
-  - Enemy
   - StaticObstacle
+  - LoadHandler
   layers:
   - Default
   - TransparentFX

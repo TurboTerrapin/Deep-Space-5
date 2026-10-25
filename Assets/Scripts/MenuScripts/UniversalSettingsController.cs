@@ -4,10 +4,7 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Assertions.Must;
 using UnityEngine.Audio;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class UniversalSettingsController : MonoBehaviour
@@ -57,6 +54,7 @@ public class UniversalSettingsController : MonoBehaviour
     public Image VoiceVolumeFillBar;
     public TMP_Text ActualVoiceVolumeLabel;
 
+    // Voice Options
     public TMP_Dropdown VoiceOptionDropdown;
     public GameObject PushToTalkButton;
     public TMP_Text PushToTalkLabel;
@@ -70,8 +68,6 @@ public class UniversalSettingsController : MonoBehaviour
     public Slider BrightnessSlider;
     public Image BrightnessFillBar;
     public TMP_Text ActualBrightnessLabel;
-    public Image BrightnessOverlay;
-    public Image TitleBrightnessOverlay;
 
     // HUD Visibility
     public TMP_Dropdown HUDVisibilityDropdown;
@@ -118,22 +114,22 @@ public class UniversalSettingsController : MonoBehaviour
         // Applies option based on index
         HandleResolutionDropdownClicked(ResIndex);
 
-        // Loads player volume preferece (default is 50%)
+        // Loads player volume preference (default is 50%)
         float masterVolume = PlayerPrefs.GetFloat("MasterVolume", 0.5f);
         MasterVolumeSlider.value = masterVolume;
         HandleMasterVolumeDragged(masterVolume);
 
-        // Loads player volume preferece (default is 50%)
+        // Loads player volume preference (default is 50%)
         float musicVolume = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
         MusicVolumeSlider.value = musicVolume;
         HandleMusicVolumeDragged(musicVolume);
 
-        // Loads player volume preferece (default is 50%)
+        // Loads player volume preference (default is 50%)
         float SFXVolume = PlayerPrefs.GetFloat("SFXVolume", 0.5f);
         SFXVolumeSlider.value = SFXVolume;
         HandleSFXVolumeDragged(SFXVolume);
         
-        // Loads player volume preferece (default is 50%)
+        // Loads player volume preference (default is 50%)
         float voiceVolume = PlayerPrefs.GetFloat("VoiceVolume", 0.5f);
         VoiceVolumeSlider.value = voiceVolume;
         HandleVoiceVolumeDragged(voiceVolume);
@@ -147,17 +143,9 @@ public class UniversalSettingsController : MonoBehaviour
 
         // Loads player VSync preference (default is true if nothing is saved)
         bool isVSyncOn = PlayerPrefs.GetInt("VSync", 0) == 1;
-        VSyncToggle.isOn = isVSyncOn;
-        QualitySettings.vSyncCount = isVSyncOn ? 1 : 0;
-        
-        // If VSync is on when you load up the game, Max Frame Rate setting is dimmed out
-        if (isVSyncOn == true)
-        {
-            FrameRateLabel.alpha = 0.2f;
-            FrameRateGroup.alpha = 0.2f;
-        }
+        HandleVSyncToggleClicked(isVSyncOn);
 
-        // Loads player VSync preference (default is 60FPS)
+        // Loads player frame rate preference (default is 60FPS)
         int FPSIndex = PlayerPrefs.GetInt("MaxFrameRate", 1);
         FrameRateDropdown.value = FPSIndex;
         HandleMaxFrameRateDropDownClicked(FPSIndex);
@@ -167,10 +155,10 @@ public class UniversalSettingsController : MonoBehaviour
         CameraSensitivitySlider.value = camSensitivity;
         HandleCameraSensitivityDragged(camSensitivity);
 
-        float brightness = PlayerPrefs.GetFloat("Brightness", 0.1f);
+        // Loads player brightness preference (default is 50%)
+        float brightness = PlayerPrefs.GetFloat("Brightness", 0.5f);
         BrightnessSlider.value = brightness;
         HandleBrightnessSliderDragged(brightness);
-
 
         // Loads player HUD visbility preference (default is 0 if nothing is saved)
         int HUDIndex = PlayerPrefs.GetInt("HUDVisibility", 0);
@@ -476,22 +464,18 @@ public class UniversalSettingsController : MonoBehaviour
 
     public void HandleBrightnessSliderDragged(float brightness)
     {
-        Color overlayColor = BrightnessOverlay.color;
-        overlayColor.a = (1f - brightness) * 0.5f;
-        BrightnessOverlay.color = overlayColor;
-
-        if (TitleBrightnessOverlay != null)
-        {
-            Color titleOverlayColor = TitleBrightnessOverlay.color;
-            titleOverlayColor.a = (1f - brightness) * 0.5f;
-            TitleBrightnessOverlay.color = titleOverlayColor;
-        }
-
         int percent = Mathf.RoundToInt(brightness * 100);
         ActualBrightnessLabel.text = percent.ToString();
 
         PlayerPrefs.SetFloat("Brightness", brightness);
         PlayerPrefs.Save();
+
+        GameObject loadHandler = GameObject.FindGameObjectWithTag("LoadHandler");
+        if (loadHandler == null)
+        {
+            return;
+        }
+        loadHandler.GetComponent<LoadHandler>().adjustBrightness(brightness);
     }
 
     public void HandleCameraSensitivityDragged(float mouseSensitivity)
@@ -508,7 +492,7 @@ public class UniversalSettingsController : MonoBehaviour
 
         if (PrimaryScript.Instance != null)
         {
-            // Sends the sensitivity to PrimaryScript
+            // Send the sensitivity to PrimaryScript
             PrimaryScript.Instance.setCameraSensitivity(GetCameraSensitivity());
         }
     }

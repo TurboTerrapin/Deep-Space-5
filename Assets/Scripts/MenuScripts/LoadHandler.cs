@@ -4,7 +4,7 @@
     - Handles displaying disconnection and connecting (...) screens
     - Handles Steam checks
     Contributor(s): Jake Schott, Beata Musial
-    Last Updated: 10/6/2026
+    Last Updated: 10/23/2026
 */
 
 using System.Collections;
@@ -26,9 +26,9 @@ public class LoadHandler : MonoBehaviour
     private GameObject connection_lost;
     private GameObject steam_failure;
     private GameObject dummy_camera;
+    private CanvasGroup brightness_overlay;
     private bool network_manager_linked = false;
 
-    private static int last_tip = -1; //index of last tip as to avoid repeats
     private AsyncOperation load_operation = null;
     private Coroutine fade_black_coroutine = null;
     private Coroutine connecting_coroutine = null;
@@ -57,6 +57,7 @@ public class LoadHandler : MonoBehaviour
         connection_lost = transform.GetChild(2).gameObject;
         steam_failure = transform.GetChild(3).gameObject;
         dummy_camera = transform.GetChild(4).gameObject;
+        brightness_overlay = transform.GetChild(5).gameObject.GetComponent<CanvasGroup>();
 
         //check for Steam at beginning, and if successful, show title screen
         GameObject.Find("TitleScreen").GetComponent<TitleScreenController>().TitleScreenContents.SetActive(titleScreenSteamCheck() == true);
@@ -77,6 +78,12 @@ public class LoadHandler : MonoBehaviour
             }
         }
         return true;
+    }
+
+    //called by UniversalSettingsController.cs
+    public void adjustBrightness(float brightness)
+    {
+        brightness_overlay.alpha = Mathf.Lerp(0.5f, 0.0f, brightness);
     }
 
     //called by CampaignLobbyController.cs and FriendJoinWithButton.cs to ensure that handleSceneLoad() gets linked to the right NetworkManager
@@ -324,20 +331,6 @@ public class LoadHandler : MonoBehaviour
             load_ring.transform.GetChild(i).GetComponent<UnityEngine.UI.RawImage>().color = ReferenceAssistor.COLOR_OPTIONS[possible_colors[c]];
             possible_colors.RemoveAt(c);
         }
-
-        //randomize tip
-        int new_tip_index;
-        do
-        {
-            new_tip_index = Random.Range(0, load_screen.transform.GetChild(3).childCount);
-        }
-        while (new_tip_index == last_tip);
-
-        for (int i = 0; i < load_screen.transform.GetChild(3).childCount; i++)
-        {
-            load_screen.transform.GetChild(3).GetChild(i).gameObject.SetActive(i == new_tip_index);
-        }
-        last_tip = new_tip_index;
     }
 
     //helper method used to spin the rings on a single frame (yield return null)
@@ -384,7 +377,6 @@ public class LoadHandler : MonoBehaviour
         load_screen.transform.GetChild(0).GetComponent<UnityEngine.UI.RawImage>().color = new Color(0.0f, 0.0f, 0.0f);
         load_screen.transform.GetChild(1).gameObject.SetActive(true);
         load_ring.SetActive(true);
-        load_screen.transform.GetChild(3).gameObject.SetActive(true);
         while (true)
         {
             spinRings();
@@ -477,7 +469,6 @@ public class LoadHandler : MonoBehaviour
         float anim_time = fade_time;
         load_screen.transform.GetChild(1).gameObject.SetActive(false);
         load_ring.SetActive(false);
-        load_screen.transform.GetChild(3).gameObject.SetActive(false);
 
         while (anim_time > 0.0f)
         {

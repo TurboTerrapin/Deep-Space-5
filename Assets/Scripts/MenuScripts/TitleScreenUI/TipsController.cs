@@ -1,6 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI; 
-using TMPro;
 using System.Collections;
 
 public class TipsController : MonoBehaviour
@@ -11,13 +9,13 @@ public class TipsController : MonoBehaviour
 
     private Coroutine TipTimer;
 
-    void Start()
+    private void Start()
     {
         UpdateCurrentTip();
         TipTimer = StartCoroutine(SwitchTip());
     }
 
-    void UpdateCurrentTip()
+    private void UpdateCurrentTip()
     {
         for (int i = 0; i < Tips.Length; i++)
         {
@@ -26,12 +24,10 @@ public class TipsController : MonoBehaviour
 
         Tips[CurrentTipIndex].SetActive(true);
 
-        TMP_Text text = Tips[CurrentTipIndex].GetComponentInChildren<TMP_Text>();
-        Color color = text.color;
+        CanvasGroup canvasGroup = Tips[CurrentTipIndex].GetComponentInChildren<CanvasGroup>();
+        canvasGroup.alpha = 0f;
 
-        text.color = new Color(color.r, color.g, color.b, 0f);
-
-        StartCoroutine(FadeText(text, 1f, 1f));
+        StartCoroutine(FadeTip(canvasGroup, 1f, 1f));
 
         //Debug.Log(CurrentTipIndex);
     }
@@ -41,7 +37,7 @@ public class TipsController : MonoBehaviour
         CurrentTipIndex--;
         if (CurrentTipIndex < 0)
         {
-            // wrap around
+            // Wrap around
             CurrentTipIndex = Tips.Length - 1;
         }
         UpdateCurrentTip();
@@ -54,7 +50,7 @@ public class TipsController : MonoBehaviour
 
         if (CurrentTipIndex >= Tips.Length)
         {
-            // wrap around
+            // Wrap around
             CurrentTipIndex = 0;
         }
 
@@ -73,24 +69,23 @@ public class TipsController : MonoBehaviour
         }
     }
 
-    IEnumerator FadeText(TMP_Text text, float targetAlpha, float duration)
+    IEnumerator FadeTip(CanvasGroup canvasGroup, float targetAlpha, float duration)
     {
-        Color color = text.color;
-        float startAlpha = color.a;
+        float startAlpha = canvasGroup.alpha;
         float time = 0f;
 
         while (time < duration)
         {
             time += Time.deltaTime;
-            float alpha = Mathf.Lerp(startAlpha, targetAlpha, time / duration);
-            text.color = new Color(color.r, color.g, color.b, alpha);
+            float a = Mathf.Lerp(startAlpha, targetAlpha, time / duration);
+            canvasGroup.alpha = a;
             yield return null;
         }
 
-        text.color = new Color(color.r, color.g, color.b, targetAlpha);
+        canvasGroup.alpha = targetAlpha;
     }
 
-    void RestartTipTimer()
+    private void RestartTipTimer()
     {
         StopCoroutine(TipTimer);
         TipTimer = StartCoroutine(SwitchTip());

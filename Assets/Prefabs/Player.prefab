@@ -157,13 +157,13 @@ GameObject:
   - component: {fileID: 6651144661822147006}
   - component: {fileID: 3147236109247125174}
   - component: {fileID: 4318529968537306650}
-  - component: {fileID: 8408303967717794670}
-  - component: {fileID: 354468506889354184}
-  - component: {fileID: 6783741294232666437}
   - component: {fileID: 7759421863261743704}
+  - component: {fileID: -1737606101095224485}
+  - component: {fileID: 8408303967717794670}
   - component: {fileID: 7434551271023729940}
   - component: {fileID: 9209038235315788674}
-  - component: {fileID: 4360814093682479969}
+  - component: {fileID: 6783741294232666437}
+  - component: {fileID: -2844373776492017700}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -312,7 +312,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 4033476747
+  GlobalObjectIdHash: 2290305919
   InScenePlacedSourceGlobalObjectIdHash: 2049436854
   DeferredDespawnTick: 0
   Ownership: 1
@@ -326,75 +326,6 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
---- !u!114 &8408303967717794670
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5044668463616075467}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e81591fc113bfb408dcbec7f3e29282, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  playerRB: {fileID: 3147236109247125174}
-  animator: {fileID: 6310913860878337281}
---- !u!114 &354468506889354184
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5044668463616075467}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 491b2c7318394eb439cbf30b515aedbc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  leftEyeObject: {fileID: 627195117442887100}
-  rightEyeObject: {fileID: 5505749068501960175}
-  playerObject: {fileID: 4198554170782870750}
-  hairModels:
-  - {fileID: 919132149155446097, guid: 677b9b4a2aa29f24d861096356e5bdb8, type: 3}
-  - {fileID: 919132149155446097, guid: 712206c064a35c3488416e0f8fef89dd, type: 3}
-  - {fileID: 919132149155446097, guid: 59a57ed8fbb0995469344757bf490d28, type: 3}
-  hairObject: {fileID: 9094463023835485656}
-  hair: 0
-  shirtObject: {fileID: 5406028627457909774}
-  shirtModels:
-  - {fileID: 5919100220734724927, guid: 5e3ca7565bf25b443a401aea50550e7c, type: 3}
-  - {fileID: -260613626914459891, guid: 42b8e8b4d7ac39549b40c7bb4e8509dd, type: 3}
-  shirtMaterials:
-  - {fileID: -876546973899608171, guid: 5e3ca7565bf25b443a401aea50550e7c, type: 3}
-  - {fileID: -2571066135233467577, guid: 42b8e8b4d7ac39549b40c7bb4e8509dd, type: 3}
-  pantsObject: {fileID: 7530628980056537716}
-  pantsModels:
-  - {fileID: -5291407736170811975, guid: b49636fadec42f4439fff0967ef8db42, type: 3}
-  - {fileID: -5291407736170811975, guid: fdbcf3a59e1c8254cb2fb237a331a2ed, type: 3}
-  pantsMaterials:
-  - {fileID: -6478536213147159724, guid: b49636fadec42f4439fff0967ef8db42, type: 3}
-  - {fileID: 8766343988393363296, guid: fdbcf3a59e1c8254cb2fb237a331a2ed, type: 3}
-  clothing: 0
-  HairColor: {r: 1, g: 1, b: 1, a: 1}
-  EyeColor: {r: 1, g: 1, b: 1, a: 1}
-  SkinColor: {r: 1, g: 1, b: 1, a: 1}
---- !u!114 &6783741294232666437
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5044668463616075467}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb919cb01b64d4f40a5ffbe61896a940, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  myAnimator: {fileID: 6310913860878337281}
-  myAnimatorHandler: {fileID: 4949771906129122618}
 --- !u!114 &7759421863261743704
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -408,7 +339,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  NetworkTransformExpanded: 0
+  NetworkTransformExpanded: 1
   AutoOwnerAuthorityTickOffset: 1
   PositionInterpolationType: 0
   RotationInterpolationType: 0
@@ -419,7 +350,7 @@ MonoBehaviour:
   RotationMaxInterpolationTime: 0.1
   ScaleLerpSmoothing: 1
   ScaleMaxInterpolationTime: 0.1
-  AuthorityMode: 0
+  AuthorityMode: 1
   TickSyncChildren: 0
   UseUnreliableDeltas: 0
   SyncPositionX: 1
@@ -441,6 +372,37 @@ MonoBehaviour:
   SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
   SlerpPosition: 0
+--- !u!114 &-1737606101095224485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5044668463616075467}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6c0be61502bb534f922ebb746851216, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.Components.NetworkRigidbody
+  ShowTopMostFoldoutHeaderGroup: 1
+  NetworkRigidbodyBaseExpanded: 0
+  UseRigidBodyForMotion: 0
+  AutoUpdateKinematicState: 1
+  AutoSetKinematicOnDespawn: 1
+--- !u!114 &8408303967717794670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5044668463616075467}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e81591fc113bfb408dcbec7f3e29282, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerRB: {fileID: 3147236109247125174}
+  animator: {fileID: 6310913860878337281}
 --- !u!114 &7434551271023729940
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -659,7 +621,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &4360814093682479969
+--- !u!114 &6783741294232666437
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -668,11 +630,53 @@ MonoBehaviour:
   m_GameObject: {fileID: 5044668463616075467}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a90a2e6fadb52844aa5430a7113c5e6, type: 3}
+  m_Script: {fileID: 11500000, guid: bb919cb01b64d4f40a5ffbe61896a940, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AudioSource: {fileID: 1137807619422898853}
-  recording: 0
+  myAnimator: {fileID: 6310913860878337281}
+  myAnimatorHandler: {fileID: 4949771906129122618}
+--- !u!114 &-2844373776492017700
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5044668463616075467}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 491b2c7318394eb439cbf30b515aedbc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterCustomization
+  leftEyeObject: {fileID: 627195117442887100}
+  rightEyeObject: {fileID: 5505749068501960175}
+  playerObject: {fileID: 4198554170782870750}
+  hairModels:
+  - {fileID: 919132149155446097, guid: 677b9b4a2aa29f24d861096356e5bdb8, type: 3}
+  - {fileID: 919132149155446097, guid: 59a57ed8fbb0995469344757bf490d28, type: 3}
+  - {fileID: 919132149155446097, guid: 712206c064a35c3488416e0f8fef89dd, type: 3}
+  hairObject: {fileID: 9094463023835485656}
+  shirtObject: {fileID: 5406028627457909774}
+  shirtModels:
+  - {fileID: 3254439933026420654, guid: 42b8e8b4d7ac39549b40c7bb4e8509dd, type: 3}
+  - {fileID: 3254439933026420654, guid: 42b8e8b4d7ac39549b40c7bb4e8509dd, type: 3}
+  - {fileID: 3254439933026420654, guid: 42b8e8b4d7ac39549b40c7bb4e8509dd, type: 3}
+  - {fileID: 3254439933026420654, guid: 42b8e8b4d7ac39549b40c7bb4e8509dd, type: 3}
+  shirtMaterials:
+  - {fileID: 2100000, guid: b4bd21e714cf54148adac786f2de5c9a, type: 2}
+  - {fileID: 2100000, guid: b4bd21e714cf54148adac786f2de5c9a, type: 2}
+  - {fileID: 2100000, guid: b4bd21e714cf54148adac786f2de5c9a, type: 2}
+  - {fileID: 2100000, guid: b4bd21e714cf54148adac786f2de5c9a, type: 2}
+  pantsObject: {fileID: 7530628980056537716}
+  pantsModels:
+  - {fileID: 6343735780247800750, guid: fdbcf3a59e1c8254cb2fb237a331a2ed, type: 3}
+  - {fileID: 6343735780247800750, guid: fdbcf3a59e1c8254cb2fb237a331a2ed, type: 3}
+  - {fileID: 6343735780247800750, guid: fdbcf3a59e1c8254cb2fb237a331a2ed, type: 3}
+  - {fileID: 6343735780247800750, guid: fdbcf3a59e1c8254cb2fb237a331a2ed, type: 3}
+  pantsMaterials:
+  - {fileID: 2100000, guid: 1f16ea9e32e548b42bd5fc717e7599b1, type: 2}
+  - {fileID: 2100000, guid: 1f16ea9e32e548b42bd5fc717e7599b1, type: 2}
+  - {fileID: 2100000, guid: 1f16ea9e32e548b42bd5fc717e7599b1, type: 2}
+  - {fileID: 2100000, guid: 1f16ea9e32e548b42bd5fc717e7599b1, type: 2}
 --- !u!1 &5225299753694156033
 GameObject:
   m_ObjectHideFlags: 0
@@ -948,7 +952,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6880954645618528392}
-  - component: {fileID: 1685083153544795155}
   m_Layer: 3
   m_Name: RightArmIKTarget
   m_TagString: Untagged
@@ -971,37 +974,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7832574621657267926}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1685083153544795155
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5342489398951201457}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 27b70b88b9bbf624fb2fa7c99a196f2c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  UseUnreliableDeltas: 0
-  SyncPositionX: 1
-  SyncPositionY: 1
-  SyncPositionZ: 1
-  SyncRotAngleX: 1
-  SyncRotAngleY: 1
-  SyncRotAngleZ: 1
-  SyncScaleX: 0
-  SyncScaleY: 0
-  SyncScaleZ: 0
-  PositionThreshold: 0.001
-  RotAngleThreshold: 0.01
-  ScaleThreshold: 0.01
-  UseQuaternionSynchronization: 0
-  UseQuaternionCompression: 0
-  UseHalfFloatPrecision: 0
-  InLocalSpace: 0
-  Interpolate: 1
-  SlerpPosition: 0
 --- !u!1 &5505749068501960175
 GameObject:
   m_ObjectHideFlags: 0
@@ -1187,7 +1159,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8037169524787375048}
-  - component: {fileID: 9101075894930530053}
   m_Layer: 3
   m_Name: HeadIKTarget
   m_TagString: Untagged
@@ -1210,37 +1181,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 682683335958875487}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9101075894930530053
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7738883358200894698}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 27b70b88b9bbf624fb2fa7c99a196f2c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  UseUnreliableDeltas: 0
-  SyncPositionX: 1
-  SyncPositionY: 1
-  SyncPositionZ: 1
-  SyncRotAngleX: 1
-  SyncRotAngleY: 1
-  SyncRotAngleZ: 1
-  SyncScaleX: 0
-  SyncScaleY: 0
-  SyncScaleZ: 0
-  PositionThreshold: 0.001
-  RotAngleThreshold: 0.01
-  ScaleThreshold: 0.01
-  UseQuaternionSynchronization: 0
-  UseQuaternionCompression: 0
-  UseHalfFloatPrecision: 0
-  InLocalSpace: 0
-  Interpolate: 1
-  SlerpPosition: 0
 --- !u!1 &8332335125348655386
 GameObject:
   m_ObjectHideFlags: 0
@@ -1250,7 +1190,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4865660404503577723}
-  - component: {fileID: 1918332454394158479}
   m_Layer: 3
   m_Name: LeftArmIKTarget
   m_TagString: Untagged
@@ -1273,37 +1212,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7832574621657267926}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1918332454394158479
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8332335125348655386}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 27b70b88b9bbf624fb2fa7c99a196f2c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  UseUnreliableDeltas: 0
-  SyncPositionX: 1
-  SyncPositionY: 1
-  SyncPositionZ: 1
-  SyncRotAngleX: 1
-  SyncRotAngleY: 1
-  SyncRotAngleZ: 1
-  SyncScaleX: 0
-  SyncScaleY: 0
-  SyncScaleZ: 0
-  PositionThreshold: 0.001
-  RotAngleThreshold: 0.01
-  ScaleThreshold: 0.01
-  UseQuaternionSynchronization: 0
-  UseQuaternionCompression: 0
-  UseHalfFloatPrecision: 0
-  InLocalSpace: 0
-  Interpolate: 1
-  SlerpPosition: 0
 --- !u!1 &9094463023835485656
 GameObject:
   m_ObjectHideFlags: 0
@@ -1526,6 +1434,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8c0110d32b87e44b8a051e370bd9bd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   myAnimator: {fileID: 6310913860878337281}
   ikActive: 1
   ikHead: 1

@@ -18,7 +18,6 @@ using UnityEngine;
 
 public class VoiceChat : NetworkBehaviour
 {
-
     public static VoiceChat Instance { get; protected set; }
 
     public AudioSource AudioSource;
@@ -36,14 +35,16 @@ public class VoiceChat : NetworkBehaviour
     private int audioPlayerPosition;
 
     private int playbackBuffer;
-    private int dataPosition;
     private int dataReceived;
 
     void Awake()
     {
+        return;
+
         if (Instance != null)
         {
             Destroy(this);
+            return;
         }
         Instance = this;
 
@@ -64,6 +65,8 @@ public class VoiceChat : NetworkBehaviour
 
     void Start()
     {
+        return;
+
         voiceStream = new MemoryStream();
         uncompressedStream = new MemoryStream();
         compressedStream = new MemoryStream();
@@ -103,11 +106,9 @@ public class VoiceChat : NetworkBehaviour
 
     internal void Update()
     {
+        return;
+
         SteamUser.VoiceRecord = useVoice && (voiceActivated || Input.GetKey(pushToTalkKey));
-
-
-
-
         recording = SteamUser.VoiceRecord;
         //Recording from mic and sending to server
         if (IsClient)
