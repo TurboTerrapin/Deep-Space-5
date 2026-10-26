@@ -4,7 +4,7 @@
     - Handles displaying disconnection and connecting (...) screens
     - Handles Steam checks
     Contributor(s): Jake Schott, Beata Musial
-    Last Updated: 10/23/2026
+    Last Updated: 10/26/2026
 */
 
 using System.Collections;
@@ -60,6 +60,7 @@ public class LoadHandler : MonoBehaviour
         brightness_overlay = transform.GetChild(5).gameObject.GetComponent<CanvasGroup>();
 
         //check for Steam at beginning, and if successful, show title screen
+        GameObject.Find("TitleScreen").GetComponent<TitleScreenController>().PlaceCameraAtStart();
         GameObject.Find("TitleScreen").GetComponent<TitleScreenController>().TitleScreenContents.SetActive(titleScreenSteamCheck() == true);
 
         DontDestroyOnLoad(gameObject);

@@ -323,6 +323,7 @@ public class IntroSequenceManager : MonoBehaviour
         player.GetComponent<CameraMove>().GetCamera().SetActive(false);
         player.SetActive(false);
         Cursor.lockState = CursorLockMode.Locked;
+        MainMenuController.OnIntroCompleted();
 
         yield return cameraAdjustmentExponential(ending_scene_camera_positions.transform.GetChild(0), ending_scene_camera_positions.transform.GetChild(1), 7.0f, false);
 

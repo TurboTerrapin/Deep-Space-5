@@ -12,6 +12,8 @@ public class TitleScreenController : MonoBehaviour
     public TMP_Text VersionLabel;
     public float FadeDuration = 1.5f; // Time for a full fade in/out
     public GameObject TitleScreenContents;
+    public GameObject TitleScreenCamera;
+    public GameObject TitleScreenCameraPositions;
     private bool PressAnyTextAppears = false;
 
     // Audio
@@ -20,10 +22,8 @@ public class TitleScreenController : MonoBehaviour
     public AudioClip SFXTest;
 
     // Rings
-    public GameObject SpinCircle;
-    public GameObject SpriteMask;
+    public GameObject[] RingHalves = new GameObject[2];
     public static float[] SPIN_SPEEDS = new float[3] { 12.5f, 50.0f, 22.5f };
-    public SpriteRenderer[] RingSprites;
 
     // MainMenu
     public GameObject MainMenu;
@@ -43,12 +43,37 @@ public class TitleScreenController : MonoBehaviour
 
     private void Update()
     {
-        spinRings();
+        SpinRings();
 
         if (Input.anyKeyDown && PressAnyTextAppears && TitleScreenContents.activeSelf)
         {
             SwitchToMainMenu();
+            StartCoroutine(PushCameraBack(7.0f));
             VersionLabel.alpha = 0f;
+        }
+    }
+
+    public void PlaceCameraAtStart()
+    {
+        TitleScreenCamera.transform.position = TitleScreenCameraPositions.transform.GetChild(0).position;
+    }
+
+    IEnumerator PushCameraBack(float duration)
+    {
+        Vector3 startingPosition = TitleScreenCameraPositions.transform.GetChild(0).position;
+        Vector3 destinationPosition = TitleScreenCameraPositions.transform.GetChild(1).position;
+        TitleScreenCamera.transform.position = startingPosition;
+
+        float time = duration;
+        AnimationCurve animation_curve = AnimationCurve.EaseInOut(0.0f, 0.0f, time, 1.0f);
+        while (time > 0.0f)
+        {
+            time = Mathf.Max(0.0f, time - Time.deltaTime);
+
+            float animation_percentage = animation_curve.Evaluate(time);
+            TitleScreenCamera.transform.position = Vector3.Lerp(destinationPosition, startingPosition, animation_percentage);
+
+            yield return null;
         }
     }
 
@@ -76,18 +101,19 @@ public class TitleScreenController : MonoBehaviour
         }
     }
 
-    private void spinRings()
+    private void SpinRings()
     {
         for (int i = 0; i < 3; i++)
         {
-            float z = SpinCircle.transform.GetChild(i).GetComponent<Transform>().rotation.eulerAngles.z + SPIN_SPEEDS[i] * Time.deltaTime;
-            SpinCircle.transform.GetChild(i).GetComponent<Transform>().rotation = Quaternion.Euler(0.0f, 0.0f, z);
+            float z = RingHalves[0].transform.GetChild(i).GetComponent<Transform>().rotation.eulerAngles.z + SPIN_SPEEDS[i] * Time.deltaTime;
+            RingHalves[0].transform.GetChild(i).localRotation = Quaternion.Euler(0.0f, 0.0f, z);
+            RingHalves[1].transform.GetChild(i).localRotation = Quaternion.Euler(0.0f, 0.0f, z);
         }
     }
 
     IEnumerator FadeRings(float targetAlpha, float duration)
     {
-        float startAlpha = RingSprites[0].color.a;
+        float startAlpha = RingHalves[0].transform.GetChild(0).GetComponent<Image>().color.a;
         float time = 0f;
 
         while (time < duration)
@@ -105,11 +131,13 @@ public class TitleScreenController : MonoBehaviour
 
     public void SetRingAlpha(float alpha)
     {
-        foreach (SpriteRenderer ring in RingSprites)
+        for (int i = 0; i < 3; i++)
         {
+            Image ring = RingHalves[0].transform.GetChild(i).GetComponent<Image>();
             Color color = ring.color;
             color.a = alpha;
             ring.color = color;
+            RingHalves[1].transform.GetChild(i).GetComponent<Image>().color = color;
         }
     }
 

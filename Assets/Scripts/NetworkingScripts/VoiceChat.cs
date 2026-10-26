@@ -39,8 +39,6 @@ public class VoiceChat : NetworkBehaviour
 
     void Awake()
     {
-        return;
-
         if (Instance != null)
         {
             Destroy(this);
@@ -65,8 +63,6 @@ public class VoiceChat : NetworkBehaviour
 
     void Start()
     {
-        return;
-
         voiceStream = new MemoryStream();
         uncompressedStream = new MemoryStream();
         compressedStream = new MemoryStream();
@@ -106,8 +102,6 @@ public class VoiceChat : NetworkBehaviour
 
     internal void Update()
     {
-        return;
-
         SteamUser.VoiceRecord = useVoice && (voiceActivated || Input.GetKey(pushToTalkKey));
         recording = SteamUser.VoiceRecord;
         //Recording from mic and sending to server

@@ -16,6 +16,7 @@ TagManager:
   - CharacterModel
   - StaticObstacle
   - LoadHandler
+  - ModuleHandlers
   layers:
   - Default
   - TransparentFX
