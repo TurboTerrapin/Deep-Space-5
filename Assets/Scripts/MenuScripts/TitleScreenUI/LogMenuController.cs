@@ -142,18 +142,24 @@ public class LogMenuController : MonoBehaviour
     // Marks anomaly as encountered and updates/saves the data
     public static void OnScenarioEncountered(int index)
     {
-        LoadLogData();
-        PlayerLogDataList[index].HasEncountered = true;
-        SaveLogData();
+        if (index >= 0)
+        {
+            LoadLogData();
+            PlayerLogDataList[index].HasEncountered = true;
+            SaveLogData();
+        }
     }
 
     // Increments anomaly beaten count and updates/saves the data
     public static void OnScenarioBeaten(int index) 
     {
-        LoadLogData();
-        PlayerLogDataList[index].HasEncountered = true;
-        PlayerLogDataList[index].TimesBeaten++;
-        SaveLogData();
+        if (index >= 0)
+        {
+            LoadLogData();
+            PlayerLogDataList[index].HasEncountered = true;
+            PlayerLogDataList[index].TimesBeaten++;
+            SaveLogData();
+        }
     }
 
     // Saves log data into a JSON file

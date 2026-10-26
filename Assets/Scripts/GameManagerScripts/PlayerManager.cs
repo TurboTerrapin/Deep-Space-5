@@ -21,7 +21,6 @@ public class PlayerManager : NetworkBehaviour
     public GameObject spawn_points;
     public GameObject players_holder;
     public GameObject audio_manager;
-    public GameObject scenario_transitioner;
 
     private GameObject local_player;
     private LoadHandler load_handler;
@@ -232,10 +231,6 @@ public class PlayerManager : NetworkBehaviour
                 GameObject.Destroy(attempt_to_destroy);
             }
         }
-        foreach (GameObject plr in GameObject.FindGameObjectsWithTag("Player"))
-        {
-            GameObject.Destroy(plr);
-        }
     }
 
     //called by PauseMenuController.cs and FailureHandler.cs
@@ -329,7 +324,7 @@ public class PlayerManager : NetworkBehaviour
         LogMenuController.OnScenarioEncountered(current_scenario_index);
 
         //end transition (whether looking at the cinematic shot or load screen)
-        scenario_transitioner.GetComponent<TransitionHandler>().EndTransition();
+        ReferenceAssistor.Instance.transition_handler.EndTransition();
 
         //end load (whether looking at the cinematic shot or load screen)
         load_handler.endLoad(false);
@@ -345,7 +340,7 @@ public class PlayerManager : NetworkBehaviour
         ReferenceAssistor.Instance.audio_manager.UnmuteSFX();
     }
 
-    //fired when a client's AsyncOperation for loading a scenario (not BridgeEnvironment) is complete
+    //fired when a client's AsyncOperation for loading a scenario or EndSequence (not BridgeEnvironment) is complete
     [Rpc(SendTo.Everyone)]
     private void scenarioLoadedRPC(ulong steam_id)
     {
@@ -357,7 +352,14 @@ public class PlayerManager : NetworkBehaviour
             if (getNumReadyPlayers() >= lobby_handler.getNumberOfPlayersInNetworkManagerLobby())
             {
                 resetReadyPlayers();
-                ReferenceAssistor.Instance.scenario_manager.prepScenario(!game_initialized);
+                if (SceneManager.GetActiveScene().name.CompareTo("EndSequence") == 0) //end sequence
+                {
+                    ReferenceAssistor.Instance.scenario_manager.handleEndSequenceRPC();
+                }
+                else //normal scenario
+                {
+                    ReferenceAssistor.Instance.scenario_manager.prepScenario(!game_initialized);
+                }
                 if (game_initialized == false)
                 {
                     //wait LOAD_IN_DELAY
@@ -383,7 +385,7 @@ public class PlayerManager : NetworkBehaviour
         }
         else
         {
-            GameObject transition_canvas = scenario_transitioner.GetComponent<TransitionHandler>().TransitionCanvas;
+            GameObject transition_canvas = ReferenceAssistor.Instance.transition_handler.TransitionCanvas;
             while (transition_canvas.activeSelf == true) //ensure that host's transition is done before starting new scenario
             {
                 yield return null;

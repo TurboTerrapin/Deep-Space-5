@@ -6,7 +6,7 @@
     - Sends user inputs to control script if looking at said control and within RAYCAST_RANGE
     - Handles transmitting IK targets for hand movement animations
     Contributor(s): Jake Schott, John Aylward
-    Last Updated: 9/6/2026
+    Last Updated: 10/26/2026
 */
 
 using System.Collections;
@@ -14,6 +14,17 @@ using UnityEngine;
 
 public class BridgePrimaryScript : PrimaryScript
 {
+    private bool standing_mode_only = false;
+
+    public void enableStandingModeOnly()
+    {
+        standing_mode_only = true;
+        if (is_sitting == true)
+        {
+            initiateGetUp();
+        }
+    }
+
     public override void onShiftChange()
     {
         bool can_shift_left = ReferenceAssistor.Instance.seat_manager.canShiftLeft(curr_seat);
@@ -29,7 +40,7 @@ public class BridgePrimaryScript : PrimaryScript
     //returns seat index of closest seat or -1 if none
     protected override int getClosestSeat()
     {
-        if (ReferenceAssistor.Instance.seat_manager == null)
+        if (ReferenceAssistor.Instance.seat_manager == null || standing_mode_only == true)
         {
             return -1;
         }

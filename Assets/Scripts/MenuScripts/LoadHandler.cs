@@ -164,7 +164,7 @@ public class LoadHandler : MonoBehaviour
         {
             load_coroutines.Add(StartCoroutine(loadBridgeEnvironment()));
         }
-        else //scenario load-in
+        else //scenario or end sequence load-in
         {
             load_coroutines.Add(StartCoroutine(loadScenarioTransition()));
         }
@@ -421,11 +421,10 @@ public class LoadHandler : MonoBehaviour
         }
     }
 
-    //called whenever the client loads into a scenario 
+    //called whenever the client loads into a scenario  or end sequence
     IEnumerator loadScenarioTransition()
     {
-        ReferenceAssistor.Instance.player_manager.GetComponent<PlayerManager>();
-        GameObject transition_canvas = GameObject.Find("ScenarioTransitioner").GetComponent<TransitionHandler>().TransitionCanvas;
+        GameObject transition_canvas = ReferenceAssistor.Instance.transition_handler.TransitionCanvas;
         bool scenario_loaded = false;
         bool switched_to_load_screen = false;
         while (true)

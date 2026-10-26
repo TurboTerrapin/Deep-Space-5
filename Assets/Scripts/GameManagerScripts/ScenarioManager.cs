@@ -2,7 +2,7 @@
     ScenarioManager.cs
     - Handles loading and transitioning of scenarios
     Contributor(s): John Aylward, Jake Schott, Henryk Musial
-    Last Updated: 8/10/2026
+    Last Updated: 10/26/2026
 */
 
 using System.Collections;
@@ -32,8 +32,8 @@ public class ScenarioManager : NetworkBehaviour
     {
         new int[]{ 1, 1, 2, 2, 3 }, //easy
         new int[]{ 1, 2, 2, 3, 2, 3}, //medium
-        new int[]{ 2, 2, 1, 2, 1, 2, 3, 3}, //hard
-        new int[]{ 2, 2, 3, 2, 2, 3, 2, 3, 2, 3} //expert
+        new int[]{ 2, 2, 1, 2, 1, 2, 3}, //hard
+        new int[]{ 2, 2, 3, 2, 2, 3, 2, 3} //expert
     };
     private static string[][] SCENARIO_POSSIBILITIES = new string[][]
     {
@@ -59,10 +59,6 @@ public class ScenarioManager : NetworkBehaviour
         SelfDestructed
     }
 
-    public GameObject player_manager; 
-    public GameObject scenario_transitioner;
-    public GameObject failure_handler;
-
     private GameObject scenario_handler;
     private LobbyHandler lobby_handler;
     private ShipInventory ship_inventory;
@@ -70,7 +66,6 @@ public class ScenarioManager : NetworkBehaviour
     private ScenarioMap scenario_map;
     private PowerManager power_manager;
     private PowerControl power_control;
-    private LightsManager lights_manager;
     private BackgroundAnimator background_animator;
     private Coroutine countdown_coroutine = null;
 
@@ -103,7 +98,6 @@ public class ScenarioManager : NetworkBehaviour
         scenario_map = ReferenceAssistor.Instance.module_handlers[2].GetComponent<ScenarioMap>();
         power_manager = ReferenceAssistor.Instance.power_manager;
         power_control = ReferenceAssistor.Instance.module_handlers[4].GetComponent<PowerControl>();
-        lights_manager = GameObject.Find("LightsManager").GetComponent<LightsManager>();
         background_animator = GameObject.Find("BackgroundAnimator").GetComponent<BackgroundAnimator>();
         game_difficulty = lobby_handler.getDifficulty();
 
@@ -402,6 +396,13 @@ public class ScenarioManager : NetworkBehaviour
         endpoint_reached = false;
         ReferenceAssistor.Instance.spaceship.GetComponent<ShipMovement>().LockMovement();
 
+        if (num_scenarios_defeated == SCENARIO_SEQUENCE[game_difficulty].Length)
+        {
+            ReferenceAssistor.Instance.spaceship.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+            NetworkManager.Singleton.SceneManager.LoadScene("EndSequence", LoadSceneMode.Single);
+            return;
+        }
+
         string next_scenario = ""; //used for override for testing (blank means obey sequence and random)
 
         if (next_scenario.CompareTo("") == 0)
@@ -435,14 +436,14 @@ public class ScenarioManager : NetworkBehaviour
 
         powerAllStationsRPC();
 
-        //clear spawn locations
-        spawn_locations.Clear();
-        
-        //generate new entrance/exit path locations and angles
-        generatePaths();
-
         //reset transmission frequencies
         ReferenceAssistor.Instance.module_handlers[1].GetComponent<FrequencyAdjuster>().resetFrequencies();
+
+        //clear spawn locations
+        spawn_locations.Clear();
+
+        //generate new entrance/exit path locations and angles
+        generatePaths();
 
         //check for a scenario script and handle any sort of scenario prep (ex. starting an energy pattern, spawning cheeseballs)
         IScenario scenario_script = getScenarioScript();
@@ -564,7 +565,7 @@ public class ScenarioManager : NetworkBehaviour
         {
             endpoint_reached = true;
             num_scenarios_defeated++;
-            handleTransitionRPC(current_scenario_index, scenario_transitioner.GetComponent<TransitionHandler>().GetTransitionOption(), num_scenarios_defeated / (1.0f * SCENARIO_SEQUENCE[game_difficulty].Length));
+            handleTransitionRPC(current_scenario_index, ReferenceAssistor.Instance.transition_handler.GetTransitionOption(), num_scenarios_defeated / (1.0f * SCENARIO_SEQUENCE[game_difficulty].Length));
             return;
         }
 
@@ -646,7 +647,7 @@ public class ScenarioManager : NetworkBehaviour
         }
 
         //reset lights
-        lights_manager.resetLights();
+        ReferenceAssistor.Instance.lights_manager.resetLights();
 
         //reset certain controls
         ReferenceAssistor.Instance.module_handlers[0].GetComponent<SpatialCompositionAnalyzer>().resetToDefault();
@@ -699,7 +700,7 @@ public class ScenarioManager : NetworkBehaviour
         ReferenceAssistor.Instance.player_manager.getLocalPlayer().GetComponent<CameraMove>().ResetCameraEffects();
 
         //show transition
-        scenario_transitioner.GetComponent<TransitionHandler>().ShowTransition(transition_option, OverviewTracker.getStardate(percent_to_DSF), OverviewTracker.getDistanceToDSF(percent_to_DSF));
+        ReferenceAssistor.Instance.transition_handler.ShowTransition(transition_option, OverviewTracker.getStardate(percent_to_DSF), OverviewTracker.getDistanceToDSF(percent_to_DSF));
 
         //update overview screen in back of bridge
         ReferenceAssistor.Instance.module_handlers[4].GetComponent<OverviewTracker>().updateOverviewDisplay(percent_to_DSF);
@@ -734,7 +735,18 @@ public class ScenarioManager : NetworkBehaviour
         PrimaryScript.Instance.deactivate(false, true);
 
         //display death screen using scenario number sn and death message frm
-        failure_handler.GetComponent<FailureHandler>().displayDeathScreen(lobby_handler.getPlayerNamesInLobby(), lobby_handler.getPlayerSteamIDsInLobby(), OverviewTracker.getStardate(percent_to_DSF), failure_message, caught);
+        ReferenceAssistor.Instance.failure_handler.displayDeathScreen(lobby_handler.getPlayerNamesInLobby(), lobby_handler.getPlayerSteamIDsInLobby(), OverviewTracker.getStardate(percent_to_DSF), failure_message, caught);
+    }
+
+    //called by PlayerManager.scenarioLoadedRPC() when all players have loaded the EndSequence
+    [Rpc(SendTo.Everyone)]
+    public void handleEndSequenceRPC()
+    {
+        if (NetworkManager.Singleton.IsHost == true)
+        {
+            powerAllStationsRPC();
+        }
+        ((BridgePrimaryScript)PrimaryScript.Instance).enableStandingModeOnly();
     }
 
     //used to update the boundary expiration timer in engineer position

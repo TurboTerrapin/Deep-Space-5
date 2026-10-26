@@ -45853,7 +45853,7 @@ GameObject:
   - component: {fileID: 172495237}
   - component: {fileID: 172495238}
   m_Layer: 0
-  m_Name: ScenarioTransitioner
+  m_Name: TransitionHandler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -156090,7 +156090,6 @@ MonoBehaviour:
   spawn_points: {fileID: 1077929263}
   players_holder: {fileID: 1096093258}
   audio_manager: {fileID: 17234536}
-  scenario_transitioner: {fileID: 172495236}
 --- !u!1 &608131137
 GameObject:
   m_ObjectHideFlags: 0
@@ -252806,7 +252805,8 @@ MonoBehaviour:
   player_manager: {fileID: 607931634}
   power_manager: {fileID: 1117393096}
   scenario_manager: {fileID: 1782299889}
-  lights_manager: {fileID: 0}
+  transition_handler: {fileID: 172495238}
+  lights_manager: {fileID: 1205278334}
   seat_manager: {fileID: 525066848}
   hints_manager: {fileID: 261578152}
   training_handler: {fileID: 0}
@@ -452678,9 +452678,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  player_manager: {fileID: 607931631}
-  scenario_transitioner: {fileID: 172495236}
-  failure_handler: {fileID: 1294688394}
 --- !u!114 &1782299890
 MonoBehaviour:
   m_ObjectHideFlags: 0
