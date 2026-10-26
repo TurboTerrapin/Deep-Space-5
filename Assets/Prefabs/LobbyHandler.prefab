@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 3127675364283066209}
   - component: {fileID: 6818304668589893799}
   - component: {fileID: -218689836586187922}
-  - component: {fileID: 5298457094011414455}
   - component: {fileID: 1981894904706359914}
   m_Layer: 0
   m_Name: LobbyHandler
@@ -74,24 +73,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
---- !u!114 &5298457094011414455
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8625433946929067064}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a90a2e6fadb52844aa5430a7113c5e6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::VoiceChat
-  ShowTopMostFoldoutHeaderGroup: 1
-  AudioSource: {fileID: 1981894904706359914}
-  recording: 0
-  voiceActivated: 0
-  useVoice: 0
-  pushToTalkKey: 0
 --- !u!82 &1981894904706359914
 AudioSource:
   m_ObjectHideFlags: 0
