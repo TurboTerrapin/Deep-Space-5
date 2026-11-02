@@ -103,8 +103,8 @@ public class TrainingHandler : MonoBehaviour
         ReferenceAssistor.Instance.spaceship.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
         ReferenceAssistor.Instance.module_handlers[0].GetComponent<FlyingInstruments>().updateAltimeterScreen(0.0f);
         ReferenceAssistor.Instance.module_handlers[0].GetComponent<FlyingInstruments>().updateCourseHeadingScreen(0.0f, "90.0°");
-        ReferenceAssistor.Instance.module_handlers[2].GetComponent<ScenarioMap>().updateAltitude(0.0f);
-        ReferenceAssistor.Instance.module_handlers[2].GetComponent<ScenarioMap>().updateShipLocation(ReferenceAssistor.Instance.world_root.transform.position);
+        ReferenceAssistor.Instance.module_handlers[2].GetComponent<ScenarioNavigation>().updateAltitude(0.0f);
+        ReferenceAssistor.Instance.module_handlers[2].GetComponent<ScenarioNavigation>().updateShipLocation(ReferenceAssistor.Instance.world_root.transform.position);
     }
 
     public void endTraining(bool successful)

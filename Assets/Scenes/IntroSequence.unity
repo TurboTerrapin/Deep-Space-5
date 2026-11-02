@@ -1115,9 +1115,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   masterMixer: {fileID: 24100000, guid: 7bae398e1ad926142b2c77962f4a592f, type: 2}
-  audioSources:
-  - {fileID: 0}
-  - {fileID: 0}
+  ship_beeps: {fileID: 0}
+  ambient_noise: {fileID: 1256248516}
   computerVoiceSpeaker: {fileID: 0}
 --- !u!4 &17234538
 Transform:
@@ -49969,6 +49968,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77d8ee707f1eae8439852ccc92d952be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BriefingConsolePower
+  console_light: {fileID: 919053472}
   briefing_console_power_switch: {fileID: 8098773048289355612}
   briefing_console_power_display: {fileID: 1712525414}
   IK_target: {fileID: 1706350365}
@@ -96831,6 +96831,7 @@ GameObject:
   m_Component:
   - component: {fileID: 805206318}
   - component: {fileID: 805206319}
+  - component: {fileID: 805206320}
   m_Layer: 0
   m_Name: ReferenceAssistor
   m_TagString: Untagged
@@ -96908,7 +96909,10 @@ MonoBehaviour:
   spaceship: {fileID: 0}
   camera_settings: {fileID: 0}
   intro_sequence_manager: {fileID: 2008593879}
+  end_sequence_manager: {fileID: 0}
+  translation_helper: {fileID: 805206320}
   audio_manager: {fileID: 17234537}
+  background_animator: {fileID: 0}
   effects_handler: {fileID: 0}
   failure_handler: {fileID: 0}
   player_manager: {fileID: 0}
@@ -96919,6 +96923,18 @@ MonoBehaviour:
   seat_manager: {fileID: 0}
   hints_manager: {fileID: 2120449624}
   training_handler: {fileID: 0}
+--- !u!114 &805206320
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 805206317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f00618fda0198f242b8c963629a24fb3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TranslationHelper
 --- !u!1 &805232698
 GameObject:
   m_ObjectHideFlags: 0
@@ -122651,7 +122667,7 @@ GameObject:
   - component: {fileID: 919053472}
   - component: {fileID: 919053471}
   m_Layer: 0
-  m_Name: Light
+  m_Name: Console Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -122666,7 +122682,7 @@ Transform:
   m_GameObject: {fileID: 919053469}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 43.1, y: -7.199997, z: 2.5}
+  m_LocalPosition: {x: 43.1, y: -7.2, z: 2.25}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -122712,7 +122728,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0, g: 0.8352941, b: 1, a: 1}
-  m_Intensity: 3
+  m_Intensity: 7
   m_Range: 5
   m_SpotAngle: 145
   m_InnerSpotAngle: 0
@@ -242281,7 +242297,7 @@ Transform:
   m_GameObject: {fileID: 1820113879}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 43.1, y: -11.199995, z: 2.5}
+  m_LocalPosition: {x: 43.1, y: -11.199995, z: 2.25}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -242327,7 +242343,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0, g: 0.8352941, b: 1, a: 1}
-  m_Intensity: 3
+  m_Intensity: 7
   m_Range: 5
   m_SpotAngle: 145
   m_InnerSpotAngle: 0
@@ -277516,7 +277532,7 @@ Transform:
   m_GameObject: {fileID: 2121150527}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 43.1, y: -3.1999984, z: 2.5}
+  m_LocalPosition: {x: 43.1, y: -3.2, z: 2.25}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -277562,7 +277578,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0, g: 0.8352941, b: 1, a: 1}
-  m_Intensity: 3
+  m_Intensity: 7
   m_Range: 5
   m_SpotAngle: 145
   m_InnerSpotAngle: 0
@@ -288388,7 +288404,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 812361465
+  GlobalObjectIdHash: 3891612235
   InScenePlacedSourceGlobalObjectIdHash: 2290305919
   DeferredDespawnTick: 0
   Ownership: 1

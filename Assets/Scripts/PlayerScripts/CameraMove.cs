@@ -127,7 +127,6 @@ public class CameraMove : MonoBehaviour
     public void ReactivateCamera()
     {
         cameraShakeEffects.Clear();
-        FaceWindow();
         myCamera.gameObject.SetActive(true);
 
         if (myCamera != null)
@@ -176,21 +175,21 @@ public class CameraMove : MonoBehaviour
     }
 
     //Faces window if standing
-    private void FaceWindow()
+    public void FaceWindow()
     {
         if (parentRotationLock == true)
         {
             return;
         }
 
-        Transform window = GameObject.Find("WindowLookPoint").transform;
+        GameObject window = GameObject.Find("WindowLookPoint");
         if (window == null)
         {
             return;
         }
 
-        transform.LookAt(window.position);
-        cameraHolder.LookAt(window.position);
+        transform.LookAt(window.transform.position);
+        cameraHolder.LookAt(window.transform.position);
 
         prevPos.x = transform.localRotation.eulerAngles.y % 360.0f;
         prevPos.y = Mathf.Clamp(cameraHolder.localRotation.eulerAngles.x, -90.0f, 90.0f);

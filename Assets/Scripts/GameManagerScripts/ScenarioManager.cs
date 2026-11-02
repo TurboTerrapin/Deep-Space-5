@@ -2,7 +2,7 @@
     ScenarioManager.cs
     - Handles loading and transitioning of scenarios
     Contributor(s): John Aylward, Jake Schott, Henryk Musial
-    Last Updated: 10/26/2026
+    Last Updated: 10/27/2026
 */
 
 using System.Collections;
@@ -30,7 +30,7 @@ public class ScenarioManager : NetworkBehaviour
     private static int[] COUNTDOWN_TIME = new int[] { 900, 720, 600, 360 }; //how long each round lasts before scenario failure based on difficulty
     private static int[][] SCENARIO_SEQUENCE = new int[][] //denotes number of scenarios and scenario tier (1-3) to reach Deep Space Five
     {
-        new int[]{ 1, 1, 2, 2, 3 }, //easy
+        new int[]{ 1, 1, 2, 2, 3}, //easy
         new int[]{ 1, 2, 2, 3, 2, 3}, //medium
         new int[]{ 2, 2, 1, 2, 1, 2, 3}, //hard
         new int[]{ 2, 2, 3, 2, 2, 3, 2, 3} //expert
@@ -63,10 +63,9 @@ public class ScenarioManager : NetworkBehaviour
     private LobbyHandler lobby_handler;
     private ShipInventory ship_inventory;
     private ScenarioCountdown scenario_countdown;
-    private ScenarioMap scenario_map;
+    private ScenarioNavigation scenario_navigation;
     private PowerManager power_manager;
     private PowerControl power_control;
-    private BackgroundAnimator background_animator;
     private Coroutine countdown_coroutine = null;
 
     private List<Vector3> spawn_locations = new List<Vector3>();
@@ -95,10 +94,9 @@ public class ScenarioManager : NetworkBehaviour
         lobby_handler = GameObject.Find("LobbyHandler").GetComponent<LobbyHandler>();
         ship_inventory = ReferenceAssistor.Instance.spaceship.GetComponent<ShipInventory>();
         scenario_countdown = ReferenceAssistor.Instance.module_handlers[2].GetComponent<ScenarioCountdown>();
-        scenario_map = ReferenceAssistor.Instance.module_handlers[2].GetComponent<ScenarioMap>();
+        scenario_navigation = ReferenceAssistor.Instance.module_handlers[2].GetComponent<ScenarioNavigation>();
         power_manager = ReferenceAssistor.Instance.power_manager;
         power_control = ReferenceAssistor.Instance.module_handlers[4].GetComponent<PowerControl>();
-        background_animator = GameObject.Find("BackgroundAnimator").GetComponent<BackgroundAnimator>();
         game_difficulty = lobby_handler.getDifficulty();
 
         for (int tier = 0; tier < 3; tier++)
@@ -391,7 +389,7 @@ public class ScenarioManager : NetworkBehaviour
     }
 
     //called when start of scenario transition
-    public void loadNewScenario()
+    public void loadNextScene()
     {
         endpoint_reached = false;
         ReferenceAssistor.Instance.spaceship.GetComponent<ShipMovement>().LockMovement();
@@ -400,6 +398,7 @@ public class ScenarioManager : NetworkBehaviour
         {
             ReferenceAssistor.Instance.spaceship.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
             NetworkManager.Singleton.SceneManager.LoadScene("EndSequence", LoadSceneMode.Single);
+            current_scenario_index = -1;
             return;
         }
 
@@ -425,7 +424,7 @@ public class ScenarioManager : NetworkBehaviour
         NetworkManager.Singleton.SceneManager.LoadScene(next_scenario, LoadSceneMode.Single);
     }
 
-    //called by PlayerManager.scenarioLoadedRPC() when all players have loaded the scenario scene
+    //called by PlayerManager.sceneLoadedRPC() when all players have loaded the scenario scene
     public void prepScenario(bool first_scenario)
     {
         //initialize inventory if first scenario
@@ -465,7 +464,7 @@ public class ScenarioManager : NetworkBehaviour
         }
     }
 
-    //called by PlayerManager.startScenarioRPC()
+    //called by PlayerManager.endTransitionRPC()
     public void startScenario()
     {
         //host-only stuff
@@ -511,7 +510,6 @@ public class ScenarioManager : NetworkBehaviour
         yield return new WaitForSeconds(2.0f); //2-second courtesy
 
         countdown_coroutine = null;
-
         endScenario(EndCondition.TimeRanOut);
     }
 
@@ -621,7 +619,7 @@ public class ScenarioManager : NetworkBehaviour
         exit_position = exit_pos;
         exit_rotation = exit_rot;
 
-        scenario_map.updatePathLocations(entrance_position, entrance_rotation, exit_position, exit_rotation);
+        scenario_navigation.updatePathLocations(entrance_position, entrance_rotation, exit_position, exit_rotation);
         ReferenceAssistor.Instance.spaceship.GetComponent<ShipMovement>().SetPaths(entrance_position, entrance_rotation, exit_position, exit_rotation);
 
         //if host, position the ship to entrance position and let the network sync the transform
@@ -638,7 +636,7 @@ public class ScenarioManager : NetworkBehaviour
         power_manager.resetPowerManager();
 
         //reset BackgroundAnimator
-        background_animator.enableAllScreens();
+        ReferenceAssistor.Instance.background_animator.enableAllScreens();
 
         //power down all stations
         for (int i = 0; i < 4; i++)
@@ -708,12 +706,12 @@ public class ScenarioManager : NetworkBehaviour
         //if host, begin to load the next scenario
         if (NetworkManager.Singleton.IsHost == true)
         {
-            loadNewScenario();
+            loadNextScene();
         } 
     }
 
     [Rpc(SendTo.Everyone)]
-    private void powerAllStationsRPC()
+    public void powerAllStationsRPC()
     {
         for (int i = 0; i < 4; i++)
         {
@@ -728,25 +726,16 @@ public class ScenarioManager : NetworkBehaviour
         //set game over to true
         game_over = true;
 
-        //mute audio
-        ReferenceAssistor.Instance.audio_manager.MuteSFX();
-
         //stop checking for controls/seats
         PrimaryScript.Instance.deactivate(false, true);
 
-        //display death screen using scenario number sn and death message frm
-        ReferenceAssistor.Instance.failure_handler.displayDeathScreen(lobby_handler.getPlayerNamesInLobby(), lobby_handler.getPlayerSteamIDsInLobby(), OverviewTracker.getStardate(percent_to_DSF), failure_message, caught);
-    }
+        //mute default sounds
+        ReferenceAssistor.Instance.audio_manager.MuteShipBeeps();
+        ReferenceAssistor.Instance.audio_manager.MuteAmbientNoise();
+        ReferenceAssistor.Instance.audio_manager.DeactivateComputerVoice();
 
-    //called by PlayerManager.scenarioLoadedRPC() when all players have loaded the EndSequence
-    [Rpc(SendTo.Everyone)]
-    public void handleEndSequenceRPC()
-    {
-        if (NetworkManager.Singleton.IsHost == true)
-        {
-            powerAllStationsRPC();
-        }
-        ((BridgePrimaryScript)PrimaryScript.Instance).enableStandingModeOnly();
+        //display death screen using scenario number and death message
+        ReferenceAssistor.Instance.failure_handler.displayDeathScreen(lobby_handler.getPlayerNamesInLobby(), lobby_handler.getPlayerSteamIDsInLobby(), OverviewTracker.getStardate(percent_to_DSF), failure_message, caught);
     }
 
     //used to update the boundary expiration timer in engineer position

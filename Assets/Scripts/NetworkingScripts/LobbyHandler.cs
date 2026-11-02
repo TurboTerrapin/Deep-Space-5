@@ -3,7 +3,7 @@
     - Handles RPCs that pertain to lobby functions, ex. load initiation, difficulty handling
     - Keeps track of who is actually in and connected in the lobby
     Contributor(s): Jake Schott
-    Last Updated: 10/5/2026
+    Last Updated: 11/1/2026
 */
 
 using UnityEngine;
@@ -35,11 +35,6 @@ public class LobbyHandler : NetworkBehaviour
             player_client_ids.Add(0, SteamClient.SteamId);
             player_names[0] = SteamClient.Name;
             player_connecteds[0] = false;
-            if (SceneManager.GetActiveScene().name.CompareTo("TrainingEnvironment") != 0)
-            {
-                SteamMatchmaking.OnLobbyMemberJoined += onSteamLobbyJoined;
-                SteamMatchmaking.OnLobbyMemberLeave += onSteamLobbyLeft;
-            }
         }
         else
         {
@@ -50,6 +45,8 @@ public class LobbyHandler : NetworkBehaviour
         }
         if (SceneManager.GetActiveScene().name.CompareTo("TrainingEnvironment") != 0)
         {
+            SteamMatchmaking.OnLobbyMemberJoined += onSteamLobbyJoined;
+            SteamMatchmaking.OnLobbyMemberLeave += onSteamLobbyLeft;
             heartbeat_coroutines.Add(SteamClient.SteamId, StartCoroutine(heartbeatSender())); //send out heartbeat pings
         }
         NetworkManager.Singleton.OnClientConnectedCallback += onClientConnect;
@@ -57,14 +54,14 @@ public class LobbyHandler : NetworkBehaviour
 
     private void OnDisable()
     {
+        if (SceneManager.GetActiveScene().name.CompareTo("TrainingEnvironment") != 0)
+        {
+            SteamMatchmaking.OnLobbyMemberJoined -= onSteamLobbyJoined;
+            SteamMatchmaking.OnLobbyMemberLeave -= onSteamLobbyLeft;
+        }
         if (NetworkManager.Singleton != null)
         {
             NetworkManager.Singleton.OnClientConnectedCallback -= onClientConnect;
-            if (NetworkManager.Singleton.IsHost == true && SceneManager.GetActiveScene().name.CompareTo("TrainingEnvironment") == 0)
-            {
-                SteamMatchmaking.OnLobbyMemberJoined -= onSteamLobbyJoined;
-                SteamMatchmaking.OnLobbyMemberLeave -= onSteamLobbyLeft;
-            }
         }
     }
 
@@ -74,6 +71,15 @@ public class LobbyHandler : NetworkBehaviour
         {
             DontDestroyOnLoad(gameObject);
         }
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        if (GameNetworkManager.Instance.AlreadyDisconnected() == false)
+        {
+            GameNetworkManager.Instance.HandleHostDisconnect();
+        }
+        base.OnNetworkDespawn();
     }
 
     //called by CampaignLobbyController.cs when checking difficulty boxes
@@ -195,7 +201,7 @@ public class LobbyHandler : NetworkBehaviour
             }
             lobbyFinalizedRPC(client_ids[0], client_ids[1], client_ids[2]);
         }
-
+        updateDifficultyRPC(difficulty);
         allPlayersLoadRPC(); //triggers below RPC
     }
 
@@ -267,8 +273,13 @@ public class LobbyHandler : NetworkBehaviour
 
     private void onSteamLobbyLeft(Lobby l, Friend f)
     {
+        Debug.Log(f.Name + " has left the Steam lobby");
         if (NetworkManager.Singleton.IsHost == false || player_steam_ids.Contains(f.Id) == false)
         {
+            if (f.Id == player_steam_ids[0]) //if host leaves the Steam lobby, the game is over
+            {
+                GameNetworkManager.Instance.HandleHostDisconnect();
+            }
             return;
         }
 

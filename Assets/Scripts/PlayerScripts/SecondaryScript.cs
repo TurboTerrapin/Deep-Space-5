@@ -3,14 +3,13 @@
     - Helps with secondary info that isn't primary control interactions
     - Handles displaying pop-up notifications
     Contributor(s): Jake Schott
-    Last Updated: 10/5/2026
+    Last Updated: 11/1/2026
 */
 
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class SecondaryScript : MonoBehaviour
 {
@@ -23,12 +22,12 @@ public class SecondaryScript : MonoBehaviour
     private GameObject stations_button;
     private GameObject current_station_indicator;
     private GameObject station_functions;
-    private GameObject mission_objective;
     private GameObject sitting_overlay;
     private GameObject sitting_left_side;
     private GameObject sitting_right_side;
     private GameObject primary_default_power_circles;
 
+    private bool permanent_overlay_top_accessible = true;
     private List<int> popup_notification_queue = new List<int>();
     private float displayed_power = 0.0f;
     private Coroutine popup_notification_animation_coroutine = null;
@@ -39,44 +38,59 @@ public class SecondaryScript : MonoBehaviour
         stations_button = permanent_overlay.transform.GetChild(0).gameObject;
         current_station_indicator = permanent_overlay.transform.GetChild(1).gameObject;
         station_functions = permanent_overlay.transform.GetChild(2).gameObject;
-        mission_objective = permanent_overlay.transform.GetChild(3).gameObject;
         sitting_overlay = secondary_info.transform.GetChild(1).gameObject;
         sitting_left_side = sitting_overlay.transform.GetChild(0).gameObject;
         sitting_right_side = sitting_overlay.transform.GetChild(1).gameObject;
         primary_default_power_circles = transform.GetChild(1).GetChild(0).GetChild(1).GetChild(3).GetChild(1).gameObject;
     }
 
-    public void setSecondaryInfoVisibility(bool active)
+    public void setPermanentOverlayTopAccessible(bool accessible)
     {
-        secondary_info.SetActive(active);
+        permanent_overlay_top_accessible = accessible;
+        setPermanentOverlayTopVisibility(stations_button.activeSelf && accessible);
     }
 
-    public void setPermanentOverlayVisibility(bool active)
+    public void setSecondaryInfoVisibility(bool visible)
     {
-        permanent_overlay.SetActive(active);
+        if (visible == false)
+        {
+            clearPopupNotifications();
+        }
+        secondary_info.SetActive(visible);
     }
 
-    private void setPermanentOverlayTopVisibility(bool active)
+    public void updateSecondaryInfoConfiguration(int HUD_setting)
     {
-        stations_button.SetActive(active);
-        current_station_indicator.SetActive(active);
+        setPermanentOverlayVisibility(HUD_setting == 0);
+        setPermanentOverlayTopVisibility(HUD_setting == 0 && permanent_overlay_top_accessible);
     }
 
-    public void setSittingOverlayVisibility(bool active)
+    public void setPermanentOverlayVisibility(bool visible)
     {
-        sitting_overlay.SetActive(active);
+        permanent_overlay.SetActive(visible);
     }
 
-    public void setSittingRightSideVisibility(bool active)
+    private void setPermanentOverlayTopVisibility(bool visible)
     {
-        sitting_right_side.SetActive(active);
+        stations_button.SetActive(visible);
+        current_station_indicator.SetActive(visible);
+    }
+
+    public void setSittingOverlayVisibility(bool visible)
+    {
+        sitting_overlay.SetActive(visible);
+    }
+
+    public void setSittingRightSideVisibility(bool visible)
+    {
+        sitting_right_side.SetActive(visible);
     }
 
     //updates station indicator in top right as well as colors on top
     public void onStationChange(Color c, Texture icon)
     {
         //handle station functions top left indicator and station icon top right indicator
-        if (SceneManager.GetActiveScene().name.CompareTo("IntroSequence") != 0)
+        if (permanent_overlay_top_accessible == true)
         {
             //update station icon
             current_station_indicator.transform.GetChild(2).gameObject.SetActive(icon != null);
@@ -251,7 +265,7 @@ public class SecondaryScript : MonoBehaviour
     {
         bool inputted = PrimaryScript.checkInputIndexDown(15);
 
-        if ((SceneManager.GetActiveScene().name.CompareTo("IntroSequence") == 0) || (inputted == false && force_hide == false))
+        if ((force_hide == false && inputted == false) || stations_button.transform.childCount == 0)
         {
             return;
         }
@@ -268,7 +282,6 @@ public class SecondaryScript : MonoBehaviour
         stations_button.transform.GetChild(4).GetComponent<CanvasGroup>().alpha = a;
         GetComponent<PrimaryScript>().setCursorVisibility(hide && !force_hide);
     }
-
 
     public void displayPopupNotification(int popup_index)
     {
@@ -307,7 +320,7 @@ public class SecondaryScript : MonoBehaviour
     private void clearPopupNotifications()
     {
         //show stations button and current station indicator
-        setPermanentOverlayTopVisibility(true);
+        setPermanentOverlayTopVisibility(permanent_overlay_top_accessible);
 
         //clear pop-up queue
         popup_notification_queue.Clear();
@@ -373,8 +386,11 @@ public class SecondaryScript : MonoBehaviour
 
         yield return null;
 
-        PrimaryScript.Instance.activate();
-        setPermanentOverlayTopVisibility(true);
+        if (PrimaryScript.Instance.getPlayerCamera().activeInHierarchy == true)
+        {
+            PrimaryScript.Instance.activate();
+        }
+        setPermanentOverlayTopVisibility(permanent_overlay_top_accessible);
         popup_notification_animation_coroutine = null;
         checkForPopupNotificationToDisplay();
     }

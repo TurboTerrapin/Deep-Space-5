@@ -4,7 +4,7 @@
     - Records changes in power consumption (as called by the individual controls)
     - Handles overconsumption and complete shutdown
     Contributor(s): Jake Schott
-    Last Updated: 10/21/2026
+    Last Updated: 10/27/2026
 */
 
 using System.Collections;
@@ -20,7 +20,7 @@ public class PowerManager : NetworkBehaviour, IPowerable
     private static float POWER_OFF_TIME = 1.0f; //how long it takes to power down a position
     private static float POWER_UPDATE_TIME = 0.5f; //how often the power consumption displays update
     private static float TIME_TO_POWER_LOSS = 3.0f; //once a position overconsumes power, how long until ship shutdown
-    public static int[] DEFAULT_POWER_ALLOCATIONS = new int[] { 8, 6, 5, 5 }; //communicated to PowerAllocation
+    public static int[] DEFAULT_POWER_ALLOCATIONS = new int[] { 8, 6, 5, 5 }; //used by PowerAllocation
 
     public List<GameObject> position_power_displays = null;
     public List<GameObject> engineer_power_displays = null;
@@ -730,11 +730,11 @@ public class PowerManager : NetworkBehaviour, IPowerable
     private void addEngineerModules()
     {
         List<Component> engineer_modules = new List<Component>();
-        engineer_modules.Add(ReferenceAssistor.Instance.module_handlers[2].GetComponent("ScenarioMap")); //1
+        engineer_modules.Add(ReferenceAssistor.Instance.module_handlers[2].GetComponent("ScenarioNavigation")); //1
         engineer_modules.Add(ReferenceAssistor.Instance.module_handlers[2].GetComponent("ScenarioCountdown")); //2
         engineer_modules.Add(ReferenceAssistor.Instance.module_handlers[2].GetComponent("PhaserFrequency")); //3
         engineer_modules.Add(ReferenceAssistor.Instance.module_handlers[2].GetComponent("EnergyPattern")); //4
-        engineer_modules.Add(ReferenceAssistor.Instance.module_handlers[2].GetComponent("ScenarioMap")); //5
+        engineer_modules.Add(ReferenceAssistor.Instance.module_handlers[2].GetComponent("ScenarioNavigation")); //5
         engineer_modules.Add(ReferenceAssistor.Instance.module_handlers[2].GetComponent("PowerAllocation")); //6
         engineer_modules.Add(ReferenceAssistor.Instance.module_handlers[2].GetComponent("PowerAllocation")); //7
         engineer_modules.Add(ReferenceAssistor.Instance.module_handlers[2].GetComponent("PhaserHeat")); //8

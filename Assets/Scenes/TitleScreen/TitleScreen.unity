@@ -27278,6 +27278,7 @@ MonoBehaviour:
   CustomizationMenu: {fileID: 820769105}
   SettingsMenu: {fileID: 1987510632}
   MainMenuContents: {fileID: 463838303}
+  TipsController: {fileID: 1925340356}
   CampaignButton: {fileID: 1445022564}
   CampaignText: {fileID: 264627818}
   CampaignBorder: {fileID: 1977124723}
@@ -92216,7 +92217,6 @@ MonoBehaviour:
   TitleScreenCameraPositions: {fileID: 1495146886}
   MusicSource: {fileID: 1532734219}
   TitleScreenAudio: {fileID: 8300000, guid: 308bd665f5e58b84fab5894a221ce209, type: 3}
-  SFXTest: {fileID: 0}
   RingHalves:
   - {fileID: 1942659318}
   - {fileID: 735417849}

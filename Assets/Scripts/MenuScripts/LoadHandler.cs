@@ -4,7 +4,7 @@
     - Handles displaying disconnection and connecting (...) screens
     - Handles Steam checks
     Contributor(s): Jake Schott, Beata Musial
-    Last Updated: 10/26/2026
+    Last Updated: 11/1/2026
 */
 
 using System.Collections;
@@ -71,6 +71,7 @@ public class LoadHandler : MonoBehaviour
     {
         if (SceneManager.GetActiveScene().name.Equals("TitleScreen") == true && connection_lost.activeSelf == false)
         {
+
             if (SteamClient.IsValid == false || SteamClient.IsLoggedOn == false)
             {
                 steam_failure.SetActive(true);
@@ -217,6 +218,8 @@ public class LoadHandler : MonoBehaviour
                 main_menu.transform.GetChild(i).gameObject.SetActive(false);
             }
             GameObject.Find("TitleScreen").GetComponent<TitleScreenController>().TitleScreenContents.SetActive(false);
+            UnityEngine.Cursor.visible = true;
+            UnityEngine.Cursor.lockState = CursorLockMode.None;
         }
     }
 
@@ -261,7 +264,7 @@ public class LoadHandler : MonoBehaviour
             PlayerManager.clearDontDestroyOnLoads(true);
             SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
             startLoad();
-            while (SceneManager.GetActiveScene().name != "TitleScreen") //get back to TitleScreen
+            while (SceneManager.GetActiveScene().name != "TitleScreen") //get back to TitleScreen and shutdown NetworkManager
             {
                 yield return null;
             }
@@ -277,7 +280,7 @@ public class LoadHandler : MonoBehaviour
             }
             PrimaryScript.Instance.unpause(); //forces unpause
             PrimaryScript.Instance.deactivate(false, true); //stops control interaction
-            ReferenceAssistor.Instance.audio_manager.GetComponent<AudioManager>().MuteSFX(); //mute SFX
+            ReferenceAssistor.Instance.audio_manager.MuteSFX(); //mute SFX
             PlayerManager.clearDontDestroyOnLoads(false);
             CameraMove.HideMainCamera();
             enableDummyCameraIfNecessary();
@@ -307,7 +310,11 @@ public class LoadHandler : MonoBehaviour
         connection_lost.SetActive(false);
         if (SceneManager.GetActiveScene().name.Equals("TitleScreen") == true)
         {
-            GameObject.Find("MainMenuCanvas").transform.GetChild(0).gameObject.SetActive(titleScreenSteamCheck() == true);
+            if (titleScreenSteamCheck() == true)
+            {
+                GameObject.Find("MainMenuCanvas").transform.GetChild(0).gameObject.SetActive(true);
+                GameObject.Find("MainMenuCanvas").transform.GetChild(0).GetComponent<MainMenuController>().InitializeMainMenu();
+            }
         }
         else
         {
@@ -434,7 +441,7 @@ public class LoadHandler : MonoBehaviour
                 if (load_operation != null && load_operation.isDone == true)
                 {
                     //tell PlayerManager that the new scenario is loaded
-                    ReferenceAssistor.Instance.player_manager.signifyScenarioLoaded();
+                    ReferenceAssistor.Instance.player_manager.signifySceneLoaded();
                     scenario_loaded = true;
                     load_operation = null;
                 }

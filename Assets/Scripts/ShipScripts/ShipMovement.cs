@@ -6,7 +6,7 @@
     - Handles getting "stunned" when running into immovable objects
     - Tells ScenarioManager when ship reaches endpoint or leaves boundary for too long
     Contributor(s): Henryk Musial
-    Last Updated: 8/27/2026
+    Last Updated: 10/27/2026
 */
 
 using System.Collections;
@@ -26,7 +26,7 @@ public class ShipMovement : NetworkBehaviour
     private float maxRotationSpeed = 25.0f;
 
     [Header("Miscellaneous Settings")]
-    private int outOfBoundsCountdown = 15;
+    private int outOfBoundsCountdown = 1;
 
     // Component references
     private ImpulseThrottle impulseThrottle;
@@ -35,7 +35,7 @@ public class ShipMovement : NetworkBehaviour
     private VerticalThrusters verticalThrusters;
     private FlyingInstruments flyingInstruments;
     private ProximityMap proximityMap;
-    private ScenarioMap scenarioMap;
+    private ScenarioNavigation scenarioNavigation;
     private ProbeController probeController;
 
     // Input values
@@ -70,7 +70,7 @@ public class ShipMovement : NetworkBehaviour
     private float exitSlope = 0.0f;
     private float[] exitIntercepts = new float[2];
     private bool insideBoundary = true;
-    private bool insideAltitudeBoundary = true; // Used for altitude boundary display in ScenarioMap
+    private bool insideAltitudeBoundary = true; // Used for altitude boundary display in scenarioNavigation
     private Coroutine boundaryCountdownCoroutine = null;
 
     private void AssignControlReferences()
@@ -83,7 +83,7 @@ public class ShipMovement : NetworkBehaviour
 
         flyingInstruments = ReferenceAssistor.Instance.module_handlers[0].GetComponent<FlyingInstruments>();
         proximityMap = ReferenceAssistor.Instance.module_handlers[1].GetComponent<ProximityMap>();
-        scenarioMap = ReferenceAssistor.Instance.module_handlers[2].GetComponent<ScenarioMap>();
+        scenarioNavigation = ReferenceAssistor.Instance.module_handlers[2].GetComponent<ScenarioNavigation>();
     }
 
     private void Start()
@@ -518,21 +518,21 @@ public class ShipMovement : NetworkBehaviour
         {
             insideBoundary = withinBoundary;
             insideAltitudeBoundary = withinAltitudeBoundary;
-            scenarioMap.updateShipBoundaryStatus(insideBoundary, insideAltitudeBoundary);
+            scenarioNavigation.updateShipBoundaryStatus(insideBoundary, insideAltitudeBoundary);
         }
     }
 
     [Rpc(SendTo.Everyone)]
     private void ShipBoundaryCountdownChangeRPC(int countdownValue)
     {
-        scenarioMap.updateShipBoundaryCountdownStatus(countdownValue);
+        scenarioNavigation.updateShipBoundaryCountdownStatus(countdownValue);
     }
 
     [Rpc(SendTo.Everyone)]
     private void LateralMovementRPC(Vector3 newPosition)
     {
         // Update map
-        scenarioMap.updateShipLocation(newPosition);
+        scenarioNavigation.updateShipLocation(newPosition);
 
         // If host, check boundary
         if (NetworkManager.Singleton.IsHost == true)
@@ -547,14 +547,14 @@ public class ShipMovement : NetworkBehaviour
         proximityMap.rotateMap(shipRotation);
         string currentHeading = FlyingInstruments.getRoundedDegreeReading(shipRotation + 90.0f);
         flyingInstruments.updateCourseHeadingScreen(shipRotation, currentHeading);
-        scenarioMap.updateShipOrientation(shipRotation, currentHeading, GetTargetHeading());
+        scenarioNavigation.updateShipOrientation(shipRotation, currentHeading, GetTargetHeading());
     }
 
     [Rpc(SendTo.Everyone)]
     private void AltitudeChangeRPC(float shipAltitude)
     {
         flyingInstruments.updateAltimeterScreen(shipAltitude);
-        scenarioMap.updateAltitude(shipAltitude);
+        scenarioNavigation.updateAltitude(shipAltitude);
 
         // If host, check boundary
         if (NetworkManager.Singleton.IsHost == true)

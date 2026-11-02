@@ -272,7 +272,7 @@ public abstract class PrimaryScript : MonoBehaviour
             default_view.SetActive(HUD_setting < 2); //default
             minimized_view.SetActive(HUD_setting == 2); //minimized
             control_update_flag = true; //forces an update
-            GetComponent<SecondaryScript>().setPermanentOverlayVisibility(HUD_setting == 0);
+            GetComponent<SecondaryScript>().updateSecondaryInfoConfiguration(HUD_setting);
         }
     }
 
@@ -350,13 +350,7 @@ public abstract class PrimaryScript : MonoBehaviour
         GetComponent<SecondaryScript>().setPermanentOverlayVisibility(is_active && HUD_setting == 0);
         GetComponent<SecondaryScript>().setSittingOverlayVisibility(is_active && is_sitting && HUD_setting == 0);
         paused = false;
-        if (is_active == true)
-        {
-            if (HUD_setting != 4)
-            {
-                cursor.SetActive(GetComponent<SecondaryScript>().isDisplayingPopupNotification() == false);
-            }
-        }
+        cursor.SetActive(is_active && plr_camera != null && plr_camera.gameObject.activeInHierarchy && HUD_setting != 4 && !GetComponent<SecondaryScript>().isDisplayingPopupNotification());
     }
 
     public void activate()
@@ -374,6 +368,7 @@ public abstract class PrimaryScript : MonoBehaviour
         is_active = false;
         can_pause = allow_pausing;
         GetComponent<SecondaryScript>().setSecondaryInfoVisibility(false);
+        GetComponent<SecondaryScript>().checkStationFunctionsInput(true);
         if (allow_pausing == false && paused == true)
         {
             unpause();
@@ -384,6 +379,11 @@ public abstract class PrimaryScript : MonoBehaviour
             UnityEngine.Cursor.lockState = CursorLockMode.None;
         }
         cursor.SetActive(false);
+    }
+
+    public GameObject getPlayerCamera()
+    {
+        return plr_camera.gameObject;
     }
 
     public int getHUD()

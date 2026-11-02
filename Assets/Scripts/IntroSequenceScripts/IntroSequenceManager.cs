@@ -170,6 +170,7 @@ public class IntroSequenceManager : MonoBehaviour
     IEnumerator openingScene()
     {
         PrimaryScript.Instance.unlockPlayer(player);
+        PrimaryScript.Instance.GetComponent<SecondaryScript>().setPermanentOverlayTopAccessible(false);
         PrimaryScript.Instance.deactivate(true, false);
         opening_scene_canvas.SetActive(true);
         yield return new WaitForSeconds(1.0f);

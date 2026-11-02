@@ -168,7 +168,7 @@ public class UniversalSettingsController : MonoBehaviour
         HandleHUDDropdownClicked(HUDIndex);
 
         // Loads player hints toggle preference (default is true if nothing is saved)
-        bool isHintsOn = PlayerPrefs.GetInt("Hints", 0) == 1;
+        bool isHintsOn = PlayerPrefs.GetInt("Hints", 1) == 1;
         // Enables/disables checkmark
         HintsToggle.isOn = isHintsOn;
         // Applies hints visibility
@@ -348,7 +348,7 @@ public class UniversalSettingsController : MonoBehaviour
 
     public void HandleSFXVolumeDragged(float volume)
     {
-        if (PrimaryScript.Instance == null || ReferenceAssistor.Instance.audio_manager.GetCurrentlyMuted() == false)
+        if (PrimaryScript.Instance == null || ReferenceAssistor.Instance.audio_manager.GetSFXMuted() == false)
         {
             MasterMixer.SetFloat("SFX", 20 * Mathf.Log10(Mathf.Max(volume, 0.0001f)));
         }

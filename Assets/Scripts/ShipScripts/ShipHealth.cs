@@ -4,7 +4,7 @@
     - Handles hull integrity (health of the most damaged section)
     - Updates screens in engineer position
     Contributor(s): Jake Schott
-    Last Updated: 6/13/2026
+    Last Updated: 10/26/2026
 */
 
 using System.Collections;
@@ -29,8 +29,6 @@ public class ShipHealth : NetworkBehaviour, IPowerable
     public List<AudioClip> hull_creak_sounds = null;
     public List<AudioClip> hull_integrity_notifications = null;
     public AudioSource hull_creak_source;
-    private PlayerManager player_manager;
-    private ScenarioManager scenario_manager;
     private ShieldStrength shield_strength;
 
     public List<GameObject> ship_health_indicators = null;
@@ -45,8 +43,6 @@ public class ShipHealth : NetworkBehaviour, IPowerable
 
     private void Start()
     {
-        player_manager = ReferenceAssistor.Instance.player_manager;
-        scenario_manager = ReferenceAssistor.Instance.scenario_manager;
         shield_strength = ReferenceAssistor.Instance.module_handlers[2].GetComponent<ShieldStrength>();
     }
 
@@ -179,9 +175,9 @@ public class ShipHealth : NetworkBehaviour, IPowerable
     IEnumerator deadDelay()
     {
         yield return new WaitForSeconds(2.0f);
-        if (scenario_manager != null)
+        if (ReferenceAssistor.Instance.scenario_manager != null)
         {
-            scenario_manager.endScenario(ScenarioManager.EndCondition.ShipDestroyed);
+            ReferenceAssistor.Instance.scenario_manager.endScenario(ScenarioManager.EndCondition.ShipDestroyed);
         }
         else
         {
@@ -246,9 +242,9 @@ public class ShipHealth : NetworkBehaviour, IPowerable
     private float getDamageModifier()
     {
         float damage_modifier = DAMAGE_MODIFIERS[0];
-        if (scenario_manager != null)
+        if (ReferenceAssistor.Instance.scenario_manager != null)
         {
-            damage_modifier = DAMAGE_MODIFIERS[scenario_manager.getDifficulty()];
+            damage_modifier = DAMAGE_MODIFIERS[ReferenceAssistor.Instance.scenario_manager.getDifficulty()];
         }
         return damage_modifier;
     }
@@ -314,7 +310,7 @@ public class ShipHealth : NetworkBehaviour, IPowerable
     [Rpc(SendTo.Everyone)]
     private void transmitDamageAttemptRPC(float damage)
     {
-        player_manager.getLocalPlayer().GetComponent<CameraMove>().ShakeCamera(Mathf.Max(1.5f, damage * 0.35f), damage * 0.2f);
+        ReferenceAssistor.Instance.player_manager.getLocalPlayer().GetComponent<CameraMove>().ShakeCamera(Mathf.Max(1.5f, damage * 0.35f), damage * 0.2f);
     }
 
     [Rpc(SendTo.Everyone)]

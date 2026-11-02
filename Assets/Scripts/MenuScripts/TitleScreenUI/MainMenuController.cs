@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class MainMenuController : MonoBehaviour
 {
     //CLASS CONSTANTS
-    private static bool CHECK_FOR_TUTORIAL = false;
+    public static bool CHECK_FOR_TUTORIAL = false;
     private static string HAS_BEATEN_TUTORIAL_KEY = "HasBeatenTutorial";
 
     public GameObject MainMenu;
@@ -16,6 +16,7 @@ public class MainMenuController : MonoBehaviour
     public GameObject CustomizationMenu;
     public GameObject SettingsMenu;
     public CanvasGroup MainMenuContents;
+    public TipsController TipsController;
 
     public UnityEngine.UI.Button CampaignButton;
     public TMP_Text CampaignText;
@@ -23,18 +24,13 @@ public class MainMenuController : MonoBehaviour
 
     public GameObject CompleteCampaignNotif;
 
-    private void Start()
+    public void InitializeMainMenu()
     {
-        GameObject LoadHandler = GameObject.FindGameObjectWithTag("LoadHandler");
-        if (LoadHandler != null)
-        {
-            LoadHandler.GetComponent<LoadHandler>().endLoad(false);
-        }
-
         LoadTutorialData();
 
         MainMenuContents.alpha = 0f;
         StartCoroutine(FadeTo(MainMenuContents, 1f, 1f));
+        TipsController.InitializeTips();
     }
 
     public void LoadTutorialData()

@@ -2,7 +2,7 @@
     ScenarioCountdown.cs
     - Handles scenario countdown timer visual in engineer position (boundary expiration)
     Contributor(s): Jake Schott
-    Last Updated: 8/10/2026
+    Last Updated: 10/26/2026
 */
 
 using System.Collections.Generic;
@@ -59,6 +59,12 @@ public class ScenarioCountdown : MonoBehaviour, IPowerable
         countdown_display.transform.GetChild(1).GetComponent<TMP_Text>().color = to_change_to;
         to_change_to.a = 0.08f;
         countdown_display.transform.GetChild(1).GetChild(0).GetComponent<TMP_Text>().color = to_change_to;
+    }
+
+    public void hideCountdown()
+    {
+        displayCountdownAdjustment(100);
+        countdown_display.transform.GetChild(1).GetComponent<TMP_Text>().enabled = false;
     }
 
     public void powerOn(int position)

@@ -6,7 +6,8 @@ using UnityEngine.Audio;
 public class AudioManager : MonoBehaviour
 {
     public AudioMixer masterMixer;
-    public List<GameObject> audioSources;
+    public AudioSource ship_beeps;
+    public AudioSource ambient_noise;
     public AudioSource computerVoiceSpeaker;
 
     private List<AudioClip>[] notificationQueues = new List<AudioClip>[] { 
@@ -18,7 +19,7 @@ public class AudioManager : MonoBehaviour
     };
 
     private bool computerVoiceActive = false;
-    private bool currentlyMuted = false;
+    private bool sfxVolumeMuted = false;
     private int currentClipPriority = -1;
     private Coroutine computerVoicePlayerCoroutine = null;
 
@@ -26,8 +27,8 @@ public class AudioManager : MonoBehaviour
     {
         ResetToDefault();
 
-        audioSources[0].GetComponent<AudioSource>().Play(); //play ambient noise
-        audioSources[1].GetComponent<AudioSource>().Play(); //play ship beeps
+        ambient_noise.Play();
+        ship_beeps.Play();
     }
 
     public void ResetToDefault()
@@ -69,19 +70,48 @@ public class AudioManager : MonoBehaviour
 
     public void MuteSFX()
     {
-        currentlyMuted = true;
+        sfxVolumeMuted = true;
         masterMixer.SetFloat("SFX", -80.0f);
     }
 
     public void UnmuteSFX()
     {
-        currentlyMuted = false;
+        sfxVolumeMuted = false;
         PrimaryScript.Instance.GetComponent<UniversalSettingsController>().UnmuteSFXVolume();
     }
 
-    public bool GetCurrentlyMuted()
+    public bool GetSFXMuted()
     {
-        return currentlyMuted;
+        return sfxVolumeMuted;
+    }
+
+    public void MuteShipBeeps()
+    {
+        ship_beeps.pitch = 0.0f;
+    }
+
+    public void MuteAmbientNoise()
+    {
+        ambient_noise.pitch = 0.0f;
+    }
+
+    public Coroutine FadeSound(AudioSource soundToFade, float desiredVolume, float time)
+    {
+        return StartCoroutine(SoundVolumeAdjuster(soundToFade, desiredVolume, time));
+    }
+
+    IEnumerator SoundVolumeAdjuster(AudioSource sound, float volume, float time)
+    {
+        float startingVolume = sound.volume;
+        float animTime = time;
+        while (animTime > 0.0f)
+        {
+            animTime = Mathf.Max(0.0f, animTime - Time.deltaTime);
+
+            sound.volume = Mathf.Lerp(volume, startingVolume, animTime / time);
+
+            yield return null;
+        }
     }
 
     private void ClearNotificationQueuesBelowPriority(int priority)

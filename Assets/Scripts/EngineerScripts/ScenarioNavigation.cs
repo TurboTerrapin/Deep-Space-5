@@ -1,9 +1,10 @@
 /*
-    ScenarioMap.cs
+    ScenarioNavigation.cs
     - Handles engineer map
+    - Handles engineer heading and target heading
     - Handles hints for boundary issues
     Contributor(s): Jake Schott
-    Last Updated: 8/24/2026
+    Last Updated: 10/27/2026
 */
 
 using System.Collections;
@@ -11,9 +12,10 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class ScenarioMap : MonoBehaviour, IPowerable
+public class ScenarioNavigation : MonoBehaviour, IPowerable
 {
     //CLASS CONSTANTS
+    private static float MAP_REFRESH_TIME = 1.0f; //map updates every second
     private static string[] ALTITUDE_WARNING_OPTIONS = new string[] { "DECREASE", "INCREASE" };
     private static string[] ALTITUDE_HINT_OPTIONS = new string[] { "DECREASE ALTITUDE", "INCREASE ALTITUDE" };
     private static float FLASH_SPEED = 0.5f;
@@ -22,12 +24,15 @@ public class ScenarioMap : MonoBehaviour, IPowerable
     private static float ITEM_LOCATION_CONVERSION_FACTOR;
     private static float INTEREST_POINT_SIZE_CONVERSION_FACTOR;
 
-    public GameObject navigation_display;
-    public GameObject heading_display;
-    public GameObject navigation_information;
-    public GameObject altitude_label;
+    public GameObject navigation_map_display;
+    public GameObject navigation_heading_display;
     public List<Sprite> point_of_interest_sprites = null;
     public List<AudioClip> boundary_notifications = null;
+    private GameObject detection_warnings;
+    private GameObject paths_circle_ships_and_items;
+    private GameObject altitude_and_impulse_speed;
+    private GameObject altitude_label;
+    private GameObject end_sequence_map;
     private GameObject entrance_path;
     private GameObject exit_path;
     private GameObject ship_icon;
@@ -35,6 +40,7 @@ public class ScenarioMap : MonoBehaviour, IPowerable
     private GameObject circle_boundary;
     private GameObject countdown;
 
+    private Coroutine point_of_interest_update_coroutine = null;
     private Coroutine red_flash_coroutine = null;
 
     public enum PointIconType
@@ -51,14 +57,19 @@ public class ScenarioMap : MonoBehaviour, IPowerable
         ITEM_LOCATION_CONVERSION_FACTOR = (0.265f / (ScenarioManager.BOUNDARY_SIZE * 0.5f));
         INTEREST_POINT_SIZE_CONVERSION_FACTOR = (0.115f / ScenarioManager.BOUNDARY_SIZE);
 
-        entrance_path = navigation_information.transform.GetChild(0).gameObject;
-        exit_path = navigation_information.transform.GetChild(1).gameObject;
-        ship_icon = navigation_information.transform.GetChild(2).gameObject;
-        points_of_interest = navigation_information.transform.GetChild(3).gameObject;
-        circle_boundary = navigation_information.transform.GetChild(4).gameObject;
+        detection_warnings = navigation_map_display.transform.GetChild(2).gameObject;
+        altitude_and_impulse_speed = navigation_map_display.transform.GetChild(3).gameObject;
+        paths_circle_ships_and_items = navigation_map_display.transform.GetChild(4).gameObject;
+        end_sequence_map = navigation_map_display.transform.GetChild(5).gameObject;
+        entrance_path = paths_circle_ships_and_items.transform.GetChild(0).gameObject;
+        exit_path = paths_circle_ships_and_items.transform.GetChild(1).gameObject;
+        ship_icon = paths_circle_ships_and_items.transform.GetChild(2).gameObject;
+        points_of_interest = paths_circle_ships_and_items.transform.GetChild(3).gameObject;
+        circle_boundary = paths_circle_ships_and_items.transform.GetChild(4).gameObject;
+        altitude_label = altitude_and_impulse_speed.transform.GetChild(2).gameObject;
         countdown = circle_boundary.transform.GetChild(0).gameObject;
 
-        StartCoroutine(pointOfInterestUpdater());
+        point_of_interest_update_coroutine = StartCoroutine(pointOfInterestUpdater());
     }
 
     private void clearPointsOfInterest()
@@ -80,12 +91,12 @@ public class ScenarioMap : MonoBehaviour, IPowerable
 
             GameObject item_icon = points_of_interest.transform.GetChild(i).gameObject;
 
-            if (interest_items[i].getInterestType() != PointIconType.CollectibleItem)
+            if (interest_items[i].getInterestType() != PointIconType.CollectibleItem) //not collectible item
             {
                 item_icon.GetComponent<SpriteRenderer>().sprite = point_of_interest_sprites[(int)interest_items[i].getInterestType() + 3];
                 item_icon.transform.localScale = new Vector3(interest_items[i].getSize() * INTEREST_POINT_SIZE_CONVERSION_FACTOR, interest_items[i].getSize() * INTEREST_POINT_SIZE_CONVERSION_FACTOR, 1.0f);
             }
-            else
+            else //collectible item
             {
                 CollectibleItem ci = interest_items[i].GetComponent<CollectibleItem>();
                 if (ci.getItemCategory() == 0) //utility items
@@ -138,7 +149,7 @@ public class ScenarioMap : MonoBehaviour, IPowerable
                 populatePointsOfInterest(map_items);
             }
 
-            yield return new WaitForSeconds(1.0f);
+            yield return new WaitForSeconds(MAP_REFRESH_TIME);
         }
     }
 
@@ -183,7 +194,7 @@ public class ScenarioMap : MonoBehaviour, IPowerable
     public void updateShipBoundaryStatus(bool inside_boundary, bool within_altitude)
     {
         //update altitude warning
-        navigation_display.transform.GetChild(1).GetChild(0).gameObject.SetActive(within_altitude == false);
+        detection_warnings.transform.GetChild(0).gameObject.SetActive(within_altitude == false);
         if (within_altitude == false)
         {
             altitude_label.GetComponent<TMP_Text>().color = TMP_RED;
@@ -195,7 +206,7 @@ public class ScenarioMap : MonoBehaviour, IPowerable
                 hint = ALTITUDE_HINT_OPTIONS[1];
             }
             ReferenceAssistor.Instance.hints_manager.addHint(hint, 0);
-            navigation_display.transform.GetChild(1).GetChild(0).GetComponent<TMP_Text>().SetText("! " + msg + " ALTITUDE !");
+            navigation_map_display.transform.GetChild(1).GetChild(0).GetComponent<TMP_Text>().SetText("! " + msg + " ALTITUDE !");
         }
         else
         {
@@ -219,14 +230,14 @@ public class ScenarioMap : MonoBehaviour, IPowerable
             //resize ship pointer
             ship_icon.transform.GetChild(0).localScale = new Vector3(0.01f, 0.01f, 1.0f);
             //color navigation label
-            navigation_display.transform.GetChild(0).GetComponent<TMP_Text>().color = new Color(0.0f, 0.84f, 1.0f, 1.0f);
+            navigation_map_display.transform.GetChild(0).GetComponent<TMP_Text>().color = new Color(0.0f, 0.84f, 1.0f, 1.0f);
             //altitude/impulse bars
-            navigation_display.transform.GetChild(3).transform.GetChild(0).GetComponent<UnityEngine.UI.Image>().color = new Color(0.0f, 0.84f, 1.0f, 1.0f);
-            navigation_display.transform.GetChild(3).transform.GetChild(1).GetComponent<UnityEngine.UI.Image>().color = new Color(0.0f, 0.84f, 1.0f, 1.0f);
+            altitude_and_impulse_speed.transform.GetChild(0).GetComponent<UnityEngine.UI.Image>().color = new Color(0.0f, 0.84f, 1.0f, 1.0f);
+            altitude_and_impulse_speed.transform.GetChild(1).GetComponent<UnityEngine.UI.Image>().color = new Color(0.0f, 0.84f, 1.0f, 1.0f);
             //hide countdown
             countdown.SetActive(false);
             //detection warnings
-            navigation_display.transform.GetChild(1).gameObject.SetActive(false);
+            detection_warnings.SetActive(false);
         }
         else
         {
@@ -255,14 +266,14 @@ public class ScenarioMap : MonoBehaviour, IPowerable
             //resize ship pointer
             ship_icon.transform.GetChild(0).localScale = new Vector3(0.02f, 0.02f, 1.0f);
             //color navigation label
-            navigation_display.transform.GetChild(0).GetComponent<TMP_Text>().color = new Color(TMP_RED.r, TMP_RED.g, TMP_RED.b, 1.0f);
+            navigation_map_display.transform.GetChild(0).GetComponent<TMP_Text>().color = new Color(TMP_RED.r, TMP_RED.g, TMP_RED.b, 1.0f);
             //altitude/impulse bars
-            navigation_display.transform.GetChild(3).transform.GetChild(0).GetComponent<UnityEngine.UI.Image>().color = TMP_RED;
-            navigation_display.transform.GetChild(3).transform.GetChild(1).GetComponent<UnityEngine.UI.Image>().color = TMP_RED;
+            altitude_and_impulse_speed.transform.GetChild(0).GetComponent<UnityEngine.UI.Image>().color = TMP_RED;
+            altitude_and_impulse_speed.transform.GetChild(1).GetComponent<UnityEngine.UI.Image>().color = TMP_RED;
             //show countdown
             countdown.SetActive(true);
             //detection warnings
-            navigation_display.transform.GetChild(1).gameObject.SetActive(true);
+            detection_warnings.SetActive(true);
         }
     }
 
@@ -292,12 +303,13 @@ public class ScenarioMap : MonoBehaviour, IPowerable
         ship_icon.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, ship_rotation);
 
         ship_rotation += 90.0f;
-        heading_display.transform.GetChild(1).GetChild(0).transform.localRotation = Quaternion.Euler(0.0f, 180.0f, ship_rotation);
+        navigation_heading_display.transform.GetChild(1).GetChild(0).transform.localRotation = Quaternion.Euler(0.0f, 180.0f, ship_rotation);
 
-        heading_display.transform.GetChild(2).GetChild(1).GetComponent<TMP_Text>().SetText(current_heading);
-        heading_display.transform.GetChild(3).GetChild(1).GetComponent<TMP_Text>().SetText(target_heading);
+        navigation_heading_display.transform.GetChild(2).GetChild(1).GetComponent<TMP_Text>().SetText(current_heading);
+        navigation_heading_display.transform.GetChild(3).GetChild(1).GetComponent<TMP_Text>().SetText(target_heading);
     }
 
+    //updates ship triangle location on map
     public void updateShipLocation(Vector3 world_root_position)
     {
         Vector2 ship_location = new Vector2(-world_root_position.z - (ScenarioManager.BOUNDARY_SIZE * 0.5f), -world_root_position.x);
@@ -313,6 +325,7 @@ public class ScenarioMap : MonoBehaviour, IPowerable
         ship_icon.transform.localPosition = new Vector3(ship_location.x, ship_location.y, 0.0f);
     }
 
+
     public void updateAltitude(float current_altitude)
     {
         string rounded_altitude = (Mathf.Round(current_altitude * 10.0f) / 10.0f).ToString();
@@ -323,18 +336,34 @@ public class ScenarioMap : MonoBehaviour, IPowerable
         altitude_label.GetComponent<TMP_Text>().SetText("ALTITUDE: " + rounded_altitude + "m");
     }
 
+    public void displayEndSequence()
+    {
+        if (point_of_interest_update_coroutine != null)
+        {
+            StopCoroutine(point_of_interest_update_coroutine);
+            point_of_interest_update_coroutine = null;
+        }
+        updateShipBoundaryStatus(true, true);
+        clearPointsOfInterest();
+        detection_warnings.SetActive(false);
+        paths_circle_ships_and_items.SetActive(false);
+        altitude_and_impulse_speed.SetActive(false);
+        end_sequence_map.SetActive(true);
+        updateShipOrientation(0.0f, "90.0°", "");
+    }
+
     public void powerOn(int position)
     {
-        if (navigation_display.activeSelf == true)
+        if (navigation_map_display.activeSelf == true)
         {
-            heading_display.SetActive(true);
+            navigation_heading_display.SetActive(true);
         }
-        navigation_display.SetActive(true);
+        navigation_map_display.SetActive(true);
     }
 
     public void powerOff(int position, float time)
     {
-        navigation_display.SetActive(false);
-        heading_display.SetActive(false);
+        navigation_map_display.SetActive(false);
+        navigation_heading_display.SetActive(false);
     }
 }

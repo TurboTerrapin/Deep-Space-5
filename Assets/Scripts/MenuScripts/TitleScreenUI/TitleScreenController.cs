@@ -17,9 +17,9 @@ public class TitleScreenController : MonoBehaviour
     private bool PressAnyTextAppears = false;
 
     // Audio
-    [SerializeField] AudioSource MusicSource;
+    [SerializeField] 
+    private AudioSource MusicSource;
     public AudioClip TitleScreenAudio;
-    public AudioClip SFXTest;
 
     // Rings
     public GameObject[] RingHalves = new GameObject[2];
@@ -163,5 +163,6 @@ public class TitleScreenController : MonoBehaviour
     {
         TitleScreenContents.SetActive(false);
         MainMenu.SetActive(true);
+        MainMenu.GetComponent<MainMenuController>().InitializeMainMenu();
     }
 }

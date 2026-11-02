@@ -2,7 +2,7 @@
     BriefingConsoleScreen.cs
     - Used to give the player the background information for their mission
     Contributor(s): Jake Schott
-    Last Updated: 10/24/2026
+    Last Updated: 11/2/2026
 */
 
 using System.Collections;
@@ -258,4 +258,5 @@ public class BriefingConsoleScreen : MonoBehaviour, IDescribable
 
         intro_coroutine = null;
     }
+
 }

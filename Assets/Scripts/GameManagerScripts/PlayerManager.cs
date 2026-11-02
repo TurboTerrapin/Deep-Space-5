@@ -3,7 +3,7 @@
     - Handles loading and managing of players/scenes
     - Handles when a player quits to take them back to the TitleScreen
     Contributor(s): Jake Schott
-    Last Updated: 5/24/2026
+    Last Updated: 10/27/2026
 */
 
 using System.Collections;
@@ -37,12 +37,11 @@ public class PlayerManager : NetworkBehaviour
     private void Awake()
     {
         lobby_handler = GameObject.Find("LobbyHandler").GetComponent<LobbyHandler>();
-        List<ulong> player_steam_ids = lobby_handler.getPlayerSteamIDsInLobby();
-        for (int i = 0; i < player_steam_ids.Count; i++)
+        foreach (ulong steam_id in lobby_handler.getPlayerSteamIDsInLobby())
         {
-            if (player_steam_ids[i] != 0) //ignore empty slots
+            if (steam_id != 0) //ignore empty slots
             {
-                players_ready.Add(player_steam_ids[i], false);
+                players_ready.Add(steam_id, false);
             }
         }
     }
@@ -158,7 +157,7 @@ public class PlayerManager : NetworkBehaviour
         if (NetworkManager.Singleton.IsHost == true)
         {
             ReferenceAssistor.Instance.scenario_manager.intializeScenarioDatabase();
-            ReferenceAssistor.Instance.scenario_manager.loadNewScenario();
+            ReferenceAssistor.Instance.scenario_manager.loadNextScene();
         }
     }
 
@@ -192,7 +191,7 @@ public class PlayerManager : NetworkBehaviour
         cc.ApplyHairType(hair_type);
     }
 
-    //called only at the start of the game
+    //called when loading or transitioning is complete
     [Rpc(SendTo.Everyone)]
     private void unlockPlayersRPC()
     {
@@ -208,7 +207,7 @@ public class PlayerManager : NetworkBehaviour
         audio_manager.GetComponent<AudioManager>().InitializeAudio();
         if (NetworkManager.Singleton.IsHost == true)
         {
-            startScenarioRPC(ReferenceAssistor.Instance.scenario_manager.getCurrentScenarioIndex());
+            endTransitionRPC(ReferenceAssistor.Instance.scenario_manager.getCurrentScenarioIndex());
         }
     }
 
@@ -236,15 +235,19 @@ public class PlayerManager : NetworkBehaviour
     //called by PauseMenuController.cs and FailureHandler.cs
     public static void leaveGame()
     {
+        if (GameNetworkManager.Instance != null)
+        {
+            GameNetworkManager.Instance.MarkAsDisconnected();
+        }
         if (NetworkManager.Singleton != null)
         {
             GameObject.Destroy(NetworkManager.Singleton.gameObject);
         }
         clearDontDestroyOnLoads(true);
-        SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
-        SceneData.targetUI = "MainMenu";
         CameraMove.HideMainCamera();
         GameObject.Find("LoadHandler").GetComponent<LoadHandler>().startLoad();
+        SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
+        SceneData.targetUI = "MainMenu";
     }
 
     public static void freezePlayer(GameObject player)
@@ -305,36 +308,44 @@ public class PlayerManager : NetworkBehaviour
     //---------------------------------------------------------------------------------------//
 
     //called by LoadHandler.cs
-    public void signifyScenarioLoaded()
+    public void signifySceneLoaded()
     {
         //assign ReferenceAssistor the new WorldRoot
         ReferenceAssistor.Instance.assignWorldRoot(GameObject.FindGameObjectWithTag("WorldRoot"));
 
         //let others know you have loaded the scenario
-        scenarioLoadedRPC(SteamClient.SteamId);
+        sceneLoadedRPC(SteamClient.SteamId);
     }
 
     [Rpc(SendTo.Everyone)]
-    private void startScenarioRPC(int current_scenario_index)
+    private void endTransitionRPC(int current_scenario_index)
     {
-        //begin the scenario
-        ReferenceAssistor.Instance.scenario_manager.startScenario();
-
-        //update logs
-        LogMenuController.OnScenarioEncountered(current_scenario_index);
-
         //end transition (whether looking at the cinematic shot or load screen)
         ReferenceAssistor.Instance.transition_handler.EndTransition();
 
         //end load (whether looking at the cinematic shot or load screen)
         load_handler.endLoad(false);
 
-        //reactivate control/seat checking
+        if (current_scenario_index >= 0) //begin the scenario
+        {
+            ReferenceAssistor.Instance.scenario_manager.startScenario();
+        }
+        else //begin end sequence
+        {
+            ReferenceAssistor.Instance.end_sequence_manager.startEndSequence();
+            return;
+        }
+
+        //reactivate control checking
         PrimaryScript.Instance.activate();
 
+        //update logs
+        LogMenuController.OnScenarioEncountered(current_scenario_index);
+
         //reactivate camera
-        local_player.transform.GetComponent<CameraMove>().ReactivateCamera();
-        
+        local_player.GetComponent<CameraMove>().ReactivateCamera();
+        local_player.GetComponent<CameraMove>().FaceWindow();
+
         //unmute audio and activate computer voice that was muted/deactivated during scenario transition
         ReferenceAssistor.Instance.audio_manager.ActivateComputerVoice();
         ReferenceAssistor.Instance.audio_manager.UnmuteSFX();
@@ -342,7 +353,7 @@ public class PlayerManager : NetworkBehaviour
 
     //fired when a client's AsyncOperation for loading a scenario or EndSequence (not BridgeEnvironment) is complete
     [Rpc(SendTo.Everyone)]
-    private void scenarioLoadedRPC(ulong steam_id)
+    private void sceneLoadedRPC(ulong steam_id)
     {
         players_ready[steam_id] = true;
 
@@ -354,7 +365,7 @@ public class PlayerManager : NetworkBehaviour
                 resetReadyPlayers();
                 if (SceneManager.GetActiveScene().name.CompareTo("EndSequence") == 0) //end sequence
                 {
-                    ReferenceAssistor.Instance.scenario_manager.handleEndSequenceRPC();
+                    ReferenceAssistor.Instance.end_sequence_manager.prepEndSequenceRPC();
                 }
                 else //normal scenario
                 {
@@ -390,7 +401,7 @@ public class PlayerManager : NetworkBehaviour
             {
                 yield return null;
             }
-            startScenarioRPC(ReferenceAssistor.Instance.scenario_manager.getCurrentScenarioIndex());
+            endTransitionRPC(ReferenceAssistor.Instance.scenario_manager.getCurrentScenarioIndex());
         }
     }
 }

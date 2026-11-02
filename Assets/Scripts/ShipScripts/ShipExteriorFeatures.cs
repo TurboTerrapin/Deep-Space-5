@@ -3,7 +3,7 @@
     - Handles rotating elements and blinking lights on the exterior of the ship
     - Handles/opening closing of cargo door
     Contributor(s): Jake Schott
-    Last Updated: 4/11/2026
+    Last Updated: 10/30/2026
 */
 
 using System.Collections;
@@ -33,7 +33,7 @@ public class ShipExteriorFeatures : MonoBehaviour
     private float target_open_percentage = 0.0f;
     private Coroutine cargo_change_coroutine = null;
 
-    private void Start()
+    private void OnEnable()
     {
         if (enable_cosmetic_features == true)
         {

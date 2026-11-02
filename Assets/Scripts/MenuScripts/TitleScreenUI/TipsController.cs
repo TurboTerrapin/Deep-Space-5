@@ -9,7 +9,7 @@ public class TipsController : MonoBehaviour
 
     private Coroutine TipTimer;
 
-    private void Start()
+    public void InitializeTips()
     {
         UpdateCurrentTip();
         TipTimer = StartCoroutine(SwitchTip());

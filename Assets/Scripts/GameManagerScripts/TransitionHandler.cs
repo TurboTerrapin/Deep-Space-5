@@ -90,7 +90,7 @@ public class TransitionHandler : MonoBehaviour
 
         // set text
         TransitionText.GetChild(TRANSITION_OPTIONS[transitionOption]).GetChild(1).GetComponent<TMP_Text>().text = starDate;
-        TransitionText.GetChild(TRANSITION_OPTIONS[transitionOption]).GetChild(3).GetComponent<TMP_Text>().text = distanceToDSF + " lightyears";
+        TransitionText.GetChild(TRANSITION_OPTIONS[transitionOption]).GetChild(3).GetComponent<TMP_Text>().text = distanceToDSF + " ly";
 
         StartCoroutine(MoveCamera(CameraPositions.GetChild(transitionOption * 2), CameraPositions.GetChild((transitionOption * 2) + 1), 12f));
 
@@ -103,6 +103,13 @@ public class TransitionHandler : MonoBehaviour
 
         StartCoroutine(FadeText(TransitionText.GetChild(TRANSITION_OPTIONS[transitionOption]).GetChild(2).GetComponent<TMP_Text>(), 1f, 1.5f));
         StartCoroutine(FadeText(TransitionText.GetChild(TRANSITION_OPTIONS[transitionOption]).GetChild(3).GetComponent<TMP_Text>(), 1f, 1.5f));
+
+        yield return new WaitForSeconds(5f);
+
+        StartCoroutine(FadeText(TransitionText.GetChild(TRANSITION_OPTIONS[transitionOption]).GetChild(0).GetComponent<TMP_Text>(), 0f, 1f));
+        StartCoroutine(FadeText(TransitionText.GetChild(TRANSITION_OPTIONS[transitionOption]).GetChild(1).GetComponent<TMP_Text>(), 0f, 1f));
+        StartCoroutine(FadeText(TransitionText.GetChild(TRANSITION_OPTIONS[transitionOption]).GetChild(2).GetComponent<TMP_Text>(), 0f, 1f));
+        StartCoroutine(FadeText(TransitionText.GetChild(TRANSITION_OPTIONS[transitionOption]).GetChild(3).GetComponent<TMP_Text>(), 0f, 1f));
     }
 
     IEnumerator FadeText(TMP_Text text, float targetAlpha, float duration)
@@ -142,6 +149,7 @@ public class TransitionHandler : MonoBehaviour
 
         ScenarioTransitionCamera.transform.position = end.position;
 
+        GameObject.Find("LoadHandler").GetComponent<LoadHandler>().startLoad();
         EndTransition();
     }
 }
