@@ -179,6 +179,7 @@ public class GameNetworkManager : MonoBehaviour
             lobby.SetPublic();
             lobby.SetJoinable(true);
             lobby.SetGameServer(lobby.Owner.Id);
+            disconnected = false;
             GameObject.Find("LobbyHandler").GetComponent<LobbyHandler>().onSteamLobbySuccessfullyCreated();
         }
     }
@@ -214,6 +215,7 @@ public class GameNetworkManager : MonoBehaviour
         if (NetworkManager.Singleton.StartClient() == true)
         {
             Debug.Log("Client started");
+            disconnected = false;
         }
         else
         {

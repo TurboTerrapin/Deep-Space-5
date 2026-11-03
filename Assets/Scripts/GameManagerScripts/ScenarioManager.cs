@@ -2,7 +2,7 @@
     ScenarioManager.cs
     - Handles loading and transitioning of scenarios
     Contributor(s): John Aylward, Jake Schott, Henryk Musial
-    Last Updated: 10/27/2026
+    Last Updated: 11/3/2026
 */
 
 using System.Collections;
@@ -64,7 +64,6 @@ public class ScenarioManager : NetworkBehaviour
     private ShipInventory ship_inventory;
     private ScenarioCountdown scenario_countdown;
     private ScenarioNavigation scenario_navigation;
-    private PowerManager power_manager;
     private PowerControl power_control;
     private Coroutine countdown_coroutine = null;
 
@@ -81,7 +80,7 @@ public class ScenarioManager : NetworkBehaviour
     private int num_scenarios_defeated = 0;
     private int current_scenario_index = -1;
     private int countdown_time_to_add = 0; //for controls/scenarios that want to add countdown time
-    private int game_difficulty = -1; //assigned by LobbyHandler, goes easy, medium, hard, expert (0-3)
+    private int game_difficulty = 0; //assigned by LobbyHandler, goes easy, medium, hard, expert (0-3)
 
     //entrance/exit channel info
     private Vector2 entrance_position;
@@ -91,11 +90,15 @@ public class ScenarioManager : NetworkBehaviour
 
     private void Awake()
     {
+        if (SceneManager.GetActiveScene().name.CompareTo("TrainingEnvironment") == 0)
+        {
+            return;
+        }
+
         lobby_handler = GameObject.Find("LobbyHandler").GetComponent<LobbyHandler>();
         ship_inventory = ReferenceAssistor.Instance.spaceship.GetComponent<ShipInventory>();
         scenario_countdown = ReferenceAssistor.Instance.module_handlers[2].GetComponent<ScenarioCountdown>();
         scenario_navigation = ReferenceAssistor.Instance.module_handlers[2].GetComponent<ScenarioNavigation>();
-        power_manager = ReferenceAssistor.Instance.power_manager;
         power_control = ReferenceAssistor.Instance.module_handlers[4].GetComponent<PowerControl>();
         game_difficulty = lobby_handler.getDifficulty();
 
@@ -340,9 +343,9 @@ public class ScenarioManager : NetworkBehaviour
     }
 
     //called when all players have loaded in at the very start
-    public void intializeScenarioDatabase()
+    public static void intializeScenarioDatabase(GameObject database)
     {
-        foreach (Component c in GetComponents<IScenarioInitialization>())
+        foreach (Component c in database.GetComponents<IScenarioInitialization>())
         {
             if (c as IScenarioInitialization != null)
             {
@@ -633,7 +636,7 @@ public class ScenarioManager : NetworkBehaviour
     private void controlResetHelper()
     {
         //resets PowerManager, PowerAllocation, and PowerRegulator
-        power_manager.resetPowerManager();
+        ReferenceAssistor.Instance.power_manager.resetPowerManager();
 
         //reset BackgroundAnimator
         ReferenceAssistor.Instance.background_animator.enableAllScreens();
@@ -641,7 +644,7 @@ public class ScenarioManager : NetworkBehaviour
         //power down all stations
         for (int i = 0; i < 4; i++)
         {
-            power_manager.disableStation(i);
+            ReferenceAssistor.Instance.power_manager.disableStation(i);
         }
 
         //reset lights
@@ -715,7 +718,7 @@ public class ScenarioManager : NetworkBehaviour
     {
         for (int i = 0; i < 4; i++)
         {
-            power_manager.powerStation(i);
+            ReferenceAssistor.Instance.power_manager.powerStation(i);
             power_control.turnDial(i, true);
         }
     }

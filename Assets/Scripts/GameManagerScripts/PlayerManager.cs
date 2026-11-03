@@ -156,7 +156,7 @@ public class PlayerManager : NetworkBehaviour
         resetReadyPlayers();
         if (NetworkManager.Singleton.IsHost == true)
         {
-            ReferenceAssistor.Instance.scenario_manager.intializeScenarioDatabase();
+            ScenarioManager.intializeScenarioDatabase(ReferenceAssistor.Instance.scenario_manager.gameObject);
             ReferenceAssistor.Instance.scenario_manager.loadNextScene();
         }
     }

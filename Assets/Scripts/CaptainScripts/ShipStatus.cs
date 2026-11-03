@@ -3,7 +3,7 @@
     - Handles slider
     - Enables/disables red alert
     Contributor(s): Jake Schott
-    Last Updated: 10/3/2026
+    Last Updated: 11/3/2026
 */
 
 using System.Collections;
@@ -25,7 +25,6 @@ public class ShipStatus: NetworkBehaviour, IControllable, IPowerable, IIKTargeta
     private List<Button> BUTTONS = new List<Button>();
 
     public GameObject selector_stick;
-    public LightsManager lights_manager;
     public Color[] color_options = new Color[3] { new Color(0.0f, 0.84f, 1.0f), new Color(1.0f, 0.47f, 0.0f), new Color(1.0f, 0.0f, 0.0f) };
     private GameObject selector_indicator;
 
@@ -104,11 +103,11 @@ public class ShipStatus: NetworkBehaviour, IControllable, IPowerable, IIKTargeta
         {
             if (curr_status == 2)
             {
-                lights_manager.enableRedAlert();
+                ReferenceAssistor.Instance.lights_manager.enableRedAlert();
             }
             else
             {
-                lights_manager.disableRedAlert();
+                ReferenceAssistor.Instance.lights_manager.disableRedAlert();
             }
         }
 

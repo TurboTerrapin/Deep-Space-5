@@ -2,7 +2,7 @@
     TrainingHandler.cs
     - Handles loading into TrainingEnvironment scene
     Contributor(s): Jake Schott
-    Last Updated: 10/23/2026
+    Last Updated: 11/3/2026
 */
 
 using UnityEngine;
@@ -19,6 +19,7 @@ public class TrainingHandler : MonoBehaviour
 
     public GameObject training_hud_display;
     public GameObject training_obstacles;
+    public GameObject scenario_database;
 
     private int simulation_number = 1;
 
@@ -29,6 +30,7 @@ public class TrainingHandler : MonoBehaviour
 
     IEnumerator trainingEnvironmentInitializer()
     {
+        //start host and ensure loading is successful
         LoadHandler load_handler = GameObject.Find("LoadHandler").GetComponent<LoadHandler>();
         if (NetworkManager.Singleton.StartHost() == false) 
         {
@@ -48,7 +50,11 @@ public class TrainingHandler : MonoBehaviour
         //wait a frame to let scripts initialize
         yield return null;
 
+        //place ship at origin
         placeShipAtStart();
+
+        //initialize scenario database for manual
+        ScenarioManager.intializeScenarioDatabase(scenario_database);
 
         //enable all stations
         for (int i = 0; i < 4; i++)
@@ -69,6 +75,7 @@ public class TrainingHandler : MonoBehaviour
 
         yield return new WaitForSeconds(1.0f);
 
+        //end load and start gameplay
         load_handler.GetComponent<LoadHandler>().endLoad(true);
         ReferenceAssistor.Instance.player_manager.addPlayer(player, load_handler);
         player.transform.localPosition = PLAYER_STARTING_POSITION;
@@ -87,6 +94,7 @@ public class TrainingHandler : MonoBehaviour
         ReferenceAssistor.Instance.module_handlers[4].GetComponent<CrewManifest>().reportAsReady();
         ReferenceAssistor.Instance.light_layer_two.gameObject.SetActive(true);
 
+        //initialize drones
         foreach (TrainingDrone td in training_drones)
         {
             td.initializeDrone();
@@ -94,6 +102,7 @@ public class TrainingHandler : MonoBehaviour
 
         yield return new WaitForSeconds(1.0f);
 
+        //display the grid and text ouside the window
         displaySimulationStart();
     }
 
