@@ -188177,6 +188177,7 @@ MonoBehaviour:
   HintsToggle: {fileID: 1893738998}
   HintsLabel: {fileID: 1167089638}
   HintsGroup: {fileID: 1893738996}
+  myVoiceChat: {fileID: 0}
 --- !u!114 &1393993265
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -295445,26 +295446,30 @@ MonoBehaviour:
   hairObject: {fileID: 9094463025866055025}
   shirtObject: {fileID: 5406028625695780007}
   shirtModels:
-  - {fileID: 3254439933026420654, guid: 42b8e8b4d7ac39549b40c7bb4e8509dd, type: 3}
-  - {fileID: 3254439933026420654, guid: 42b8e8b4d7ac39549b40c7bb4e8509dd, type: 3}
-  - {fileID: 3254439933026420654, guid: 42b8e8b4d7ac39549b40c7bb4e8509dd, type: 3}
-  - {fileID: 3254439933026420654, guid: 42b8e8b4d7ac39549b40c7bb4e8509dd, type: 3}
+  - {fileID: -260613626914459891, guid: 42b8e8b4d7ac39549b40c7bb4e8509dd, type: 3}
+  - {fileID: -260613626914459891, guid: 42b8e8b4d7ac39549b40c7bb4e8509dd, type: 3}
+  - {fileID: -260613626914459891, guid: 42b8e8b4d7ac39549b40c7bb4e8509dd, type: 3}
+  - {fileID: -260613626914459891, guid: 42b8e8b4d7ac39549b40c7bb4e8509dd, type: 3}
   shirtMaterials:
   - {fileID: 2100000, guid: b4bd21e714cf54148adac786f2de5c9a, type: 2}
-  - {fileID: 2100000, guid: b4bd21e714cf54148adac786f2de5c9a, type: 2}
-  - {fileID: 2100000, guid: b4bd21e714cf54148adac786f2de5c9a, type: 2}
-  - {fileID: 2100000, guid: b4bd21e714cf54148adac786f2de5c9a, type: 2}
+  - {fileID: 2100000, guid: a9d5cc12ab40ffb4e9c140255cd757ad, type: 2}
+  - {fileID: 2100000, guid: 735beabe3ca14454e935147e3caa6a71, type: 2}
+  - {fileID: 2100000, guid: e20d86d05894a324eab7361bda3d1f7e, type: 2}
   pantsObject: {fileID: 7530628981784064733}
   pantsModels:
-  - {fileID: 6343735780247800750, guid: fdbcf3a59e1c8254cb2fb237a331a2ed, type: 3}
-  - {fileID: 6343735780247800750, guid: fdbcf3a59e1c8254cb2fb237a331a2ed, type: 3}
-  - {fileID: 6343735780247800750, guid: fdbcf3a59e1c8254cb2fb237a331a2ed, type: 3}
-  - {fileID: 6343735780247800750, guid: fdbcf3a59e1c8254cb2fb237a331a2ed, type: 3}
+  - {fileID: -5291407736170811975, guid: fdbcf3a59e1c8254cb2fb237a331a2ed, type: 3}
+  - {fileID: -5291407736170811975, guid: fdbcf3a59e1c8254cb2fb237a331a2ed, type: 3}
+  - {fileID: -5291407736170811975, guid: fdbcf3a59e1c8254cb2fb237a331a2ed, type: 3}
+  - {fileID: -5291407736170811975, guid: fdbcf3a59e1c8254cb2fb237a331a2ed, type: 3}
   pantsMaterials:
   - {fileID: 2100000, guid: 1f16ea9e32e548b42bd5fc717e7599b1, type: 2}
   - {fileID: 2100000, guid: 1f16ea9e32e548b42bd5fc717e7599b1, type: 2}
   - {fileID: 2100000, guid: 1f16ea9e32e548b42bd5fc717e7599b1, type: 2}
   - {fileID: 2100000, guid: 1f16ea9e32e548b42bd5fc717e7599b1, type: 2}
+  clothing: 0
+  HairColor: {r: 1, g: 1, b: 1, a: 1}
+  EyeColor: {r: 1, g: 1, b: 1, a: 1}
+  SkinColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!23 &6392414135934701272
 MeshRenderer:
   m_ObjectHideFlags: 0

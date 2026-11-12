@@ -2,7 +2,7 @@
     VoiceChat.cs
     - Handles Voice Chat (VOIP) functionality was mostly copied from user 
         schouffy here: https://github.com/Facepunch/Facepunch.Steamworks/issues/261
-        with small edits to fit our use case
+        with edits to fit our use case
     Contributor(s): John Aylward
     Last Updated: 10/2/2026
 */
@@ -39,6 +39,7 @@ public class VoiceChat : NetworkBehaviour
     private int audioPlayerPosition;
 
     private int playbackBuffer;
+    private int dataPosition;
     private int dataReceived;
 
     void Awake()
@@ -60,7 +61,7 @@ public class VoiceChat : NetworkBehaviour
             useVoice = false;
         }
 
-        KeyCode temp = (KeyCode)Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("PushToTalkButton", "U"));
+        KeyCode temp = (KeyCode)Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("PushToTalkButton", "T"));
         pushToTalkKey = temp;
     }
 
@@ -79,6 +80,7 @@ public class VoiceChat : NetworkBehaviour
         AudioSource.clip = AudioClip.Create("VoiceData", (int)optimalRate * 2, 1, (int)optimalRate, true, OnAudioRead, null);
         AudioSource.loop = true;
         AudioSource.Play();
+        
 
         // TODO for this example it always records but you should push to talk or have a setting
         SteamUser.VoiceRecord = true;
@@ -184,9 +186,10 @@ public class VoiceChat : NetworkBehaviour
         pushToTalkKey = key;
     }
 
+
     public override void OnDestroy()
     {
-        //SteamUser.VoiceRecord = false;
+        SteamUser.VoiceRecord = false;
         base.OnDestroy();
     }
 
@@ -198,4 +201,7 @@ public class VoiceChat : NetworkBehaviour
         public byte[] Buffer { get; set; }
         public int Size { get; set; }
     }
+
+
 }
+

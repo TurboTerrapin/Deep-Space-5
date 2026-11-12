@@ -307,7 +307,7 @@ public class CustomizeCharacterMenu : MonoBehaviour
 
     private void OnClothingUpdate()
     {
-        DummyAppearance.ApplyClothingType(CurrentHairOptionIndex);
+        DummyAppearance.ApplyClothingType(CurrentClothingOptionIndex);
         ClothingOptionText.text = CLOTHING_OPTION_NAMES[CurrentClothingOptionIndex];
     }
 

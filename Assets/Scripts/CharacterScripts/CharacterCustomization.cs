@@ -12,12 +12,23 @@ public class CharacterCustomization : MonoBehaviour
     public GameObject hairObject = null;
 
     public GameObject shirtObject = null;
-    public List<Mesh> shirtModels = new List<Mesh>();
+    public List<SkinnedMeshRenderer> shirtModels = new List<SkinnedMeshRenderer>();
     public List<Material> shirtMaterials = new List<Material>();
 
     public GameObject pantsObject = null;
-    public List<Mesh> pantsModels = new List<Mesh>();
+    public List<SkinnedMeshRenderer> pantsModels = new List<SkinnedMeshRenderer>();
     public List<Material> pantsMaterials = new List<Material>();
+
+
+    [SerializeField]
+    private int clothing = 0;
+
+    [SerializeField]
+    private Color HairColor = Color.white;
+    [SerializeField]
+    private Color EyeColor = Color.white;
+    [SerializeField]
+    private Color SkinColor = Color.white;
 
     private void Start()
     {
@@ -33,6 +44,7 @@ public class CharacterCustomization : MonoBehaviour
         {
             Material mat = hairObject.GetComponent<MeshRenderer>().material;
             mat.SetColor("_BaseColor", newColor);
+            HairColor = newColor;
         }
     }
 
@@ -44,6 +56,7 @@ public class CharacterCustomization : MonoBehaviour
             Material matRight = rightEyeObject.GetComponent<MeshRenderer>().material;
             matLeft.SetColor("_BaseColor", newColor);
             matRight.SetColor("_BaseColor", newColor);
+            EyeColor = newColor;
         }
     }
 
@@ -53,6 +66,7 @@ public class CharacterCustomization : MonoBehaviour
         {
             Material mat = playerObject.GetComponent<SkinnedMeshRenderer>().material;
             mat.SetColor("_BaseColor", newColor);
+            SkinColor = newColor;
         }
     }
 
@@ -69,9 +83,10 @@ public class CharacterCustomization : MonoBehaviour
 
     public void ApplyClothingType(int newClothing)
     {
-        shirtObject.GetComponent<SkinnedMeshRenderer>().sharedMesh = shirtModels[newClothing];
+        Debug.Log("Apply");
+        shirtObject.GetComponent<SkinnedMeshRenderer>().sharedMesh = shirtModels[newClothing].sharedMesh;
         shirtObject.GetComponent<SkinnedMeshRenderer>().material = shirtMaterials[newClothing];
-        pantsObject.GetComponent<SkinnedMeshRenderer>().sharedMesh = pantsModels[newClothing];
+        pantsObject.GetComponent<SkinnedMeshRenderer>().sharedMesh = pantsModels[newClothing].sharedMesh;
         pantsObject.GetComponent<SkinnedMeshRenderer>().material = pantsMaterials[newClothing];
     }
 
@@ -87,7 +102,36 @@ public class CharacterCustomization : MonoBehaviour
         ApplySkinTone(SkinTone);
 
         // Load hair and clothing options
+        //ApplyHairType(data.SelectedHairOption);
+        //ApplyClothingType(data.SelectedClothingOption);
+        //hair = data.SelectedHairOption;
         ApplyHairType(data.SelectedHairOption);
+        //clothing = data.SelectedClothingOption;
         ApplyClothingType(data.SelectedClothingOption);
     }
+
+    /*
+    [Rpc(SendTo.Owner)]
+    public void SyncAllCustomizationsRPC()
+    {
+        SyncCustomizationRPC(HairColor, EyeColor, SkinColor, hair, clothing);
+    }
+
+    [Rpc(SendTo.NotMe)]
+    public void SyncCustomizationRPC(Color hairColor, Color eyeColor, Color skinColor, int hairType, int clothingType)
+    {
+        HairColor = hairColor;
+        EyeColor = eyeColor;
+        SkinColor = skinColor;
+        hair = hairType;
+        clothing = clothingType;
+
+        ApplyHairColor(HairColor);
+        ApplyEyeColor(EyeColor);
+        ApplySkinTone(SkinColor);
+        ChangeHairType(hair);
+        ChangeClothingType(clothing);
+    }
+    */
+
 }
