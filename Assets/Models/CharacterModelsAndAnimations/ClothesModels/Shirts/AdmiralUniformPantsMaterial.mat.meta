@@ -1,6 +1,11 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Models/CharacterModelsAndAnimations/ClothesModels/Shirts/AdmiralUniformPantsMaterial.mat.meta
 guid: 3f7f9f41d1346c94fa5015723643a46d
 NativeFormatImporter:
+========
+guid: d9b9bba2ec4ece543af56528d4307c21
+DefaultImporter:
+>>>>>>>> jake-branch:Assets/Scenes/EndSequence.unity.meta
   externalObjects: {}
   mainObjectFileID: 2100000
   userData: 

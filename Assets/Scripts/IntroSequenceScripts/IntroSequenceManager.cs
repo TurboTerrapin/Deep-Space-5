@@ -170,6 +170,7 @@ public class IntroSequenceManager : MonoBehaviour
     IEnumerator openingScene()
     {
         PrimaryScript.Instance.unlockPlayer(player);
+        PrimaryScript.Instance.GetComponent<SecondaryScript>().setPermanentOverlayTopAccessible(false);
         PrimaryScript.Instance.deactivate(true, false);
         opening_scene_canvas.SetActive(true);
         yield return new WaitForSeconds(1.0f);
@@ -227,6 +228,7 @@ public class IntroSequenceManager : MonoBehaviour
         player.GetComponent<CameraMove>().GetCamera().SetActive(true);
         player.GetComponent<CameraMove>().UnlockCamera(Vector2.zero);
         PrimaryScript.Instance.activate();
+        PlayerManager.unfreezePlayer(player);
         if (PrimaryScript.Instance.hintsEnabled() == true)
         {
             while (PrimaryScript.Instance.isPaused() == true)
@@ -322,6 +324,7 @@ public class IntroSequenceManager : MonoBehaviour
         player.GetComponent<CameraMove>().GetCamera().SetActive(false);
         player.SetActive(false);
         Cursor.lockState = CursorLockMode.Locked;
+        MainMenuController.OnIntroCompleted();
 
         yield return cameraAdjustmentExponential(ending_scene_camera_positions.transform.GetChild(0), ending_scene_camera_positions.transform.GetChild(1), 7.0f, false);
 

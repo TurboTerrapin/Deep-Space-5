@@ -16,7 +16,7 @@ public class MapItem : MonoBehaviour
     [SerializeField]
     private bool is_visible = false;
     [SerializeField]
-    private ScenarioMap.PointIconType interest_type = ScenarioMap.PointIconType.None;
+    private ScenarioNavigation.PointIconType interest_type = ScenarioNavigation.PointIconType.None;
     [SerializeField]
     private Color icon_color = Color.white;
     [SerializeField]
@@ -37,7 +37,7 @@ public class MapItem : MonoBehaviour
         is_ship = ship;
     }
 
-    public void setInterestItem(ScenarioMap.PointIconType type)
+    public void setInterestItem(ScenarioNavigation.PointIconType type)
     {
         interest_type = type;
     }
@@ -72,7 +72,7 @@ public class MapItem : MonoBehaviour
         return is_visible;
     }
 
-    public ScenarioMap.PointIconType getInterestType()
+    public ScenarioNavigation.PointIconType getInterestType()
     {
         return interest_type;
     }

@@ -3,7 +3,7 @@
     - Handles loading and managing of players/scenes
     - Handles when a player quits to take them back to the TitleScreen
     Contributor(s): Jake Schott
-    Last Updated: 5/24/2026
+    Last Updated: 10/27/2026
 */
 
 using System.Collections;
@@ -21,7 +21,6 @@ public class PlayerManager : NetworkBehaviour
     public GameObject spawn_points;
     public GameObject players_holder;
     public GameObject audio_manager;
-    public GameObject scenario_transitioner;
 
     private GameObject local_player;
     private LoadHandler load_handler;
@@ -38,12 +37,11 @@ public class PlayerManager : NetworkBehaviour
     private void Awake()
     {
         lobby_handler = GameObject.Find("LobbyHandler").GetComponent<LobbyHandler>();
-        List<ulong> player_steam_ids = lobby_handler.getPlayerSteamIDsInLobby();
-        for (int i = 0; i < player_steam_ids.Count; i++)
+        foreach (ulong steam_id in lobby_handler.getPlayerSteamIDsInLobby())
         {
-            if (player_steam_ids[i] != 0) //ignore empty slots
+            if (steam_id != 0) //ignore empty slots
             {
-                players_ready.Add(player_steam_ids[i], false);
+                players_ready.Add(steam_id, false);
             }
         }
     }
@@ -147,23 +145,53 @@ public class PlayerManager : NetworkBehaviour
         //inform crew manifest of player name
         ReferenceAssistor.Instance.module_handlers[4].GetComponent<CrewManifest>().reportAsReady();
 
+        //send out player customization info
+        CustomizeCharacterData data = CustomizeCharacterMenu.GetCharacterData();
+        ColorUtility.TryParseHtmlString("#" + data.CurrentHairHexValue, out Color hair_color);
+        ColorUtility.TryParseHtmlString("#" + data.CurrentEyeHexValue, out Color eye_color);
+        ColorUtility.TryParseHtmlString("#" + data.CurrentSkinToneHexValue, out Color skin_color);
+        syncCharacterCustomizationRPC(local_player.GetComponent<NetworkObject>().OwnerClientId, hair_color, eye_color, skin_color, data.SelectedHairOption, data.SelectedClothingOption);
+
         //reset ready player counter to 0 to prepare for scenario load instead of BridgeEnvironment load
         resetReadyPlayers();
         if (NetworkManager.Singleton.IsHost == true)
         {
-            ReferenceAssistor.Instance.scenario_manager.intializeScenarioDatabase();
-            ReferenceAssistor.Instance.scenario_manager.loadNewScenario();
+            ScenarioManager.intializeScenarioDatabase(ReferenceAssistor.Instance.scenario_manager.gameObject);
+            ReferenceAssistor.Instance.scenario_manager.loadNextScene();
         }
     }
 
-
-    [Rpc(SendTo.Everyone)]
-    private void sendPlayerCustomizationDataRPC(int client_id, int hair_index, int uniform_index, Color hair_color, Color eye_color, Color skin_color)
+    //tells other clients this client's customization package
+    [Rpc(SendTo.NotMe)]
+    public void syncCharacterCustomizationRPC(ulong owner_client_id, Color hair_color, Color eye_color, Color skin_color, int hair_type, int clothing_type)
     {
+        //get corresponding player
+        GameObject corresponding_player = null;
+        foreach (GameObject plr in GameObject.FindGameObjectsWithTag("Player"))
+        {
+            if (plr.GetComponent<NetworkObject>() != null && plr.GetComponent<NetworkObject>().OwnerClientId == owner_client_id)
+            {
+                corresponding_player = plr;
+                break;
+            }
+        }
 
+        //stop if player not found
+        if (corresponding_player == null)
+        {
+            return;
+        }
+
+        //update customization
+        CharacterCustomization cc = corresponding_player.GetComponent<CharacterCustomization>();
+        cc.ApplyHairColor(hair_color);
+        cc.ApplyEyeColor(eye_color);
+        cc.ApplySkinTone(skin_color);
+        cc.ApplyClothingType(clothing_type);
+        cc.ApplyHairType(hair_type);
     }
 
-    //called only at the start of the game
+    //called when loading or transitioning is complete
     [Rpc(SendTo.Everyone)]
     private void unlockPlayersRPC()
     {
@@ -179,7 +207,7 @@ public class PlayerManager : NetworkBehaviour
         audio_manager.GetComponent<AudioManager>().InitializeAudio();
         if (NetworkManager.Singleton.IsHost == true)
         {
-            startScenarioRPC(ReferenceAssistor.Instance.scenario_manager.getCurrentScenarioIndex());
+            endTransitionRPC(ReferenceAssistor.Instance.scenario_manager.getCurrentScenarioIndex());
         }
     }
 
@@ -207,15 +235,19 @@ public class PlayerManager : NetworkBehaviour
     //called by PauseMenuController.cs and FailureHandler.cs
     public static void leaveGame()
     {
+        if (GameNetworkManager.Instance != null)
+        {
+            GameNetworkManager.Instance.MarkAsDisconnected();
+        }
         if (NetworkManager.Singleton != null)
         {
             GameObject.Destroy(NetworkManager.Singleton.gameObject);
         }
         clearDontDestroyOnLoads(true);
-        SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
-        SceneData.targetUI = "MainMenu";
         CameraMove.HideMainCamera();
         GameObject.Find("LoadHandler").GetComponent<LoadHandler>().startLoad();
+        SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
+        SceneData.targetUI = "MainMenu";
     }
 
     public static void freezePlayer(GameObject player)
@@ -276,44 +308,52 @@ public class PlayerManager : NetworkBehaviour
     //---------------------------------------------------------------------------------------//
 
     //called by LoadHandler.cs
-    public void signifyScenarioLoaded()
+    public void signifySceneLoaded()
     {
         //assign ReferenceAssistor the new WorldRoot
         ReferenceAssistor.Instance.assignWorldRoot(GameObject.FindGameObjectWithTag("WorldRoot"));
 
         //let others know you have loaded the scenario
-        scenarioLoadedRPC(SteamClient.SteamId);
+        sceneLoadedRPC(SteamClient.SteamId);
     }
 
     [Rpc(SendTo.Everyone)]
-    private void startScenarioRPC(int current_scenario_index)
+    private void endTransitionRPC(int current_scenario_index)
     {
-        //begin the scenario
-        ReferenceAssistor.Instance.scenario_manager.startScenario();
-
-        //update logs
-        LogMenuController.OnScenarioEncountered(current_scenario_index);
-
         //end transition (whether looking at the cinematic shot or load screen)
-        scenario_transitioner.GetComponent<TransitionHandler>().EndTransition();
+        ReferenceAssistor.Instance.transition_handler.EndTransition();
 
         //end load (whether looking at the cinematic shot or load screen)
         load_handler.endLoad(false);
 
-        //reactivate control/seat checking
+        if (current_scenario_index >= 0) //begin the scenario
+        {
+            ReferenceAssistor.Instance.scenario_manager.startScenario();
+        }
+        else //begin end sequence
+        {
+            ReferenceAssistor.Instance.end_sequence_manager.startEndSequence();
+            return;
+        }
+
+        //reactivate control checking
         PrimaryScript.Instance.activate();
 
+        //update logs
+        LogMenuController.OnScenarioEncountered(current_scenario_index);
+
         //reactivate camera
-        local_player.transform.GetComponent<CameraMove>().ReactivateCamera();
-        
+        local_player.GetComponent<CameraMove>().ReactivateCamera();
+        local_player.GetComponent<CameraMove>().FaceWindow();
+
         //unmute audio and activate computer voice that was muted/deactivated during scenario transition
         ReferenceAssistor.Instance.audio_manager.ActivateComputerVoice();
         ReferenceAssistor.Instance.audio_manager.UnmuteSFX();
     }
 
-    //fired when a client's AsyncOperation for loading a scenario (not BridgeEnvironment) is complete
+    //fired when a client's AsyncOperation for loading a scenario or EndSequence (not BridgeEnvironment) is complete
     [Rpc(SendTo.Everyone)]
-    private void scenarioLoadedRPC(ulong steam_id)
+    private void sceneLoadedRPC(ulong steam_id)
     {
         players_ready[steam_id] = true;
 
@@ -323,7 +363,14 @@ public class PlayerManager : NetworkBehaviour
             if (getNumReadyPlayers() >= lobby_handler.getNumberOfPlayersInNetworkManagerLobby())
             {
                 resetReadyPlayers();
-                ReferenceAssistor.Instance.scenario_manager.prepScenario(!game_initialized);
+                if (SceneManager.GetActiveScene().name.CompareTo("EndSequence") == 0) //end sequence
+                {
+                    ReferenceAssistor.Instance.end_sequence_manager.prepEndSequenceRPC();
+                }
+                else //normal scenario
+                {
+                    ReferenceAssistor.Instance.scenario_manager.prepScenario(!game_initialized);
+                }
                 if (game_initialized == false)
                 {
                     //wait LOAD_IN_DELAY
@@ -349,12 +396,12 @@ public class PlayerManager : NetworkBehaviour
         }
         else
         {
-            GameObject transition_canvas = scenario_transitioner.GetComponent<TransitionHandler>().TransitionCanvas;
+            GameObject transition_canvas = ReferenceAssistor.Instance.transition_handler.TransitionCanvas;
             while (transition_canvas.activeSelf == true) //ensure that host's transition is done before starting new scenario
             {
                 yield return null;
             }
-            startScenarioRPC(ReferenceAssistor.Instance.scenario_manager.getCurrentScenarioIndex());
+            endTransitionRPC(ReferenceAssistor.Instance.scenario_manager.getCurrentScenarioIndex());
         }
     }
 }

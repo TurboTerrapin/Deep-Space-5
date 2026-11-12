@@ -3,7 +3,7 @@
     - Handles IK positioning
     - Handles animation events (sitting down, getting up)
     Contributor(s): John Aylward
-    Last Updated: 11/26/2025
+    Last Updated: 10/21/2026
 */
 
 using System.Collections;
@@ -18,7 +18,7 @@ public class AnimatorHandler : NetworkBehaviour
     private Animator myAnimator = null;
 
 
-    public enum HandInteractionType {Grasp, Pinch, Press, SidePinch}
+    public enum HandInteractionType {Grasp, Pinch, Press, SidePinch, None}
 
     [SerializeField]
     private bool ikActive = true;

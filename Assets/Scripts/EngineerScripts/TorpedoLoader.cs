@@ -2,7 +2,7 @@
     TorpedoLoader.cs
     - Handles the loading of torpedoes 
     Contributor(s): Jake Schott
-    Last Updated: 8/23/2026
+    Last Updated: 10/21/2026
 */
 
 using System.Collections;
@@ -116,8 +116,6 @@ public class TorpedoLoader : NetworkBehaviour, IControllable, IPowerable, IIKTar
             shortestDistance = Vector3.Distance(hand_placements[0].transform.position, IK_targets[shortestIndex].transform.position);
 
             int topSearchBound = shortestIndex + 3;
-
-            //Debug.Log(shortestIndex + " at " + shortestDistance);
 
             for (int i = 4; i <= topSearchBound; i++)
             {

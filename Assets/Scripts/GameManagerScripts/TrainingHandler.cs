@@ -2,7 +2,7 @@
     TrainingHandler.cs
     - Handles loading into TrainingEnvironment scene
     Contributor(s): Jake Schott
-    Last Updated: 10/4/2026
+    Last Updated: 11/3/2026
 */
 
 using UnityEngine;
@@ -15,10 +15,11 @@ public class TrainingHandler : MonoBehaviour
 {
     //CLASS CONSTANTS
     private static Vector3 PLAYER_STARTING_POSITION = new Vector3(0.0f, 0.079f, -10.75f);
-    private static float SHIP_SETBACK_DISTANCE = 250.0f; //how far back the ship is at the start
+    private static float SHIP_SETBACK_DISTANCE = 350.0f; //how far back the ship is at the start
 
     public GameObject training_hud_display;
     public GameObject training_obstacles;
+    public GameObject scenario_database;
 
     private int simulation_number = 1;
 
@@ -29,6 +30,7 @@ public class TrainingHandler : MonoBehaviour
 
     IEnumerator trainingEnvironmentInitializer()
     {
+        //start host and ensure loading is successful
         LoadHandler load_handler = GameObject.Find("LoadHandler").GetComponent<LoadHandler>();
         if (NetworkManager.Singleton.StartHost() == false) 
         {
@@ -48,7 +50,11 @@ public class TrainingHandler : MonoBehaviour
         //wait a frame to let scripts initialize
         yield return null;
 
+        //place ship at origin
         placeShipAtStart();
+
+        //initialize scenario database for manual
+        ScenarioManager.intializeScenarioDatabase(scenario_database);
 
         //enable all stations
         for (int i = 0; i < 4; i++)
@@ -69,6 +75,7 @@ public class TrainingHandler : MonoBehaviour
 
         yield return new WaitForSeconds(1.0f);
 
+        //end load and start gameplay
         load_handler.GetComponent<LoadHandler>().endLoad(true);
         ReferenceAssistor.Instance.player_manager.addPlayer(player, load_handler);
         player.transform.localPosition = PLAYER_STARTING_POSITION;
@@ -87,6 +94,7 @@ public class TrainingHandler : MonoBehaviour
         ReferenceAssistor.Instance.module_handlers[4].GetComponent<CrewManifest>().reportAsReady();
         ReferenceAssistor.Instance.light_layer_two.gameObject.SetActive(true);
 
+        //initialize drones
         foreach (TrainingDrone td in training_drones)
         {
             td.initializeDrone();
@@ -94,6 +102,7 @@ public class TrainingHandler : MonoBehaviour
 
         yield return new WaitForSeconds(1.0f);
 
+        //display the grid and text ouside the window
         displaySimulationStart();
     }
 
@@ -103,8 +112,8 @@ public class TrainingHandler : MonoBehaviour
         ReferenceAssistor.Instance.spaceship.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
         ReferenceAssistor.Instance.module_handlers[0].GetComponent<FlyingInstruments>().updateAltimeterScreen(0.0f);
         ReferenceAssistor.Instance.module_handlers[0].GetComponent<FlyingInstruments>().updateCourseHeadingScreen(0.0f, "90.0°");
-        ReferenceAssistor.Instance.module_handlers[2].GetComponent<ScenarioMap>().updateAltitude(0.0f);
-        ReferenceAssistor.Instance.module_handlers[2].GetComponent<ScenarioMap>().updateShipLocation(ReferenceAssistor.Instance.world_root.transform.position);
+        ReferenceAssistor.Instance.module_handlers[2].GetComponent<ScenarioNavigation>().updateAltitude(0.0f);
+        ReferenceAssistor.Instance.module_handlers[2].GetComponent<ScenarioNavigation>().updateShipLocation(ReferenceAssistor.Instance.world_root.transform.position);
     }
 
     public void endTraining(bool successful)

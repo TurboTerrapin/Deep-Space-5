@@ -2,7 +2,7 @@
     CrewManifest.cs
     - Handles displaying crew member names from within the bridge
     Contributor(s): Jake Schott
-    Last Updated: 9/8/2026
+    Last Updated: 10/24/2026
 */
 
 using System.Collections.Generic;
@@ -19,7 +19,7 @@ public class CrewManifest : NetworkBehaviour
 
     public void reportAsReady()
     {
-        string crew_member_name = CustomizeCharacterMenu.GetFirstName() + " " + CustomizeCharacterMenu.GetLastName();
+        string crew_member_name = CustomizeCharacterMenu.GetFirstName().ToUpper() + " " + CustomizeCharacterMenu.GetLastName().ToUpper();
         transmitCrewMemberNameRPC(SteamClient.SteamId, crew_member_name);
     }
 

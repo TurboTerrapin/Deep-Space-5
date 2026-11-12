@@ -4,7 +4,7 @@
     - Moves slider
     - Enables/disables emergency lights using LightsManager
     Contributor(s): Jake Schott
-    Last Updated: 8/25/2026
+    Last Updated: 11/3/2026
 */
 
 using System.Collections;
@@ -26,7 +26,6 @@ public class EmergencyLights : NetworkBehaviour, IControllable, IPowerable, IIKT
 
     public GameObject emergency_lights_dial;
     public GameObject emergency_lights_display;
-    public LightsManager lights_manager;
 
     private bool is_powered = false;
     private Coroutine power_loss_coroutine = null;
@@ -165,7 +164,7 @@ public class EmergencyLights : NetworkBehaviour, IControllable, IPowerable, IIKT
     {
         float starting_rotation = emergency_lights_dial.transform.localRotation.eulerAngles.z;
         displayAdjustment(0.0f);
-        lights_manager.setEmergencyLights(false);
+        ReferenceAssistor.Instance.lights_manager.setEmergencyLights(false);
 
         float anim_time = power_off_time;
         while (anim_time > 0.0f)
@@ -239,7 +238,7 @@ public class EmergencyLights : NetworkBehaviour, IControllable, IPowerable, IIKT
             StopCoroutine(emergency_lights_switch_coroutine);
         }
 
-        lights_manager.setEmergencyLights(!emergency_lights_enabled);
+        ReferenceAssistor.Instance.lights_manager.setEmergencyLights(!emergency_lights_enabled);
 
         emergency_lights_switch_coroutine = StartCoroutine(lightSwitch());
     }

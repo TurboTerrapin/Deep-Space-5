@@ -15,7 +15,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class PlayerMove : NetworkBehaviour
+public class PlayerMove : MonoBehaviour
 {
     //CLASS CONSTANTS
     private static float SHIFT_SPEED = 2.5f;

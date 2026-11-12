@@ -50,6 +50,7 @@ public class EnergyPattern : NetworkBehaviour, IControllable, IPowerable, IIKTar
 
     [Header("IK Targetable Details")]
     public GameObject IK_target;
+    private int ray_target_index = -1;
     public AnimatorHandler.HandInteractionType hand_interaction_type = AnimatorHandler.HandInteractionType.Pinch;
     public float hand_pose = 0;
     public bool does_right_hand_flip = false;
@@ -69,8 +70,8 @@ public class EnergyPattern : NetworkBehaviour, IControllable, IPowerable, IIKTar
 
     public HUDInfo getHUDinfo(GameObject current_target)
     {
-        int index = ray_targets.IndexOf(current_target.name);
-        return hud_infos[index];
+        ray_target_index = ray_targets.IndexOf(current_target.name);
+        return hud_infos[ray_target_index];
     }
 
     public Transform getIKTarget(GameObject current_target)
@@ -80,6 +81,10 @@ public class EnergyPattern : NetworkBehaviour, IControllable, IPowerable, IIKTar
 
     public AnimatorHandler.HandInteractionType getHandInteractionType()
     {
+        if (ray_target_index != 0)
+        {
+            return AnimatorHandler.HandInteractionType.None;
+        }
         return hand_interaction_type;
     }
 

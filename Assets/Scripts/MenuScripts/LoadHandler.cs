@@ -4,7 +4,7 @@
     - Handles displaying disconnection and connecting (...) screens
     - Handles Steam checks
     Contributor(s): Jake Schott, Beata Musial
-    Last Updated: 10/6/2026
+    Last Updated: 11/1/2026
 */
 
 using System.Collections;
@@ -26,9 +26,9 @@ public class LoadHandler : MonoBehaviour
     private GameObject connection_lost;
     private GameObject steam_failure;
     private GameObject dummy_camera;
+    private CanvasGroup brightness_overlay;
     private bool network_manager_linked = false;
 
-    private static int last_tip = -1; //index of last tip as to avoid repeats
     private AsyncOperation load_operation = null;
     private Coroutine fade_black_coroutine = null;
     private Coroutine connecting_coroutine = null;
@@ -57,8 +57,10 @@ public class LoadHandler : MonoBehaviour
         connection_lost = transform.GetChild(2).gameObject;
         steam_failure = transform.GetChild(3).gameObject;
         dummy_camera = transform.GetChild(4).gameObject;
+        brightness_overlay = transform.GetChild(5).gameObject.GetComponent<CanvasGroup>();
 
         //check for Steam at beginning, and if successful, show title screen
+        GameObject.Find("TitleScreen").GetComponent<TitleScreenController>().PlaceCameraAtStart();
         GameObject.Find("TitleScreen").GetComponent<TitleScreenController>().TitleScreenContents.SetActive(titleScreenSteamCheck() == true);
 
         DontDestroyOnLoad(gameObject);
@@ -69,6 +71,7 @@ public class LoadHandler : MonoBehaviour
     {
         if (SceneManager.GetActiveScene().name.Equals("TitleScreen") == true && connection_lost.activeSelf == false)
         {
+
             if (SteamClient.IsValid == false || SteamClient.IsLoggedOn == false)
             {
                 steam_failure.SetActive(true);
@@ -77,6 +80,12 @@ public class LoadHandler : MonoBehaviour
             }
         }
         return true;
+    }
+
+    //called by UniversalSettingsController.cs
+    public void adjustBrightness(float brightness)
+    {
+        brightness_overlay.alpha = Mathf.Lerp(0.5f, 0.0f, brightness);
     }
 
     //called by CampaignLobbyController.cs and FriendJoinWithButton.cs to ensure that handleSceneLoad() gets linked to the right NetworkManager
@@ -156,7 +165,7 @@ public class LoadHandler : MonoBehaviour
         {
             load_coroutines.Add(StartCoroutine(loadBridgeEnvironment()));
         }
-        else //scenario load-in
+        else //scenario or end sequence load-in
         {
             load_coroutines.Add(StartCoroutine(loadScenarioTransition()));
         }
@@ -209,6 +218,8 @@ public class LoadHandler : MonoBehaviour
                 main_menu.transform.GetChild(i).gameObject.SetActive(false);
             }
             GameObject.Find("TitleScreen").GetComponent<TitleScreenController>().TitleScreenContents.SetActive(false);
+            UnityEngine.Cursor.visible = true;
+            UnityEngine.Cursor.lockState = CursorLockMode.None;
         }
     }
 
@@ -253,7 +264,7 @@ public class LoadHandler : MonoBehaviour
             PlayerManager.clearDontDestroyOnLoads(true);
             SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
             startLoad();
-            while (SceneManager.GetActiveScene().name != "TitleScreen") //get back to TitleScreen
+            while (SceneManager.GetActiveScene().name != "TitleScreen") //get back to TitleScreen and shutdown NetworkManager
             {
                 yield return null;
             }
@@ -269,7 +280,7 @@ public class LoadHandler : MonoBehaviour
             }
             PrimaryScript.Instance.unpause(); //forces unpause
             PrimaryScript.Instance.deactivate(false, true); //stops control interaction
-            ReferenceAssistor.Instance.audio_manager.GetComponent<AudioManager>().MuteSFX(); //mute SFX
+            ReferenceAssistor.Instance.audio_manager.MuteSFX(); //mute SFX
             PlayerManager.clearDontDestroyOnLoads(false);
             CameraMove.HideMainCamera();
             enableDummyCameraIfNecessary();
@@ -299,7 +310,11 @@ public class LoadHandler : MonoBehaviour
         connection_lost.SetActive(false);
         if (SceneManager.GetActiveScene().name.Equals("TitleScreen") == true)
         {
-            GameObject.Find("MainMenuCanvas").transform.GetChild(0).gameObject.SetActive(titleScreenSteamCheck() == true);
+            if (titleScreenSteamCheck() == true)
+            {
+                GameObject.Find("MainMenuCanvas").transform.GetChild(0).gameObject.SetActive(true);
+                GameObject.Find("MainMenuCanvas").transform.GetChild(0).GetComponent<MainMenuController>().InitializeMainMenu();
+            }
         }
         else
         {
@@ -324,20 +339,6 @@ public class LoadHandler : MonoBehaviour
             load_ring.transform.GetChild(i).GetComponent<UnityEngine.UI.RawImage>().color = ReferenceAssistor.COLOR_OPTIONS[possible_colors[c]];
             possible_colors.RemoveAt(c);
         }
-
-        //randomize tip
-        int new_tip_index;
-        do
-        {
-            new_tip_index = Random.Range(0, load_screen.transform.GetChild(3).childCount);
-        } 
-        while (new_tip_index == last_tip);
-        
-        for (int i = 0; i < load_screen.transform.GetChild(3).childCount; i++)
-        {
-            load_screen.transform.GetChild(3).GetChild(i).gameObject.SetActive(i == new_tip_index);
-        }
-        last_tip = new_tip_index;
     }
 
     //helper method used to spin the rings on a single frame (yield return null)
@@ -384,7 +385,6 @@ public class LoadHandler : MonoBehaviour
         load_screen.transform.GetChild(0).GetComponent<UnityEngine.UI.RawImage>().color = new Color(0.0f, 0.0f, 0.0f);
         load_screen.transform.GetChild(1).gameObject.SetActive(true);
         load_ring.SetActive(true);
-        load_screen.transform.GetChild(3).gameObject.SetActive(true);
         while (true)
         {
             spinRings();
@@ -402,7 +402,6 @@ public class LoadHandler : MonoBehaviour
         GameObject player_prefab = GameObject.Find(player_prefab_name);
         while (player_prefab == null)
         {
-            Debug.Log("Waiting for player");
             player_prefab = GameObject.Find(player_prefab_name);
             yield return null;
         }
@@ -415,13 +414,11 @@ public class LoadHandler : MonoBehaviour
         while (load_operation.isDone == false)
         {
             //spin circles while waiting
-            Debug.Log("Waiting for BE");
             spinRings();
             yield return null;
         }
         load_operation = null;
         ReferenceAssistor.Instance.player_manager.addPlayer(player_prefab, this);
-        Debug.Log("Loaded!");
 
         //wait until PlayerManager interrupts load screen using endLoad()
         while (true)
@@ -431,11 +428,10 @@ public class LoadHandler : MonoBehaviour
         }
     }
 
-    //called whenever the client loads into a scenario 
+    //called whenever the client loads into a scenario  or end sequence
     IEnumerator loadScenarioTransition()
     {
-        ReferenceAssistor.Instance.player_manager.GetComponent<PlayerManager>();
-        GameObject transition_canvas = GameObject.Find("ScenarioTransitioner").GetComponent<TransitionHandler>().TransitionCanvas;
+        GameObject transition_canvas = ReferenceAssistor.Instance.transition_handler.TransitionCanvas;
         bool scenario_loaded = false;
         bool switched_to_load_screen = false;
         while (true)
@@ -445,7 +441,7 @@ public class LoadHandler : MonoBehaviour
                 if (load_operation != null && load_operation.isDone == true)
                 {
                     //tell PlayerManager that the new scenario is loaded
-                    ReferenceAssistor.Instance.player_manager.signifyScenarioLoaded();
+                    ReferenceAssistor.Instance.player_manager.signifySceneLoaded();
                     scenario_loaded = true;
                     load_operation = null;
                 }
@@ -464,7 +460,7 @@ public class LoadHandler : MonoBehaviour
                 randomizeLoadScreen();
                 load_screen.SetActive(true);
             }
-            
+
             //spin rings if on load screen instead of transition screen
             if (switched_to_load_screen == true)
             {
@@ -480,7 +476,6 @@ public class LoadHandler : MonoBehaviour
         float anim_time = fade_time;
         load_screen.transform.GetChild(1).gameObject.SetActive(false);
         load_ring.SetActive(false);
-        load_screen.transform.GetChild(3).gameObject.SetActive(false);
 
         while (anim_time > 0.0f)
         {

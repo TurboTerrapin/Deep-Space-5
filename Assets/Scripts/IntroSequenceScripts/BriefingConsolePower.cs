@@ -2,7 +2,7 @@
     BriefingConsolePower.cs
     - Used to turn on briefing console
     Contributor(s): Jake Schott
-    Last Updated: 9/7/2026
+    Last Updated: 11/2/2026
 */
 
 using System.Collections;
@@ -14,17 +14,20 @@ public class BriefingConsolePower : MonoBehaviour, IControllable, IIKTargetable
     //CLASS CONSTANTS
     private static Vector3 ON_POSITION = new Vector3(0.0168f, 0.0f, 0.0072f);
     private static float POWER_CHANGE_TIME = 0.5f;
+    private static float LIGHT_ADJUSTMENT_TIME = 1.0f;
 
     private string CONTROL_NAME = "BRIEFING CONSOLE";
     private List<string> CONTROL_DESCS = new List<string> { "ENABLE", "DISABLE" };
     private int CONTROL_INDEX = 6;
     private List<Button> BUTTONS = new List<Button>();
 
+    public Light console_light;
     public GameObject briefing_console_power_switch;
     public GameObject briefing_console_power_display;
     private BriefingConsoleScreen briefing_console_screen;
 
     private bool is_active = true;
+    private Coroutine light_adjustment_coroutine = null;
     private Coroutine power_change_coroutine = null;
 
     private static HUDInfo hud_info;
@@ -104,6 +107,7 @@ public class BriefingConsolePower : MonoBehaviour, IControllable, IIKTargetable
     {
         if (to_switch_to == false)
         {
+            adjustConsoleLight(7.0f);
             for (int i = 0; i < 5; i++)
             {
                 briefing_console_power_display.transform.GetChild(i + 1).GetComponent<UnityEngine.UI.RawImage>().color = new Color(0.0f, 0.086f, 0.75f, 0.2f);
@@ -111,7 +115,11 @@ public class BriefingConsolePower : MonoBehaviour, IControllable, IIKTargetable
             briefing_console_power_display.transform.GetChild(6).GetChild(0).gameObject.SetActive(false);
             briefing_console_screen.setEnabled(false);
         }
-
+        else
+        {
+            adjustConsoleLight(1.0f);
+        }
+        
         float anim_time = POWER_CHANGE_TIME;
         while (anim_time > 0.0f)
         {
@@ -146,6 +154,32 @@ public class BriefingConsolePower : MonoBehaviour, IControllable, IIKTargetable
 
         power_change_coroutine = null;
         updateButton();
+    }
+
+
+    private void adjustConsoleLight(float end_intensity)
+    {
+        if (light_adjustment_coroutine != null)
+        {
+            StopCoroutine(light_adjustment_coroutine);
+        }
+        StartCoroutine(consoleLightAdjustment(end_intensity));
+    }
+
+    IEnumerator consoleLightAdjustment(float end_intensity)
+    {
+        float start_intensity = console_light.intensity;
+        float anim_time = LIGHT_ADJUSTMENT_TIME;
+        while (anim_time > 0.0f)
+        {
+            anim_time = Mathf.Max(0.0f, anim_time - Time.deltaTime);
+
+            console_light.intensity = Mathf.Lerp(end_intensity, start_intensity, anim_time / LIGHT_ADJUSTMENT_TIME);
+
+            yield return null;
+        }
+
+        light_adjustment_coroutine = null;
     }
 
     public void handleInputs(List<KeyCode> inputs, GameObject current_target, float dt, int position)

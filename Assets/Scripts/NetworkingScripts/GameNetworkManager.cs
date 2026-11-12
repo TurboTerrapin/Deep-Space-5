@@ -4,7 +4,7 @@
     - Handles connecting/disconnecting as host and client
     - Communicates with LoadHandler for connecting/disconnect screens
     Contributor(s): John Aylward, Jake Schott
-    Last Updated: 10/6/2026
+    Last Updated: 11/1/2026
 */
 
 using System.Collections;
@@ -23,9 +23,11 @@ public class GameNetworkManager : MonoBehaviour
     public static GameNetworkManager Instance { get; private set; } = null;
 
     private FacepunchTransport transport = null;
-
-    public Lobby? currentLobby { get; private set; } = null;
     
+    public Lobby? currentLobby { get; private set; } = null;
+
+    private bool disconnected = false;
+
     private void Awake()
     {
         if (Instance == null)
@@ -46,8 +48,6 @@ public class GameNetworkManager : MonoBehaviour
 
         SteamMatchmaking.OnLobbyCreated += SteamMatchmaking_OnLobbyCreated;
         SteamMatchmaking.OnLobbyEntered += SteamMatchmaking_OnLobbyEntered;
-        SteamMatchmaking.OnLobbyMemberJoined += SteamMatchmaking_OnLobbyMemberJoined;
-        SteamMatchmaking.OnLobbyMemberLeave += SteamMatchmaking_OnLobbyMemberLeave;
         SteamMatchmaking.OnLobbyGameCreated += SteamMatchmaking_OnLobbyGameCreated;
         SteamUser.OnSteamServersDisconnected += SteamUser_OnSteamServersDisconnected;
         SteamFriends.OnGameLobbyJoinRequested += SteamFriends_OnGameLobbyJoinRequested;
@@ -57,8 +57,6 @@ public class GameNetworkManager : MonoBehaviour
     {
         SteamMatchmaking.OnLobbyCreated -= SteamMatchmaking_OnLobbyCreated;
         SteamMatchmaking.OnLobbyEntered -= SteamMatchmaking_OnLobbyEntered;
-        SteamMatchmaking.OnLobbyMemberJoined -= SteamMatchmaking_OnLobbyMemberJoined;
-        SteamMatchmaking.OnLobbyMemberLeave -= SteamMatchmaking_OnLobbyMemberLeave;
         SteamMatchmaking.OnLobbyGameCreated -= SteamMatchmaking_OnLobbyGameCreated;
         SteamUser.OnSteamServersDisconnected -= SteamUser_OnSteamServersDisconnected;
         SteamFriends.OnGameLobbyJoinRequested -= SteamFriends_OnGameLobbyJoinRequested;
@@ -73,6 +71,13 @@ public class GameNetworkManager : MonoBehaviour
         if (SceneManager.GetActiveScene().name != "TitleScreen")
         {
             Debug.Log("Failed to join lobby (cannot join from an active session)");
+            return;
+        }
+        
+        //Can't join if haven't beat tutorial
+        if (MainMenuController.GetIntroCompleted() == false && MainMenuController.CHECK_FOR_TUTORIAL == true)
+        {
+            Debug.Log("Failed to join lobby (has not completed tutorial)");
             return;
         }
 
@@ -122,18 +127,6 @@ public class GameNetworkManager : MonoBehaviour
     private void SteamMatchmaking_OnLobbyGameCreated(Lobby lobby, uint ip, ushort port, SteamId steamId)
     {
         Debug.Log("Lobby created successfully");
-    }
-
-    //Called when a member of current Steam lobby has left the lobby
-    private void SteamMatchmaking_OnLobbyMemberLeave(Lobby lobby, Friend friend)
-    {
-        Debug.Log(friend.Name + " has left the lobby");
-    }
-
-    //Called when a member joins current Steam lobby
-    private void SteamMatchmaking_OnLobbyMemberJoined(Lobby lobby, Friend friend)
-    {
-        Debug.Log(friend.Name + " has joined the lobby");
     }
 
     //Called on successful joining of a lobby
@@ -186,6 +179,7 @@ public class GameNetworkManager : MonoBehaviour
             lobby.SetPublic();
             lobby.SetJoinable(true);
             lobby.SetGameServer(lobby.Owner.Id);
+            disconnected = false;
             GameObject.Find("LobbyHandler").GetComponent<LobbyHandler>().onSteamLobbySuccessfullyCreated();
         }
     }
@@ -221,6 +215,7 @@ public class GameNetworkManager : MonoBehaviour
         if (NetworkManager.Singleton.StartClient() == true)
         {
             Debug.Log("Client started");
+            disconnected = false;
         }
         else
         {
@@ -231,6 +226,12 @@ public class GameNetworkManager : MonoBehaviour
     //Leaves Steam lobby, shuts down NetworkManager, and unlinks client events
     public void Disconnect()
     {
+        if (disconnected == true)
+        {
+            return;
+        }
+        disconnected = true;
+
         Debug.Log("Disconnected");
         currentLobby?.Leave();
         currentLobby = null;
@@ -241,6 +242,31 @@ public class GameNetworkManager : MonoBehaviour
         NetworkManager.Singleton.OnClientConnectedCallback -= Singleton_OnClientConnectedCallback;
         NetworkManager.Singleton.OnClientDisconnectCallback -= Singleton_OnClientDisconnectCallback;
         NetworkManager.Singleton.Shutdown(true);
+    }
+
+    //Prevents disconnecting more than once
+    public void MarkAsDisconnected()
+    {
+        disconnected = true;
+    }
+
+    //Returns true if already disconnected from NetworkManager
+    public bool AlreadyDisconnected()
+    {
+        return disconnected;
+    }
+
+    //Called when the host is disconnected
+    public void HandleHostDisconnect()
+    {
+        if (disconnected == true)
+        {
+            return;
+        }
+
+        Debug.Log("Host has disconnected");
+        Disconnect();
+        GameObject.Find("LoadHandler").GetComponent<LoadHandler>().displayLostConnection("The host has disconnected.");
     }
 
     //Called when a client connects to the NetworkManager lobby
@@ -266,9 +292,7 @@ public class GameNetworkManager : MonoBehaviour
         {
             if (clientId == NetworkManager.Singleton.LocalClientId)
             {
-                Debug.Log("Host has disconnected");
-                Disconnect();
-                GameObject.Find("LoadHandler").GetComponent<LoadHandler>().displayLostConnection("The host has disconnected.");
+                HandleHostDisconnect();
             }
         }
     }

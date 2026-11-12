@@ -2,16 +2,14 @@
     PhaserFrequency.cs
     - Handles inputs for engineer phaser frequency adjustment
     Contributor(s): Jake Schott
-    Last Updated: 6/27/2026
+    Last Updated: 10/20/2026
 */
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
-using static AnimatorHandler;
 
 public class PhaserFrequency : NetworkBehaviour, IControllable, IPowerable, IIKTargetable
 {
@@ -55,7 +53,6 @@ public class PhaserFrequency : NetworkBehaviour, IControllable, IPowerable, IIKT
     public float lerp_speed = 5f;
 
     private int button_index = 0;
-    private bool increasing = false;
 
     private void Start()
     {
@@ -201,12 +198,10 @@ public class PhaserFrequency : NetworkBehaviour, IControllable, IPowerable, IIKT
                 int dial_direction = 0;
                 if (PrimaryScript.checkInputIndex(CONTROL_INDEXES[2], inputs)) //E to increment
                 {
-                    increasing = true;
                     dial_direction += 1;
                 }
                 if (PrimaryScript.checkInputIndex(CONTROL_INDEXES[1], inputs)) //Q to decrement
                 {
-                    increasing = false;
                     dial_direction -= 1;
                 }
                 if (dial_direction != 0)
