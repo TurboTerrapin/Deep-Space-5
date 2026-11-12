@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Unity.Netcode;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class VoiceChat : NetworkBehaviour
@@ -107,9 +108,6 @@ public class VoiceChat : NetworkBehaviour
     {
         SteamUser.VoiceRecord = useVoice && (voiceActivated || Input.GetKey(pushToTalkKey));
 
-
-
-
         recording = SteamUser.VoiceRecord;
         //Recording from mic and sending to server
         if (IsClient)
@@ -153,7 +151,7 @@ public class VoiceChat : NetworkBehaviour
     }
 
     //[Rpc(SendTo.Me)]
-    public void PlayVoice(byte[] compressed, int length)
+    public void PlayVoice(byte[] compressed, int length, ulong clientId)
     {
         compressedStream.Position = 0;
         compressedStream.Write(compressed, 0, length);
@@ -171,7 +169,7 @@ public class VoiceChat : NetworkBehaviour
     public void SendVoiceServerRpc(byte[] compressed, int length, ulong clientId)
     {
         // TODO here you should only call clientrpc on clients other than clientId
-        PlayVoice(compressed, length);
+        PlayVoice(compressed, length, clientId);
     }
 
     public void setVoiceActivated(bool value)
