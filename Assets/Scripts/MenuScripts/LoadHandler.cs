@@ -4,7 +4,7 @@
     - Handles displaying disconnection and connecting (...) screens
     - Handles Steam checks
     Contributor(s): Jake Schott, Beata Musial
-    Last Updated: 11/1/2026
+    Last Updated: 11/25/2026
 */
 
 using System.Collections;
@@ -71,7 +71,6 @@ public class LoadHandler : MonoBehaviour
     {
         if (SceneManager.GetActiveScene().name.Equals("TitleScreen") == true && connection_lost.activeSelf == false)
         {
-
             if (SteamClient.IsValid == false || SteamClient.IsLoggedOn == false)
             {
                 steam_failure.SetActive(true);
@@ -218,8 +217,6 @@ public class LoadHandler : MonoBehaviour
                 main_menu.transform.GetChild(i).gameObject.SetActive(false);
             }
             GameObject.Find("TitleScreen").GetComponent<TitleScreenController>().TitleScreenContents.SetActive(false);
-            UnityEngine.Cursor.visible = true;
-            UnityEngine.Cursor.lockState = CursorLockMode.None;
         }
     }
 
@@ -296,7 +293,7 @@ public class LoadHandler : MonoBehaviour
 
     public void displayLostConnection(string message)
     {
-        if (connection_lost.activeSelf == true)
+        if (connection_lost.activeSelf == true || (ReferenceAssistor.Instance != null && ReferenceAssistor.Instance.end_sequence_manager != null && ReferenceAssistor.Instance.end_sequence_manager.shouldIgnoreLobbyDisconnect() == true))
         {
             return;
         }
@@ -308,6 +305,8 @@ public class LoadHandler : MonoBehaviour
     public void returnToMainMenu()
     {
         connection_lost.SetActive(false);
+        UnityEngine.Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
         if (SceneManager.GetActiveScene().name.Equals("TitleScreen") == true)
         {
             if (titleScreenSteamCheck() == true)

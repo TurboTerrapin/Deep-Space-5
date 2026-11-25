@@ -2,7 +2,7 @@
     ReferenceAssistor.cs
     - Used to streamline referencing for certain commonly-used things
     Contributor(s): Jake Schott
-    Last Updated: 10/29/2026
+    Last Updated: 11/23/2026
 */
 
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ using UnityEngine.Rendering;
 public class ReferenceAssistor : MonoBehaviour
 {
     //CLASS CONSTANTS 
-    public static Color[] COLOR_OPTIONS = new Color[4] { new Color(0.0f, 0.84f, 1.0f), new Color(0.69f, 0.0f, 0.69f), new Color(1.0f, 0.47f, 0.0f), new Color(0.13f, 1.0f, 0.04f) }; //pilot, tactician, engineer, captain
+    public static Color[] COLOR_OPTIONS = new Color[5] { new Color(0.0f, 0.84f, 1.0f), new Color(0.69f, 0.0f, 0.69f), new Color(1.0f, 0.47f, 0.0f), new Color(0.13f, 1.0f, 0.04f), new Color(0.0f, 0.08f, 0.75f) }; //pilot, tactician, engineer, captain, default
     public static string[] STATION_NAMES = { "PILOT", "TACTICIAN", "ENGINEER", "CAPTAIN" };
 
     public List<Texture> position_icons = null;
@@ -56,6 +56,7 @@ public class ReferenceAssistor : MonoBehaviour
     public ScenarioManager scenario_manager;
     public TransitionHandler transition_handler;
     public LightsManager lights_manager;
+    public InteractionManager interaction_manager;
     public SeatManager seat_manager;
     public HintsManager hints_manager;
     public TrainingHandler training_handler;

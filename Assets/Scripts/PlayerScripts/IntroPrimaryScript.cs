@@ -6,7 +6,7 @@
     - Sends user inputs to control script if looking at said control and within RAYCAST_RANGE
     - Handles transmitting IK targets for hand movement animations
     Contributor(s): Jake Schott, John Aylward
-    Last Updated: 9/27/2026
+    Last Updated: 11/19/2026
 */
 
 using UnityEngine;

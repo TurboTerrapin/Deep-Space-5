@@ -1,12 +1,11 @@
 /*
     CameraMove.cs
-    - Handles pausing
     - Handles looking around
     - Handles camera zoom (using RMB or CTRL)
     - Handles camera shaking
     - Handles displaying hints if hints enabled (station functions)
     Contributor(s): John Aylward, Jake Schott
-    Last Updated: 9/30/2026
+    Last Updated: 11/25/2026
 */
 
 using System.Collections;
@@ -17,7 +16,7 @@ using Unity.Netcode;
 public class CameraMove : MonoBehaviour
 {
     //CLASS CONSTANTS
-    private static bool HIDE_HAIR_AND_EYES = true; //Hides character's hair/eyes locally
+    public static bool HIDE_HAIR_AND_EYES = true; //Hides character's hair/eyes locally
     private static bool CAMERA_SHAKE_POSSIBLE = true; //Used for testing
     private static float MAXIMUM_CAMERA_SHAKE = 0.015f;
     private static float ZOOMED_FOV = 40.0f;
@@ -73,13 +72,7 @@ public class CameraMove : MonoBehaviour
         //Hide eyes, hair
         if (HIDE_HAIR_AND_EYES == true)
         {
-            foreach (Transform t in headTransform.parent)
-            {
-                if (t != headTransform)
-                {
-                    t.gameObject.SetActive(false);
-                }
-            }
+            UpdateFacialFeaturesVisibility(false);
         }
     }
 
@@ -145,6 +138,17 @@ public class CameraMove : MonoBehaviour
         else
         {
             sittingHorizontalRange = SITTING_CAMERA_HORIZONTAL_RANGES[0];
+        }
+    }
+
+    public void UpdateFacialFeaturesVisibility(bool visibility)
+    {
+        foreach (Transform t in headTransform.parent)
+        {
+            if (t != headTransform)
+            {
+                t.gameObject.SetActive(visibility);
+            }
         }
     }
 
@@ -250,19 +254,6 @@ public class CameraMove : MonoBehaviour
     {
         //Reposition camera to offset value (for shaking)
         cameraHolder.transform.GetChild(0).localPosition = cameraOffset;
-
-        //Handle pause/unpause
-        if (Input.GetKeyDown(KeyCode.Escape) && PrimaryScript.Instance.canPause())
-        {
-            if (!PrimaryScript.Instance.isPaused())
-            {
-                PrimaryScript.Instance.pause();
-            }
-            else
-            {
-                PrimaryScript.Instance.unpause();
-            }
-        }
         
         //If not paused
         if (myCamera.gameObject.activeSelf == true && Cursor.lockState == CursorLockMode.Locked && cameraLocked == false)

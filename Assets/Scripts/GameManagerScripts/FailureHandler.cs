@@ -4,7 +4,7 @@
     - Handles the animations of the ship exploding or getting captured
     - Handles restart voting
     Contributor(s): Beata Musial, Jake Schott
-    Last Updated: 6/29/2026
+    Last Updated: 11/22/2026
 */
 
 using System.Collections;
@@ -24,7 +24,7 @@ public class FailureHandler : NetworkBehaviour
 
     public TMP_Text starDateText;
     public TMP_Text reportText;
-    public GameObject failureHandlerCanvas;
+    public GameObject endgameCanvas;
     public CanvasGroup fadeInGroup;
     public CanvasGroup restartGroup;
     public GameObject failureCamera;
@@ -96,7 +96,7 @@ public class FailureHandler : NetworkBehaviour
         localPlayer.GetComponent<PlayerMove>().ResetPlayerMove();
 
         // show UI
-        failureHandlerCanvas.SetActive(true);
+        endgameCanvas.SetActive(true);
 
         // initialize states to 0
         for (int i = 0; i < 4; i++)

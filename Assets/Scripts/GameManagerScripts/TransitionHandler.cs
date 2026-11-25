@@ -92,19 +92,22 @@ public class TransitionHandler : MonoBehaviour
         TransitionText.GetChild(TRANSITION_OPTIONS[transitionOption]).GetChild(1).GetComponent<TMP_Text>().text = starDate;
         TransitionText.GetChild(TRANSITION_OPTIONS[transitionOption]).GetChild(3).GetComponent<TMP_Text>().text = distanceToDSF + " ly";
 
-        StartCoroutine(MoveCamera(CameraPositions.GetChild(transitionOption * 2), CameraPositions.GetChild((transitionOption * 2) + 1), 12f));
+        // play music
+        GetComponent<AudioSource>().Play();
 
-        yield return new WaitForSeconds(2f);
+        StartCoroutine(MoveCamera(CameraPositions.GetChild(transitionOption * 2), CameraPositions.GetChild((transitionOption * 2) + 1), 15f));
+
+        yield return new WaitForSeconds(5.5f);
 
         StartCoroutine(FadeText(TransitionText.GetChild(TRANSITION_OPTIONS[transitionOption]).GetChild(0).GetComponent<TMP_Text>(), 1f, 1.5f));
         StartCoroutine(FadeText(TransitionText.GetChild(TRANSITION_OPTIONS[transitionOption]).GetChild(1).GetComponent<TMP_Text>(), 1f, 1.5f));
 
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(1.0f);
 
         StartCoroutine(FadeText(TransitionText.GetChild(TRANSITION_OPTIONS[transitionOption]).GetChild(2).GetComponent<TMP_Text>(), 1f, 1.5f));
         StartCoroutine(FadeText(TransitionText.GetChild(TRANSITION_OPTIONS[transitionOption]).GetChild(3).GetComponent<TMP_Text>(), 1f, 1.5f));
 
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(6f);
 
         StartCoroutine(FadeText(TransitionText.GetChild(TRANSITION_OPTIONS[transitionOption]).GetChild(0).GetComponent<TMP_Text>(), 0f, 1f));
         StartCoroutine(FadeText(TransitionText.GetChild(TRANSITION_OPTIONS[transitionOption]).GetChild(1).GetComponent<TMP_Text>(), 0f, 1f));

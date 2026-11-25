@@ -2,7 +2,7 @@
     CrewManifest.cs
     - Handles displaying crew member names from within the bridge
     Contributor(s): Jake Schott
-    Last Updated: 10/24/2026
+    Last Updated: 11/25/2026
 */
 
 using System.Collections.Generic;
@@ -23,6 +23,18 @@ public class CrewManifest : NetworkBehaviour
         transmitCrewMemberNameRPC(SteamClient.SteamId, crew_member_name);
     }
 
+    public string getPlayerFirstInitialAndLastName(ulong player_id)
+    {
+        if (crew_member_names.ContainsKey(player_id) == true)
+        {
+            string character_name = crew_member_names[player_id];
+            string abbreviated_name = character_name[0] + ". ";
+            abbreviated_name += character_name.Substring(character_name.IndexOf(" ") + 1);
+            return abbreviated_name;
+        }
+        return "";
+    }
+
     public void updateCrewManifest()
     {
         GameObject lobby_handler = GameObject.Find("LobbyHandler");
@@ -36,10 +48,7 @@ public class CrewManifest : NetworkBehaviour
         {
             if (i < plr_steam_ids.Count && crew_member_names.ContainsKey(plr_steam_ids[i]) == true)
             {
-                string character_name = crew_member_names[plr_steam_ids[i]];
-                string display_name = character_name[0] + ". ";
-                display_name += character_name.Substring(character_name.IndexOf(" ") + 1);
-                crew_manifest_display.transform.GetChild(1).GetChild(i).GetComponent<TMP_Text>().SetText("• " + display_name);
+                crew_manifest_display.transform.GetChild(1).GetChild(i).GetComponent<TMP_Text>().SetText("• " + getPlayerFirstInitialAndLastName(plr_steam_ids[i]));
                 crew_manifest_display.transform.GetChild(1).GetChild(i).GetComponent<TMP_Text>().alpha = 1.0f;
             }
             else

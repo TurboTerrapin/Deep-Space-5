@@ -24,6 +24,7 @@ public class CustomizeCharacterMenu : MonoBehaviour
 {
     //CLASS CONSTANTS
     private static string[] CLOTHING_OPTION_NAMES = { "Blue Uniform", "Purple Uniform", "Orange Uniform", "Green Uniform" };
+    public static Color[] CLOTHING_OPTION_CORRESPONDING_COLORS = { ReferenceAssistor.COLOR_OPTIONS[0], ReferenceAssistor.COLOR_OPTIONS[1], ReferenceAssistor.COLOR_OPTIONS[2], ReferenceAssistor.COLOR_OPTIONS[3] };
     private static string[] FIRST_NAMES = { "Morgan", "Charlie", "Taylor", "Cameron", "Alex", "Jamie", "Robin", "Elliott", "Jordan", "Griffin" };
     private static string[] LAST_NAMES = { "Gregory", "Parsons", "Brannon", "Smith", "Johnson", "Miller", "Anderson", "Kirk", "Chambers", "Allen", "Stewart", "Murphy", "Morgan", "Gehring", "Murray", "Ford", "Simpson", "Porter", "Hansen", "Carroll", "Matthews", "Greene", "Davidson", "Horton", "Meyer", "Morton", "Flowers", "Huffman", "Moon", "McCoy", "Madden", "Raleigh", "Crawford" };
     private static string[] HAIR_OPTIONS = { "Bald", "Short", "Medium", "Long" };
@@ -277,6 +278,12 @@ public class CustomizeCharacterMenu : MonoBehaviour
         return GetCharacterData().LastName;
     }
 
+    public static string GetFirstInitialAndLastName()
+    {
+        CustomizeCharacterData ccd = GetCharacterData();
+        return (ccd.FirstName.Substring(0, 1) + ". " + ccd.LastName);
+    }
+
     // ------ CHANGE HAIR/CLOTHING OPTIONS ------
 
     private void PreviousClothingOption()
@@ -351,6 +358,11 @@ public class CustomizeCharacterMenu : MonoBehaviour
     {
         DummyAppearance.ApplyHairType(CurrentHairOptionIndex);
         HairOptionText.text = HAIR_OPTIONS[CurrentHairOptionIndex];
+    }
+
+    public static int GetSelectedClothingOption()
+    {
+        return GetCharacterData().SelectedClothingOption;
     }
 
     // ------ TEXT INPUT LIMITATIONS/CHECKS ------

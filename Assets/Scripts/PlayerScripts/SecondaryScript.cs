@@ -2,8 +2,9 @@
     SecondaryScript.cs
     - Helps with secondary info that isn't primary control interactions
     - Handles displaying pop-up notifications
+    - Handles displaying pop-up dialogue
     Contributor(s): Jake Schott
-    Last Updated: 11/1/2026
+    Last Updated: 11/20/2026
 */
 
 using System.Collections;
@@ -25,12 +26,31 @@ public class SecondaryScript : MonoBehaviour
     private GameObject sitting_overlay;
     private GameObject sitting_left_side;
     private GameObject sitting_right_side;
+    private GameObject dialogue_overlay;
     private GameObject primary_default_power_circles;
 
     private bool permanent_overlay_top_accessible = true;
     private List<int> popup_notification_queue = new List<int>();
+    private List<DialogueInfo> popup_dialogue_queue = new List<DialogueInfo>();
     private float displayed_power = 0.0f;
-    private Coroutine popup_notification_animation_coroutine = null;
+    private Coroutine popup_animation_coroutine = null;
+    private Coroutine dialogue_display_coroutine = null;
+
+    private struct DialogueInfo
+    {
+        public string dialogue_speaker;
+        public string dialogue_content;
+        public Color dialogue_color;
+        public float display_time;
+
+        public DialogueInfo(string speaker, string content, Color c, float time)
+        {
+            dialogue_speaker = speaker;
+            dialogue_content = content;
+            dialogue_color = c;
+            display_time = time;    
+        }
+    }
 
     private void Awake()
     {
@@ -41,6 +61,7 @@ public class SecondaryScript : MonoBehaviour
         sitting_overlay = secondary_info.transform.GetChild(1).gameObject;
         sitting_left_side = sitting_overlay.transform.GetChild(0).gameObject;
         sitting_right_side = sitting_overlay.transform.GetChild(1).gameObject;
+        dialogue_overlay = secondary_info.transform.GetChild(3).gameObject;
         primary_default_power_circles = transform.GetChild(1).GetChild(0).GetChild(1).GetChild(3).GetChild(1).gameObject;
     }
 
@@ -265,7 +286,7 @@ public class SecondaryScript : MonoBehaviour
     {
         bool inputted = PrimaryScript.checkInputIndexDown(15);
 
-        if ((force_hide == false && inputted == false) || stations_button.transform.childCount == 0)
+        if ((force_hide == false && inputted == false) || permanent_overlay_top_accessible == false || stations_button.transform.childCount == 0)
         {
             return;
         }
@@ -283,11 +304,24 @@ public class SecondaryScript : MonoBehaviour
         GetComponent<PrimaryScript>().setCursorVisibility(hide && !force_hide);
     }
 
+    public void displayPopupDialogue(string speaker_name, string dialogue_content, Color dialogue_color, float display_time)
+    {
+        DialogueInfo dialogue_info = new DialogueInfo(speaker_name, "\"" + dialogue_content.ToUpper() + "\"", dialogue_color, display_time);
+        if (popup_notification_queue.Count == 0 && isDisplayingPopupNotification() == false && dialogue_overlay.activeSelf == false)
+        {
+            popup_animation_coroutine = StartCoroutine(popupDialogueAnimation(dialogue_info));
+        }
+        else
+        {
+            popup_dialogue_queue.Add(dialogue_info);
+        }
+    }
+
     public void displayPopupNotification(int popup_index)
     {
-        if (popup_notification_queue.Count == 0 && isDisplayingPopupNotification() == false)
+        if (popup_notification_queue.Count == 0 && isDisplayingPopupNotification() == false && dialogue_overlay.activeSelf == false)
         {
-            popup_notification_animation_coroutine = StartCoroutine(popupNotificationAnimation(popup_index));
+            popup_animation_coroutine = StartCoroutine(popupNotificationAnimation(popup_index));
         }
         else
         {
@@ -307,17 +341,7 @@ public class SecondaryScript : MonoBehaviour
         return false;
     }
 
-    public bool isAnimatingPopupNotification()
-    {
-        return (popup_notification_animation_coroutine != null);
-    }
-
-    public bool hasPopupNotificationsInQueue()
-    {
-        return (popup_notification_queue.Count > 0);
-    }
-
-    private void clearPopupNotifications()
+    public void clearPopupNotifications()
     {
         //show stations button and current station indicator
         setPermanentOverlayTopVisibility(permanent_overlay_top_accessible);
@@ -334,9 +358,14 @@ public class SecondaryScript : MonoBehaviour
 
     private void checkForPopupNotificationToDisplay()
     {
-        if (popup_notification_animation_coroutine == null && popup_notification_queue.Count > 0)
+        if (popup_animation_coroutine == null && popup_notification_queue.Count > 0)
         {
-            popup_notification_animation_coroutine = StartCoroutine(popupNotificationAnimation(popup_notification_queue[0]));
+            popup_animation_coroutine = StartCoroutine(popupNotificationAnimation(popup_notification_queue[0]));
+        }
+        else if (popup_animation_coroutine == null && popup_dialogue_queue.Count > 0)
+        {
+            popup_animation_coroutine = StartCoroutine(popupDialogueAnimation(popup_dialogue_queue[0]));
+            popup_dialogue_queue.RemoveAt(0);
         }
     }
 
@@ -378,7 +407,7 @@ public class SecondaryScript : MonoBehaviour
         }
 
         popup_notification_queue.Remove(popup_index);
-        popup_notification.gameObject.SetActive(false);
+        popup_notification.SetActive(false);
         if (PrimaryScript.Instance.isPaused() == true)
         {
             clearPopupNotifications();
@@ -391,7 +420,74 @@ public class SecondaryScript : MonoBehaviour
             PrimaryScript.Instance.activate();
         }
         setPermanentOverlayTopVisibility(permanent_overlay_top_accessible);
-        popup_notification_animation_coroutine = null;
+        popup_animation_coroutine = null;
+        checkForPopupNotificationToDisplay();
+    }
+
+    IEnumerator popupDialogueAnimation(DialogueInfo dialogue_info)
+    {
+        setSecondaryInfoVisibility(true);
+
+        CanvasGroup dialogue_overlay_canvas_group = dialogue_overlay.GetComponent<CanvasGroup>();
+        dialogue_overlay_canvas_group.alpha = 0.0f;
+        foreach (Transform t in dialogue_overlay.transform.GetChild(1))
+        {
+            t.GetComponent<UnityEngine.UI.RawImage>().color = dialogue_info.dialogue_color;
+        }
+        dialogue_overlay.transform.GetChild(2).GetComponent<TMP_Text>().color = dialogue_info.dialogue_color;
+        dialogue_overlay.transform.GetChild(2).GetComponent<TMP_Text>().SetText(dialogue_info.dialogue_speaker.ToUpper());
+        TMP_Text overlay_text_content = dialogue_overlay.transform.GetChild(3).GetComponent<TMP_Text>();
+        overlay_text_content.SetText("");
+        dialogue_overlay.SetActive(true);
+
+        float fade_time = 0.5f;
+        while (fade_time > 0.0f && PrimaryScript.Instance.isPaused() == false)
+        {
+            fade_time -= Time.deltaTime;
+
+            dialogue_overlay_canvas_group.alpha = 1.0f - (fade_time / 0.5f);
+
+            yield return null;
+        }
+
+        dialogue_overlay.GetComponent<AudioSource>().Play();
+        int iterator = 0;
+        while (iterator < dialogue_info.dialogue_content.Length && PrimaryScript.Instance.isPaused() == false)
+        {
+            iterator++;
+            overlay_text_content.SetText(dialogue_info.dialogue_content.Substring(0, iterator));
+
+            yield return new WaitForSeconds(0.04f);
+        }
+        dialogue_overlay.GetComponent<AudioSource>().Stop();
+
+        float delay_time = dialogue_info.display_time;
+        while (delay_time > 0.0f)
+        {
+            delay_time -= Time.deltaTime;
+            if (PrimaryScript.Instance.isPaused() == true)
+            {
+                break;
+            }
+
+            yield return null;
+        }
+
+        fade_time = 0.5f;
+        while (fade_time > 0.0f && PrimaryScript.Instance.isPaused() == false)
+        {
+            fade_time -= Time.deltaTime;
+
+            dialogue_overlay_canvas_group.alpha = fade_time / 0.5f;
+
+            yield return null;
+        }
+
+        dialogue_overlay.SetActive(false);
+
+        yield return null;
+
+        popup_animation_coroutine = null;
         checkForPopupNotificationToDisplay();
     }
 }

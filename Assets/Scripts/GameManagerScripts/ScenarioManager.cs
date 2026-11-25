@@ -30,7 +30,7 @@ public class ScenarioManager : NetworkBehaviour
     private static int[] COUNTDOWN_TIME = new int[] { 900, 720, 600, 360 }; //how long each round lasts before scenario failure based on difficulty
     private static int[][] SCENARIO_SEQUENCE = new int[][] //denotes number of scenarios and scenario tier (1-3) to reach Deep Space Five
     {
-        new int[]{ 1, 1, 2, 2, 3}, //easy
+        new int[]{ 1, 1, 2, 1, 2}, //easy
         new int[]{ 1, 2, 2, 3, 2, 3}, //medium
         new int[]{ 2, 2, 1, 2, 1, 2, 3}, //hard
         new int[]{ 2, 2, 3, 2, 2, 3, 2, 3} //expert
@@ -397,6 +397,7 @@ public class ScenarioManager : NetworkBehaviour
         endpoint_reached = false;
         ReferenceAssistor.Instance.spaceship.GetComponent<ShipMovement>().LockMovement();
 
+        //check if ship has reached Deep Space Five
         if (num_scenarios_defeated == SCENARIO_SEQUENCE[game_difficulty].Length)
         {
             ReferenceAssistor.Instance.spaceship.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
@@ -513,7 +514,7 @@ public class ScenarioManager : NetworkBehaviour
         yield return new WaitForSeconds(2.0f); //2-second courtesy
 
         countdown_coroutine = null;
-        endScenario(EndCondition.TimeRanOut);
+        endScenario(EndCondition.ReachedEndpoint);
     }
 
     private void enableScenarioTimer()
@@ -545,7 +546,7 @@ public class ScenarioManager : NetworkBehaviour
         return null;
     }
 
-    //called when a scenario ends by PilotingSystem, ShipHealth, a scenario, or this
+    //called when a scenario ends by ShipMovement, ShipHealth, a scenario, or this
     public void endScenario(EndCondition reason)
     {
         //only run if host
@@ -576,12 +577,12 @@ public class ScenarioManager : NetworkBehaviour
         //failure conditions
         if (reason == EndCondition.TimeRanOut)
         {
-            failure_report_message = "Stolen ship designated SCC-3002 was apprehended and recovered after long-range scanners intercepted its signal at the conclusion of the periodic " + (COUNTDOWN_TIME[getDifficulty()] / 60).ToString() + "-minute reset window.";
+            failure_report_message = "Stolen ship designated SCC-3002 was apprehended and recovered after long-range scanners intercepted its signal at the conclusion of the periodic " + (COUNTDOWN_TIME[getDifficulty()] / 60).ToString() + "-minute tracking window.";
         }
         else if (reason == EndCondition.LeftBoundary)
         {
             string[] crew_members = new string[4] { "One crew member was found alive and has been", "Two crew members were found alive and have been",  "Three crew members were found alive and have been", "Four crew members were found alive and have been" };
-            failure_report_message = "Stolen ship designated SCC-3002 mistakenly left long-range scanner dead zone and was immediately identified and apprehended. " + crew_members[lobby_handler.getNumberOfPlayersInNetworkManagerLobby() - 1] + " arrested.";
+            failure_report_message = "Stolen ship designated SCC-3002 mistakenly left long-range scanner blind zone and was immediately identified and apprehended. " + crew_members[lobby_handler.getNumberOfPlayersInNetworkManagerLobby() - 1] + " arrested.";
         }
         else if (reason == EndCondition.SelfDestructed)
         {
@@ -646,6 +647,9 @@ public class ScenarioManager : NetworkBehaviour
         {
             ReferenceAssistor.Instance.power_manager.disableStation(i);
         }
+
+        //reset interaction manager
+        ReferenceAssistor.Instance.interaction_manager.resetInteractions();
 
         //reset lights
         ReferenceAssistor.Instance.lights_manager.resetLights();

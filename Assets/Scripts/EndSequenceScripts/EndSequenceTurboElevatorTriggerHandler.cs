@@ -2,7 +2,7 @@
     EndSequenceTurboElevatorTriggerHandler.cs
     - Used to close the elevator when all players are in it during the end sequence
     Contributor(s): Jake Schott
-    Last Updated: 10/27/2026
+    Last Updated: 11/21/2026
 */
 
 using UnityEngine;
@@ -30,7 +30,15 @@ public class EndSequenceTurboElevatorTriggerHandler : MonoBehaviour
 
     private bool allPlayersInElevator()
     {
-        return (players_in_trigger.Count == lobby_handler.getNumberOfPlayersInNetworkManagerLobby());
+        int confirmed_players = 0;
+        for (int i = 0; i < players_in_trigger.Count; i++)
+        {
+            if (players_in_trigger[i] != null)
+            {
+                confirmed_players++;
+            }
+        }
+        return (confirmed_players == lobby_handler.getNumberOfPlayersInSteamLobby());
     }
 
     private void OnTriggerEnter(Collider other)

@@ -16,7 +16,7 @@ public class ShipExteriorFeatures : MonoBehaviour
     private static Vector3 CARGO_LATCH_CLOSED_POSITION = new Vector3(0.0f, -77.6f, -6.7f);
     private static Vector3 CARGO_LATCH_OPEN_POSITION = new Vector3(0.0f, -77.5f, -7.35f);
     private static float FEATURE_ROTATION_SPEED = 30.0f;
-    private static float LIGHT_BLINK_DELAY = 0.5f;
+    public static float LIGHT_BLINK_DELAY = 0.5f;
 
     [SerializeField]
     private bool enable_cosmetic_features = true;
@@ -28,6 +28,7 @@ public class ShipExteriorFeatures : MonoBehaviour
     public Material lit_white;
     public Material black;
 
+    private float engine_circles_speed_factor = 1.0f;
     private bool[] open_features = new bool[] { false, false }; //tractor beam, cargo eject
     private float cargo_open_percentage = 0.0f;
     private float target_open_percentage = 0.0f;
@@ -72,13 +73,19 @@ public class ShipExteriorFeatures : MonoBehaviour
         }
     }
 
+    public void adjustEngineCirclesRotationFactor(float factor)
+    {
+        engine_circles_speed_factor = factor;
+    }
+
     IEnumerator rotator()
     {
         while (true)
         {
             float rotation = Time.deltaTime * FEATURE_ROTATION_SPEED;
-            ship_engine_circles.transform.Rotate(rotation, 0.0f, 0.0f);
             ship_radar_dish.transform.Rotate(0.0f, 0.0f, rotation);
+            rotation *= engine_circles_speed_factor;
+            ship_engine_circles.transform.Rotate(rotation, 0.0f, 0.0f);
             yield return null;
         }
     }

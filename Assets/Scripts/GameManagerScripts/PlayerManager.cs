@@ -303,6 +303,16 @@ public class PlayerManager : NetworkBehaviour
         return local_player;
     }
 
+    //returns the player with the corresponding steam ID
+    public GameObject getPlayer(ulong steam_id)
+    {
+        if (player_prefabs.ContainsKey(steam_id) == true)
+        {
+            return player_prefabs[steam_id];
+        }
+        return null;
+    }
+
     //---------------------------------------------------------------------------------------//
     //------------------------------------SCENARIO LOADING-----------------------------------//
     //---------------------------------------------------------------------------------------//

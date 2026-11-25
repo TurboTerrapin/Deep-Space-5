@@ -5,8 +5,9 @@
     - Manages the HUD display for control interaction
     - Sends user inputs to control script if looking at said control and within RAYCAST_RANGE
     - Handles transmitting IK targets for hand movement animations
+    - Handles pausing and unpausing
     Contributor(s): Jake Schott, John Aylward
-    Last Updated: 10/5/2026
+    Last Updated: 11/25/2026
 */
 
 using System.Collections;
@@ -46,7 +47,7 @@ public abstract class PrimaryScript : MonoBehaviour
     protected bool control_update_flag = false;
     protected int curr_seat = -1;
     protected bool is_sitting = false;
-    protected Coroutine seat_check_coroutine = null;
+    protected Coroutine interactables_check_coroutine = null;
     protected Coroutine control_check_coroutine = null;
     protected Coroutine ray_target_check_coroutine = null;
 
@@ -175,7 +176,7 @@ public abstract class PrimaryScript : MonoBehaviour
         //free player movement, show initial pop-up notification, begin gameplay
         can_pause = true;
         player_prefab.GetComponent<PlayerMove>().Initialize();
-        seat_check_coroutine = StartCoroutine(seatCheck());
+        interactables_check_coroutine = StartCoroutine(interactablesCheck());
         activate();
         if (hints_setting == true && HUD_setting < 2 && SceneManager.GetActiveScene().name.CompareTo("IntroSequence") != 0)
         {
@@ -422,33 +423,39 @@ public abstract class PrimaryScript : MonoBehaviour
     }
 
     //runs on Update() time
-    protected IEnumerator seatCheck()
+    protected IEnumerator interactablesCheck()
     {
         while (is_sitting == false)
         {
             yield return null;
-            checkForSeats();
+            checkForPause();
+            checkForInteractables();
         }
-        seat_check_coroutine = null;
+        interactables_check_coroutine = null;
     }
 
-    //called by seatCheck()
-    protected void checkForSeats()
+    //updates the interactable UI element
+    protected void updateInteractableIndicator(Color c, string interaction_name, string button_option)
+    {
+        foreach (Transform t in default_view.transform.GetChild(0).GetChild(1))
+        {
+            t.GetComponent<UnityEngine.UI.RawImage>().color = c;
+        }
+        default_view.transform.GetChild(0).GetChild(2).GetComponent<TMP_Text>().color = c;
+        default_view.transform.GetChild(0).GetChild(2).GetComponent<TMP_Text>().SetText(interaction_name);
+        default_view.transform.GetChild(0).GetChild(3).GetChild(4).GetComponent<TMP_Text>().SetText(button_option);
+        minimized_view.transform.GetChild(0).GetChild(0).GetComponent<TMP_Text>().SetText(button_option);
+    }
+
+    //called by interactablesCheck()
+    protected void checkForInteractables()
     {
         if (!paused && is_active && player_prefab != null && !GetComponent<SecondaryScript>().isDisplayingPopupNotification())
         {
             int closest_seat = getClosestSeat();
             if (closest_seat >= 0) //can sit
             {
-                //update seat indicator color and information
-                Color c = getSeatColor(closest_seat);
-                foreach (Transform t in default_view.transform.GetChild(0).GetChild(1))
-                {
-                    t.GetComponent<UnityEngine.UI.RawImage>().color = c;
-                }
-                default_view.transform.GetChild(0).GetChild(2).GetComponent<TMP_Text>().color = c;
-                default_view.transform.GetChild(0).GetChild(2).GetComponent<TMP_Text>().SetText(getSeatName(closest_seat));
-
+                updateInteractableIndicator(getSeatColor(closest_seat), getSeatName(closest_seat), "SIT DOWN");
                 primary_info.SetActive(true);
 
                 if (UnityEngine.Input.GetKeyDown(input_options[13][0])) //trying to sit down
@@ -465,8 +472,23 @@ public abstract class PrimaryScript : MonoBehaviour
                     }
                 }
             }
-            else //can't sit
+            else //can't sit, check for interaction
             {
+                string closest_interaction = ReferenceAssistor.Instance.interaction_manager.checkForInteractables(player_prefab.transform.position);
+                if (string.IsNullOrEmpty(closest_interaction) == false) //can interact
+                {
+                    InteractionManager.InteractionInfo interaction_info = ReferenceAssistor.Instance.interaction_manager.getInteractionInfo(closest_interaction);
+                    updateInteractableIndicator(interaction_info.interaction_color, interaction_info.interaction_name, interaction_info.interaction_action_label);
+                    primary_info.SetActive(true);
+
+                    if (UnityEngine.Input.GetKeyDown(input_options[13][0])) //trying to interact
+                    {
+                        interaction_info.interaction_handler.activateInteraction(interaction_info.interaction_name);
+                        ReferenceAssistor.Instance.interaction_manager.removeInteraction(interaction_info.interaction_name);
+                        primary_info.SetActive(false);
+                    }
+                    return;
+                }
                 primary_info.SetActive(false);
             }
 
@@ -504,7 +526,7 @@ public abstract class PrimaryScript : MonoBehaviour
         player_prefab.GetComponent<PlayerMove>().Initialize();
 
         curr_seat = -1;
-        seat_check_coroutine = StartCoroutine(seatCheck());
+        interactables_check_coroutine = StartCoroutine(interactablesCheck());
     }
 
     public void initiateGetUp()
@@ -642,12 +664,29 @@ public abstract class PrimaryScript : MonoBehaviour
         }
     }
 
+    private void checkForPause()
+    {
+        //handle pausing and unpausing
+        if (Input.GetKeyDown(KeyCode.Escape) == true && can_pause == true)
+        {
+            if (paused == false)
+            {
+                pause();
+            }
+            else
+            {
+                unpause();
+            }
+        }
+    }
+
     //runs on Update() time
     protected IEnumerator controlCheck()
     {
         while (is_sitting == true)
         {
             yield return null;
+            checkForPause();
             checkForControlsAndInputs();
         }
 

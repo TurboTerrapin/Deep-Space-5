@@ -6,7 +6,6 @@
 */
 
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class TranslationHelper : MonoBehaviour
@@ -16,7 +15,7 @@ public class TranslationHelper : MonoBehaviour
         return StartCoroutine(translateLinear(to_translate, end, time));
     }
 
-    public Coroutine linearTransation(Transform to_translate, Transform start, Transform end, float time)
+    public Coroutine linearTranslation(Transform to_translate, Transform start, Transform end, float time)
     {
         return StartCoroutine(translateLinear(to_translate, start, end, time));
     }
