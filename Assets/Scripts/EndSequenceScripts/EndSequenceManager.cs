@@ -9,6 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Steamworks;
 using TMPro;
+using Unity.Multiplayer.Samples.Utilities.ClientAuthority;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -107,6 +108,7 @@ public class EndSequenceManager : NetworkBehaviour, IInteractable
         ReferenceAssistor.Instance.audio_manager.UnmuteSFX();
         foreach (GameObject plr in GameObject.FindGameObjectsWithTag("Player"))
         {
+            plr.GetComponent<ClientNetworkTransform>().Interpolate = true;
             PlayerManager.unfreezePlayer(plr);
         }
         return player;
@@ -309,10 +311,18 @@ public class EndSequenceManager : NetworkBehaviour, IInteractable
         player.GetComponent<CameraMove>().UpdateFacialFeaturesVisibility(true);
         end_sequence_camera.SetActive(true);
 
-        //position player
+        //position players
         ReferenceAssistor.Instance.player_manager.freezeAllPlayers();
-        int spawn_index = lobby_handler.getPlayerIndex(SteamClient.SteamId);
-        player.transform.position = EndSequenceReferenceAssistor.Instance.deep_space_five_spawn_points.transform.GetChild(spawn_index).position;
+        List<ulong> steam_ids = lobby_handler.getPlayerSteamIDsInLobby();
+        for (int i = 0; i < steam_ids.Count; i++)
+        {
+            GameObject player_to_position = ReferenceAssistor.Instance.player_manager.getPlayer(steam_ids[i]);
+            if (player_to_position != null)
+            {
+                player_to_position.GetComponent<ClientNetworkTransform>().Interpolate = false;
+                player_to_position.transform.position = EndSequenceReferenceAssistor.Instance.deep_space_five_spawn_points.transform.GetChild(i).position;
+            }
+        }
         foreach (GameObject plr in GameObject.FindGameObjectsWithTag("Player"))
         {
             plr.transform.rotation = Quaternion.Euler(0.0f, 90.0f, 0.0f);

@@ -30,7 +30,7 @@ public class ScenarioManager : NetworkBehaviour
     private static int[] COUNTDOWN_TIME = new int[] { 900, 720, 600, 360 }; //how long each round lasts before scenario failure based on difficulty
     private static int[][] SCENARIO_SEQUENCE = new int[][] //denotes number of scenarios and scenario tier (1-3) to reach Deep Space Five
     {
-        new int[]{ 1, 1, 2, 1, 2}, //easy
+        new int[]{ 1, 1, 2, 1, 3 }, //easy
         new int[]{ 1, 2, 2, 3, 2, 3}, //medium
         new int[]{ 2, 2, 1, 2, 1, 2, 3}, //hard
         new int[]{ 2, 2, 3, 2, 2, 3, 2, 3} //expert
@@ -514,7 +514,7 @@ public class ScenarioManager : NetworkBehaviour
         yield return new WaitForSeconds(2.0f); //2-second courtesy
 
         countdown_coroutine = null;
-        endScenario(EndCondition.ReachedEndpoint);
+        endScenario(EndCondition.TimeRanOut);
     }
 
     private void enableScenarioTimer()
